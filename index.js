@@ -5,7 +5,8 @@
 
 import { GoogleGenAI } from '@google/genai';
 import { marked } from 'marked';
-
+import dotenv from 'dotenv';
+dotenv.config();
 // Use API_KEY from environment variables
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
