@@ -17,6 +17,7 @@ const examples = document.querySelectorAll('#examples li');
 const quizContainer = document.querySelector('#quiz-container');
 const quizWrapper = document.querySelector('#quiz-wrapper');
 const startQuizBtn = document.querySelector('#start-quiz');
+const sendPromptBtn = document.querySelector('#send-prompt'); // ✅ Grab send button
 
 // Check if all required elements are present
 if (
@@ -321,3 +322,11 @@ examples.forEach((li) =>
 );
 
 startQuizBtn.addEventListener('click', startQuiz);
+
+// ✅ Send button event for mobile
+sendPromptBtn?.addEventListener('click', async () => {
+  const message = userInput.value.trim();
+  if (message) {
+    await generate(message);
+  }
+});
