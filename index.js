@@ -2,13 +2,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-
-import { GoogleGenAI } from '@google/genai';
 import { marked } from 'marked';
-import dotenv from 'dotenv';
-dotenv.config();
-// Use API_KEY from environment variables
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 const userInput = document.querySelector('#input');
 const modelOutput = document.querySelector('#output');
@@ -133,14 +127,22 @@ async function generate(message) {
     modelOutput.append(userTurn);
     userInput.value = '';
 
-    // Step 1: Generate the slideshow script
-    const scriptResponse = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-preview-04-17',
-      contents: `${professorInstructions}\n\nTopic: "${message}"`,
-      config: {
-        responseMimeType: 'application/json',
-      },
-    });
+const scriptResponse = await fetch('/api/generate', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    prompt: `${professorInstructions}\n\nTopic: "${message}"`
+  })
+});
+
+if (!scriptResponse.ok) {
+  throw new Error('Failed to fetch from server');
+}
+
+const data = await scriptResponse.json();
+
 
     if (!scriptResponse.text) {
       throw new Error(
@@ -199,13 +201,22 @@ async function startQuiz() {
   quizWrapper.removeAttribute('hidden');
 
   try {
-    const quizResponse = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-preview-04-17',
-      contents: quizInstructions,
-      config: {
-        responseMimeType: 'application/json',
-      },
-    });
+const quizResponse = await fetch('/api/generate', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    prompt: quizInstructions
+  })
+});
+
+if (!quizResponse.ok) {
+  throw new Error('Failed to fetch quiz from server');
+}
+
+const data = await quizResponse.json();
+
 
     let quizData = quizResponse.text.trim();
     const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
