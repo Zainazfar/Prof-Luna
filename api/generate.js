@@ -1,4 +1,4 @@
-// api/generate.js
+// Correct import for the preview SDK
 import { GoogleGenAI } from '@google/genai';
 
 const ai = new GoogleGenAI({
@@ -13,17 +13,27 @@ export default async function handler(req, res) {
   try {
     const { prompt } = req.body;
 
+    // For the preview models, use this format:
     const result = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-preview-04-17',
-      contents: prompt,
-      config: {
+      model: 'gemini-2.5-flash-preview-04-17', // or your preferred model
+      contents: [{ 
+        role: 'user',
+        parts: [{ text: prompt }]
+      }],
+      generationConfig: {
         responseMimeType: 'application/json',
       },
     });
 
-    res.status(200).json({ text: result.text });
+    // Extract the response text correctly
+    const responseText = result.candidates[0].content.parts[0].text;
+
+    res.status(200).json({ text: responseText });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Something went wrong on the server' });
+    console.error('API Error:', error);
+    res.status(500).json({ 
+      error: error.message || 'Failed to generate content',
+      details: error.response?.data || null 
+    });
   }
 }
