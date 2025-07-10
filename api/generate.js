@@ -1,12 +1,12 @@
 // api/generate.js
 const { GoogleGenAI } = require('@google/genai');
 
-// Initialize with API key
+// Initialize Gemini API with API key
 const ai = new GoogleGenAI({
-  apiKey: process.env.API_KEY || '',
+  apiKey: process.env.API_KEY || '', // fallback to empty string
 });
 
-// Model configuration
+// Model and config
 const MODEL_CONFIG = {
   model: 'gemini-2.5-flash-preview-04-17',
   generationConfig: {
@@ -23,103 +23,59 @@ const MODEL_CONFIG = {
   ]
 };
 
-// Content generation function
+// Function to generate content
 async function generateContent(prompt) {
-  try {
-    console.log(`Generating content for prompt: ${prompt.substring(0, 50)}...`);
-    
-    const result = await ai.models.generateContent({
-      ...MODEL_CONFIG,
-      contents: [{
-        role: 'user',
-        parts: [{ text: prompt }]
-      }],
-    });
+  console.log(`🔮 Generating content for prompt: ${prompt.substring(0, 50)}...`);
 
-    // Safely extract response text with validation
-    const responseText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-    
-    if (!responseText) {
-      console.error('Malformed API response:', JSON.stringify(result, null, 2));
-      throw new Error('The AI response format was unexpected');
-    }
+  const result = await ai.models.generateContent({
+    ...MODEL_CONFIG,
+    contents: [{
+      role: 'user',
+      parts: [{ text: prompt }]
+    }],
+  });
 
-    return responseText;
-  } catch (error) {
-    console.error('Content generation failed:', error);
-    throw new Error(`AI service error: ${error.message}`);
+  // Extract the text safely
+  const responseText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+  if (!responseText) {
+    console.error('❌ No text in API response:', JSON.stringify(result, null, 2));
+    throw new Error('Unexpected API response format');
   }
+
+  return responseText;
 }
 
-// Request validation
-function validateRequest(body) {
-  if (!body) throw new Error('Request body is required');
-  if (!body.prompt) throw new Error('Prompt is required');
-  if (typeof body.prompt !== 'string') throw new Error('Prompt must be a string');
-  if (body.prompt.length > 5000) throw new Error('Prompt too long (max 5000 chars)');
-}
-
-// Main handler
+// API handler
 module.exports = async (req, res) => {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     return res.status(200).end();
   }
 
-  // Method validation
+  // Allow POST only
   if (req.method !== 'POST') {
-    return res.status(405).json({
-      success: false,
-      error: {
-        message: 'Method not allowed',
-        supportedMethods: ['POST']
-      }
-    });
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    // Validate request
-    validateRequest(req.body);
-    
-    // Generate content
-    const responseText = await generateContent(req.body.prompt);
-    
-    // Successful response
-    return res.status(200).json({
-      success: true,
-      data: {
-        text: responseText,
-        model: MODEL_CONFIG.model,
-        timestamp: new Date().toISOString(),
-        charsGenerated: responseText.length
-      }
-    });
+    const { prompt } = req.body;
 
+    // Validate prompt
+    if (!prompt || typeof prompt !== 'string') {
+      return res.status(400).json({ error: 'Invalid or missing prompt' });
+    }
+
+    // Generate text
+    const text = await generateContent(prompt);
+
+    // Return text in expected format
+    return res.status(200).json({ text });
   } catch (error) {
-    console.error('API Error:', error);
-    
-    // Determine appropriate status code
-    const statusCode = 
-      error.message.includes('required') || error.message.includes('must be') 
-        ? 400 
-        : 500;
-    
-    // Error response
-    return res.status(statusCode).json({
-      success: false,
-      error: {
-        message: error.message,
-        type: error.name,
-        ...(process.env.NODE_ENV === 'development' && {
-          stack: error.stack,
-          details: error.response?.data
-        })
-      }
-    });
+    console.error('💥 API Error:', error);
+    return res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
 };
