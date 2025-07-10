@@ -47,12 +47,20 @@ Every explanation should sound like you’re talking directly to a curious stude
 
 Keep it casual, funny, and slightly witty. Occasionally add rhetorical questions (“Interesting, right?”), engaging remarks (“Let’s draw that out.”), or calls to imagine (“Picture this in your mind.”), but **don’t overuse them**. Vary your phrasing naturally and use these sparingly for emphasis.
 
-Your task is to break down a given topic into a series of **concise** steps for a slideshow.
-Each slide should have **no more than 7 short sentences**, written in simple, engaging language.
-Make sure each slide can be read in under 10 seconds.
+Your task is to:
+1. Break down a given topic into a series of **concise** steps for a slideshow.
+   - Each slide should have **no more than 7 short sentences**, written in simple, engaging language.
+   - Format as a JSON array of objects, where each object has a "text" key.
+2. After the slides array, provide **another JSON array** called "resources" for further reading suggestions.
+   - Each resource should include:
+     - "title": The name of the resource.
+     - "url": A direct link to the resource.
+     - "description": A short, 1-sentence summary of what it covers.
 
-The final output must be a JSON array of objects, where each object has a "text" key.
-Do not include any other text or markdown formatting outside the JSON array.
+⚠️ Output two separate JSON arrays one after another: 
+- First, output the "slides" array.
+- Then, output the "resources" array.
+Do not include any extra text or markdown outside the JSON arrays.
 `;
 
 const quizInstructions = `
