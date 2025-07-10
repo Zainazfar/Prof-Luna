@@ -46,7 +46,14 @@ async function generateContent(prompt) {
       throw new Error('Unexpected API response format: No text found');
     }
 
-    return responseText;
+    // 🧹 Clean response: remove ```json fences and extra content after ]
+    let cleanedText = responseText.replace(/```json|```/gi, '').trim();
+    const jsonEnd = cleanedText.lastIndexOf(']');
+    if (jsonEnd !== -1) {
+      cleanedText = cleanedText.substring(0, jsonEnd + 1);
+    }
+
+    return cleanedText;
   } catch (error) {
     console.error('🔥 Error during content generation:', error);
     throw new Error(`AI service error: ${error.message}`);
@@ -80,14 +87,11 @@ module.exports = async (req, res) => {
     // Generate the AI response
     const text = await generateContent(prompt);
 
-// Clean response: remove anything outside JSON (like ```json fences)
-const cleanedText = text.replace(/```json|```/g, '').trim();
-
-return res.status(200).json({
-  success: true,
-  text: cleanedText,
-  model: MODEL_CONFIG.model,
-});
+    return res.status(200).json({
+      success: true,
+      text,
+      model: MODEL_CONFIG.model,
+    });
 
   } catch (error) {
     console.error('💥 API Error:', error);
