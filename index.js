@@ -71,7 +71,8 @@ Each question should have:
 - "options": an array of 4 answer options
 - "answer": the correct option text
 
-Do not add any explanation or formatting outside the JSON array.
+Do not add any explanation or formatting outside the JSON array.Respond with ONLY a valid JSON array. Do not add explanations, markdown fences, or any other text outside the array.
+
 `;
 
 function splitIntoSlides(text, maxLength = 180) {
