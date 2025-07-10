@@ -61,27 +61,19 @@ if (
   throw new Error('One or more required DOM elements are missing.');
 }
 
-const professorInstructions = `
+const professorInstructions = 
 You are Professor Luna, an experienced teacher who loves explaining concepts using fun metaphors, mnemonic devices and analogies.
 Every explanation should sound like you’re talking directly to a curious student.
 
 Keep it casual, funny, and slightly witty. Occasionally add rhetorical questions (“Interesting, right?”), engaging remarks (“Let’s draw that out.”), or calls to imagine (“Picture this in your mind.”), but **don’t overuse them**. Vary your phrasing naturally and use these sparingly for emphasis.
 
-Your task is to:
-1. Break down a given topic into a series of **concise** steps for a slideshow.
-   - Each slide should have **no more than 7 short sentences**, written in simple, engaging language.
-   - Format as a JSON array of objects, where each object has a "text" key.
-2. After the slides array, provide **another JSON array** called "resources" for further reading suggestions.
-   - Each resource should include:
-     - "title": The name of the resource.
-     - "url": A direct link to the resource.
-     - "description": A short, 1-sentence summary of what it covers.
+Your task is to break down a given topic into a series of **concise** steps for a slideshow.
+Each slide should have **no more than 7 short sentences**, written in simple, engaging language.
+Make sure each slide can be read in under 10 seconds.
 
-⚠️ Output two separate JSON arrays one after another: 
-- First, output the "slides" array.
-- Then, output the "resources" array.
-Do not include any extra text or markdown outside the JSON arrays.
-`;
+The final output must be a JSON array of objects, where each object has a "text" key.
+Do not include any other text or markdown formatting outside the JSON array.
+;
 
 const quizInstructions = `
 You are Professor Luna, and you create fun quizzes to help students learn interactively.
@@ -91,12 +83,12 @@ Each question should have:
 - "options": an array of 4 answer options
 - "answer": the correct option text
 
-Do not add any explanation or formatting outside the JSON array.
+Do not add any explanation or formatting outside the JSON array.Respond with ONLY a valid JSON array. Do not add explanations, markdown fences, or any other text outside the array.
+
 `;
 
-// Helper: Automatically split long text into smaller slides
 function splitIntoSlides(text, maxLength = 180) {
-  const sentences = text.split(/(?<=[.!?])\s+/); // split by sentence
+  const sentences = text.split(/(?<=[.!?])\s+/);
   let slides = [];
   let current = '';
 
@@ -112,7 +104,6 @@ function splitIntoSlides(text, maxLength = 180) {
   return slides;
 }
 
-// 🛠 Helper: Remove redundant phrases from slide text
 function cleanRedundantPhrases(text) {
   const phrases = [
     'Interesting, right?',
@@ -120,92 +111,63 @@ function cleanRedundantPhrases(text) {
     "Let's draw that out.",
   ];
   let cleaned = text;
-
   phrases.forEach((phrase) => {
     const regex = new RegExp(`(${phrase})(\\s*${phrase})+`, 'gi');
-    cleaned = cleaned.replace(regex, '$1'); // keep only one occurrence
+    cleaned = cleaned.replace(regex, '$1');
   });
-
   return cleaned;
 }
 
-// Helper: Add text-only slide with fade-in
 async function addSlide(text) {
   const slide = document.createElement('div');
   slide.className = 'slide text-only fade-in';
-
   const caption = document.createElement('div');
   caption.textContent = text;
   slide.append(caption);
-
   slideshow.append(slide);
   slideshow.removeAttribute('hidden');
 }
 
-// Handle errors cleanly
 function parseError(e) {
   if (e instanceof Error) return e.message;
   if (typeof e === 'string') return e;
   return 'An unknown error occurred.';
 }
 
-// 🌟 Generate slideshow content
 async function generate(message) {
   userInput.disabled = true;
 
-  // Clear previous output
   modelOutput.innerHTML = '';
   slideshow.innerHTML = '';
   error.innerHTML = '';
-  quizWrapper.setAttribute('hidden', 'true'); // Hide quiz if visible
+  quizWrapper.setAttribute('hidden', 'true');
   slideshow.setAttribute('hidden', 'true');
   error.setAttribute('hidden', 'true');
 
   try {
-    // Display user's prompt
     const userTurn = document.createElement('div');
     userTurn.innerHTML = await marked.parse(message);
     userTurn.className = 'user-turn';
     modelOutput.append(userTurn);
     userInput.value = '';
 
-    // Step 1: Generate the slideshow script
-    const scriptResponse = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-preview-04-17',
-      contents: `${professorInstructions}\n\nTopic: "${message}"`,
-      config: {
-        responseMimeType: 'application/json',
-      },
-    });
+    const scriptText = await callGenerateAPI(
+      `${professorInstructions}\n\nTopic: "${message}"`
+    );
 
-    if (!scriptResponse.text) {
-      throw new Error(
-        "The model didn't return any text. It's possible the prompt was blocked."
-      );
-    }
-
-    let scriptText = scriptResponse.text.trim();
+    let cleanText = scriptText.trim();
     const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
-    const match = scriptText.match(fenceRegex);
+    const match = cleanText.match(fenceRegex);
     if (match && match[2]) {
-      scriptText = match[2].trim();
+      cleanText = match[2].trim();
     }
 
-    let slidesData;
-    try {
-      slidesData = JSON.parse(scriptText);
-    } catch (e) {
-      console.error('Failed to parse JSON response:', scriptText);
-      throw new Error(
-        'The model returned an invalid slideshow script. Please try again.'
-      );
-    }
+    let slidesData = JSON.parse(cleanText);
 
     if (!Array.isArray(slidesData) || slidesData.some((s) => !s.text)) {
-      throw new Error('The model returned a malformed slideshow script.');
+      throw new Error('Malformed slideshow data from server.');
     }
 
-    // Step 2: Add slides with delay and split long ones
     let allSlides = [];
     for (const slideData of slidesData) {
       const cleanedText = cleanRedundantPhrases(slideData.text);
@@ -214,7 +176,7 @@ async function generate(message) {
     }
 
     for (const [index, chunk] of allSlides.entries()) {
-      setTimeout(() => addSlide(chunk), index * 800); // Delay between slides
+      setTimeout(() => addSlide(chunk), index * 800);
     }
   } catch (e) {
     const msg = parseError(e);
@@ -226,7 +188,6 @@ async function generate(message) {
   }
 }
 
-// 🎯 Quiz logic
 async function startQuiz() {
   quizContainer.innerHTML = '';
   slideshow.setAttribute('hidden', 'true');
@@ -235,27 +196,16 @@ async function startQuiz() {
   quizWrapper.removeAttribute('hidden');
 
   try {
-    const quizResponse = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-preview-04-17',
-      contents: quizInstructions,
-      config: {
-        responseMimeType: 'application/json',
-      },
-    });
+    const quizText = await callGenerateAPI(quizInstructions);
 
-    let quizData = quizResponse.text.trim();
+    let cleanQuiz = quizText.trim();
     const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
-    const match = quizData.match(fenceRegex);
+    const match = cleanQuiz.match(fenceRegex);
     if (match && match[2]) {
-      quizData = match[2].trim();
+      cleanQuiz = match[2].trim();
     }
 
-    let questions;
-    try {
-      questions = JSON.parse(quizData);
-    } catch {
-      throw new Error('Failed to parse quiz questions.');
-    }
+    let questions = JSON.parse(cleanQuiz);
 
     if (
       !Array.isArray(questions) ||
@@ -298,7 +248,7 @@ function renderQuiz(questions) {
     const optionButtons = quizContainer.querySelectorAll('.quiz-option');
     optionButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
-        optionButtons.forEach((b) => (b.disabled = true)); // Disable all buttons
+        optionButtons.forEach((b) => (b.disabled = true));
 
         if (btn.textContent === q.answer) {
           btn.classList.add('correct');
@@ -337,7 +287,6 @@ function renderQuiz(questions) {
   showQuestion(currentQuestion);
 }
 
-// ✨ Event listeners
 userInput.addEventListener('keydown', async (e) => {
   if (e.code === 'Enter' && !e.shiftKey) {
     e.preventDefault();
@@ -360,7 +309,6 @@ examples.forEach((li) =>
 
 startQuizBtn.addEventListener('click', startQuiz);
 
-// ✅ Send button event for mobile
 sendPromptBtn?.addEventListener('click', async () => {
   const message = userInput.value.trim();
   if (message) {
