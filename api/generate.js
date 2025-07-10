@@ -1,9 +1,6 @@
-// api/generate.js
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.API_KEY,
-});
+const ai = new GoogleGenerativeAI(process.env.API_KEY);
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -13,17 +10,16 @@ export default async function handler(req, res) {
   try {
     const { prompt } = req.body;
 
-    const result = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-preview-04-17',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-      },
-    });
+    // Get the model
+    const model = ai.getGenerativeModel({ model: 'gemini-pro' });
 
-    res.status(200).json({ text: result.text });
+    // Generate content
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+
+    res.status(200).json({ text: response.text() });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Something went wrong on the server' });
+    console.error('Server error:', error);
+    res.status(500).json({ error: 'Something went wrong on the server: ' + error.message });
   }
 }
