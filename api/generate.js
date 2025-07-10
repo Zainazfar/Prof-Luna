@@ -80,12 +80,15 @@ module.exports = async (req, res) => {
     // Generate the AI response
     const text = await generateContent(prompt);
 
-    // Return success response
-    return res.status(200).json({
-      success: true,
-      text,
-      model: MODEL_CONFIG.model,
-    });
+// Clean response: remove anything outside JSON (like ```json fences)
+const cleanedText = text.replace(/```json|```/g, '').trim();
+
+return res.status(200).json({
+  success: true,
+  text: cleanedText,
+  model: MODEL_CONFIG.model,
+});
+
   } catch (error) {
     console.error('💥 API Error:', error);
     return res.status(500).json({
