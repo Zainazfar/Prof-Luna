@@ -4,7 +4,6 @@
  */
 import { marked } from 'marked';
 
-// 🛠 Call the backend API
 async function callGenerateAPI(prompt) {
   const response = await fetch('/api/generate', {
     method: 'POST',
@@ -20,7 +19,6 @@ async function callGenerateAPI(prompt) {
   return data.text;
 }
 
-// 🎯 Grab DOM elements
 const userInput = document.querySelector('#input');
 const modelOutput = document.querySelector('#output');
 const slideshow = document.querySelector('#slideshow');
@@ -31,7 +29,6 @@ const quizWrapper = document.querySelector('#quiz-wrapper');
 const startQuizBtn = document.querySelector('#start-quiz');
 const sendPromptBtn = document.querySelector('#send-prompt');
 
-// ✅ Ensure all required elements are present
 if (
   !userInput ||
   !modelOutput ||
@@ -44,7 +41,6 @@ if (
   throw new Error('One or more required DOM elements are missing.');
 }
 
-// 📝 Prompt templates
 const professorInstructions = `
 You are Professor Luna, an experienced teacher who loves explaining concepts using fun metaphors, mnemonic devices and analogies.
 Every explanation should sound like you’re talking directly to a curious student.
@@ -70,7 +66,6 @@ Each question should have:
 Do not add any explanation or formatting outside the JSON array.
 `;
 
-// 🔥 Helper functions
 function splitIntoSlides(text, maxLength = 180) {
   const sentences = text.split(/(?<=[.!?])\s+/);
   let slides = [];
@@ -118,11 +113,9 @@ function parseError(e) {
   return 'An unknown error occurred.';
 }
 
-// 🌟 Generate slideshow
 async function generate(message) {
   userInput.disabled = true;
 
-  // Reset UI
   modelOutput.innerHTML = '';
   slideshow.innerHTML = '';
   error.innerHTML = '';
@@ -174,7 +167,6 @@ async function generate(message) {
   }
 }
 
-// 🧠 Quiz logic
 async function startQuiz() {
   quizContainer.innerHTML = '';
   slideshow.setAttribute('hidden', 'true');
@@ -274,7 +266,6 @@ function renderQuiz(questions) {
   showQuestion(currentQuestion);
 }
 
-// ✨ Event listeners
 userInput.addEventListener('keydown', async (e) => {
   if (e.code === 'Enter' && !e.shiftKey) {
     e.preventDefault();
