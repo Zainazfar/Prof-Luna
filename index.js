@@ -4,6 +4,22 @@
  */
 import { marked } from 'marked';
 
+// Call the backend API
+async function callGenerateAPI(prompt) {
+  const response = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch from server');
+  }
+
+  const data = await response.json();
+  return data.text;
+}
+
 const userInput = document.querySelector('#input');
 const modelOutput = document.querySelector('#output');
 const slideshow = document.querySelector('#slideshow');
@@ -28,7 +44,7 @@ if (
 }
 
 const professorInstructions = `
-You are Professor Luna, an experienced teacher who loves explaining concepts using fun metaphors,mnemonic devices and analogies.
+You are Professor Luna, an experienced teacher who loves explaining concepts using fun metaphors, mnemonic devices and analogies.
 Every explanation should sound like you’re talking directly to a curious student.
 
 Keep it casual, funny, and slightly witty. Occasionally add rhetorical questions (“Interesting, right?”), engaging remarks (“Let’s draw that out.”), or calls to imagine (“Picture this in your mind.”), but **don’t overuse them**. Vary your phrasing naturally and use these sparingly for emphasis.
@@ -127,51 +143,33 @@ async function generate(message) {
     modelOutput.append(userTurn);
     userInput.value = '';
 
-const scriptResponse = await fetch('/api/generate', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    prompt: `${professorInstructions}\n\nTopic: "${message}"`
-  })
-});
+    // Call API to get the slideshow content
+    const scriptText = await callGenerateAPI(
+      `${professorInstructions}\n\nTopic: "${message}"`
+    );
 
-if (!scriptResponse.ok) {
-  throw new Error('Failed to fetch from server');
-}
-
-const data = await scriptResponse.json();
-
-
-    if (!scriptResponse.text) {
-      throw new Error(
-        "The model didn't return any text. It's possible the prompt was blocked."
-      );
-    }
-
-    let scriptText = scriptResponse.text.trim();
+    let cleanText = scriptText.trim();
     const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
-    const match = scriptText.match(fenceRegex);
+    const match = cleanText.match(fenceRegex);
     if (match && match[2]) {
-      scriptText = match[2].trim();
+      cleanText = match[2].trim();
     }
 
     let slidesData;
     try {
-      slidesData = JSON.parse(scriptText);
+      slidesData = JSON.parse(cleanText);
     } catch (e) {
-      console.error('Failed to parse JSON response:', scriptText);
+      console.error('Failed to parse JSON response:', cleanText);
       throw new Error(
-        'The model returned an invalid slideshow script. Please try again.'
+        'The server returned an invalid slideshow script. Please try again.'
       );
     }
 
     if (!Array.isArray(slidesData) || slidesData.some((s) => !s.text)) {
-      throw new Error('The model returned a malformed slideshow script.');
+      throw new Error('Malformed slideshow data from server.');
     }
 
-    // Step 2: Add slides with delay and split long ones
+    // Add slides with delay and split long ones
     let allSlides = [];
     for (const slideData of slidesData) {
       const cleanedText = cleanRedundantPhrases(slideData.text);
@@ -201,33 +199,18 @@ async function startQuiz() {
   quizWrapper.removeAttribute('hidden');
 
   try {
-const quizResponse = await fetch('/api/generate', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    prompt: quizInstructions
-  })
-});
+    const quizText = await callGenerateAPI(quizInstructions);
 
-if (!quizResponse.ok) {
-  throw new Error('Failed to fetch quiz from server');
-}
-
-const data = await quizResponse.json();
-
-
-    let quizData = quizResponse.text.trim();
+    let cleanQuiz = quizText.trim();
     const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
-    const match = quizData.match(fenceRegex);
+    const match = cleanQuiz.match(fenceRegex);
     if (match && match[2]) {
-      quizData = match[2].trim();
+      cleanQuiz = match[2].trim();
     }
 
     let questions;
     try {
-      questions = JSON.parse(quizData);
+      questions = JSON.parse(cleanQuiz);
     } catch {
       throw new Error('Failed to parse quiz questions.');
     }
@@ -334,6 +317,15 @@ examples.forEach((li) =>
 );
 
 startQuizBtn.addEventListener('click', startQuiz);
+
+// ✅ Send button event for mobile
+sendPromptBtn?.addEventListener('click', async () => {
+  const message = userInput.value.trim();
+  if (message) {
+    await generate(message);
+  }
+});
+
 
 // ✅ Send button event for mobile
 sendPromptBtn?.addEventListener('click', async () => {
