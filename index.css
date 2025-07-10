@@ -462,9 +462,9 @@ textarea#input:focus {
 
   .header-logo.glow-effect {
     filter: 
-      drop-shadow(0 0 8px #00ff00)
-      drop-shadow(0 0 15px #00cc00) 
-      drop-shadow(0 0 20px #008800); 
+      drop-shadow(0 0 4px #00ff00)
+      drop-shadow(0 0 6px #00cc00) 
+      drop-shadow(0 0 8px #008800); 
   
     border: none;
     outline: none;
