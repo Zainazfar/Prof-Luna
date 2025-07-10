@@ -16,28 +16,8 @@ async function callGenerateAPI(prompt) {
   }
 
   const data = await response.json();
-  let text = data.text;
-
-  if (!text) {
-    throw new Error("API returned no text");
-  }
-
-  // 🛠 Clean any markdown fences and extra junk
-  text = text
-    .replace(/```json|```/gi, '') // remove ```json or ``` fences
-    .trim();
-
-  // 🛡️ Keep only JSON array, discard anything after the closing ]
-  const jsonEnd = text.lastIndexOf(']');
-  if (jsonEnd !== -1) {
-    text = text.substring(0, jsonEnd + 1);
-  } else {
-    console.warn("⚠️ No closing JSON array found in response. Using raw text.");
-  }
-
-  return text;
+  return data.text;
 }
-
 
 const userInput = document.querySelector('#input');
 const modelOutput = document.querySelector('#output');
@@ -61,7 +41,7 @@ if (
   throw new Error('One or more required DOM elements are missing.');
 }
 
-const professorInstructions = 
+const professorInstructions = `
 You are Professor Luna, an experienced teacher who loves explaining concepts using fun metaphors, mnemonic devices and analogies.
 Every explanation should sound like you’re talking directly to a curious student.
 
@@ -73,7 +53,7 @@ Make sure each slide can be read in under 10 seconds.
 
 The final output must be a JSON array of objects, where each object has a "text" key.
 Do not include any other text or markdown formatting outside the JSON array.
-;
+`;
 
 const quizInstructions = `
 You are Professor Luna, and you create fun quizzes to help students learn interactively.
@@ -83,8 +63,7 @@ Each question should have:
 - "options": an array of 4 answer options
 - "answer": the correct option text
 
-Do not add any explanation or formatting outside the JSON array.Respond with ONLY a valid JSON array. Do not add explanations, markdown fences, or any other text outside the array.
-
+Do not add any explanation or formatting outside the JSON array.
 `;
 
 function splitIntoSlides(text, maxLength = 180) {
