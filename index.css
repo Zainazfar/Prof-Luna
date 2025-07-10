@@ -453,6 +453,22 @@ textarea#input:focus {
                0 0 20px rgba(0, 255, 153, 0.6);
   color: #bfffd6; 
 }
+
+.logo-glow-container {
+  background-color: transparent !important; /* Remove any background */
+  padding: 0 !important; /* Remove padding */
+  border: none !important; /* Remove border */
+}
+
+.header-logo.glow-effect {
+  filter: 
+    drop-shadow(0 0 5px #00ff00)
+    drop-shadow(0 0 10px #00aa00);
+  /* Ensure no borders */
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
 <style>
 
   .logo-glow-container {
