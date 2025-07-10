@@ -4,7 +4,7 @@
  */
 import { marked } from 'marked';
 
-// Call the backend API
+// 🛠 Call the backend API
 async function callGenerateAPI(prompt) {
   const response = await fetch('/api/generate', {
     method: 'POST',
@@ -20,6 +20,7 @@ async function callGenerateAPI(prompt) {
   return data.text;
 }
 
+// 🎯 Grab DOM elements
 const userInput = document.querySelector('#input');
 const modelOutput = document.querySelector('#output');
 const slideshow = document.querySelector('#slideshow');
@@ -28,9 +29,9 @@ const examples = document.querySelectorAll('#examples li');
 const quizContainer = document.querySelector('#quiz-container');
 const quizWrapper = document.querySelector('#quiz-wrapper');
 const startQuizBtn = document.querySelector('#start-quiz');
-const sendPromptBtn = document.querySelector('#send-prompt'); // ✅ Grab send button
+const sendPromptBtn = document.querySelector('#send-prompt');
 
-// Check if all required elements are present
+// ✅ Ensure all required elements are present
 if (
   !userInput ||
   !modelOutput ||
@@ -43,6 +44,7 @@ if (
   throw new Error('One or more required DOM elements are missing.');
 }
 
+// 📝 Prompt templates
 const professorInstructions = `
 You are Professor Luna, an experienced teacher who loves explaining concepts using fun metaphors, mnemonic devices and analogies.
 Every explanation should sound like you’re talking directly to a curious student.
@@ -68,9 +70,9 @@ Each question should have:
 Do not add any explanation or formatting outside the JSON array.
 `;
 
-// Helper: Automatically split long text into smaller slides
+// 🔥 Helper functions
 function splitIntoSlides(text, maxLength = 180) {
-  const sentences = text.split(/(?<=[.!?])\s+/); // split by sentence
+  const sentences = text.split(/(?<=[.!?])\s+/);
   let slides = [];
   let current = '';
 
@@ -86,7 +88,6 @@ function splitIntoSlides(text, maxLength = 180) {
   return slides;
 }
 
-// 🛠 Helper: Remove redundant phrases from slide text
 function cleanRedundantPhrases(text) {
   const phrases = [
     'Interesting, right?',
@@ -94,56 +95,48 @@ function cleanRedundantPhrases(text) {
     "Let's draw that out.",
   ];
   let cleaned = text;
-
   phrases.forEach((phrase) => {
     const regex = new RegExp(`(${phrase})(\\s*${phrase})+`, 'gi');
-    cleaned = cleaned.replace(regex, '$1'); // keep only one occurrence
+    cleaned = cleaned.replace(regex, '$1');
   });
-
   return cleaned;
 }
 
-// Helper: Add text-only slide with fade-in
 async function addSlide(text) {
   const slide = document.createElement('div');
   slide.className = 'slide text-only fade-in';
-
   const caption = document.createElement('div');
   caption.textContent = text;
   slide.append(caption);
-
   slideshow.append(slide);
   slideshow.removeAttribute('hidden');
 }
 
-// Handle errors cleanly
 function parseError(e) {
   if (e instanceof Error) return e.message;
   if (typeof e === 'string') return e;
   return 'An unknown error occurred.';
 }
 
-// 🌟 Generate slideshow content
+// 🌟 Generate slideshow
 async function generate(message) {
   userInput.disabled = true;
 
-  // Clear previous output
+  // Reset UI
   modelOutput.innerHTML = '';
   slideshow.innerHTML = '';
   error.innerHTML = '';
-  quizWrapper.setAttribute('hidden', 'true'); // Hide quiz if visible
+  quizWrapper.setAttribute('hidden', 'true');
   slideshow.setAttribute('hidden', 'true');
   error.setAttribute('hidden', 'true');
 
   try {
-    // Display user's prompt
     const userTurn = document.createElement('div');
     userTurn.innerHTML = await marked.parse(message);
     userTurn.className = 'user-turn';
     modelOutput.append(userTurn);
     userInput.value = '';
 
-    // Call API to get the slideshow content
     const scriptText = await callGenerateAPI(
       `${professorInstructions}\n\nTopic: "${message}"`
     );
@@ -155,21 +148,12 @@ async function generate(message) {
       cleanText = match[2].trim();
     }
 
-    let slidesData;
-    try {
-      slidesData = JSON.parse(cleanText);
-    } catch (e) {
-      console.error('Failed to parse JSON response:', cleanText);
-      throw new Error(
-        'The server returned an invalid slideshow script. Please try again.'
-      );
-    }
+    let slidesData = JSON.parse(cleanText);
 
     if (!Array.isArray(slidesData) || slidesData.some((s) => !s.text)) {
       throw new Error('Malformed slideshow data from server.');
     }
 
-    // Add slides with delay and split long ones
     let allSlides = [];
     for (const slideData of slidesData) {
       const cleanedText = cleanRedundantPhrases(slideData.text);
@@ -178,7 +162,7 @@ async function generate(message) {
     }
 
     for (const [index, chunk] of allSlides.entries()) {
-      setTimeout(() => addSlide(chunk), index * 800); // Delay between slides
+      setTimeout(() => addSlide(chunk), index * 800);
     }
   } catch (e) {
     const msg = parseError(e);
@@ -190,7 +174,7 @@ async function generate(message) {
   }
 }
 
-// 🎯 Quiz logic
+// 🧠 Quiz logic
 async function startQuiz() {
   quizContainer.innerHTML = '';
   slideshow.setAttribute('hidden', 'true');
@@ -208,12 +192,7 @@ async function startQuiz() {
       cleanQuiz = match[2].trim();
     }
 
-    let questions;
-    try {
-      questions = JSON.parse(cleanQuiz);
-    } catch {
-      throw new Error('Failed to parse quiz questions.');
-    }
+    let questions = JSON.parse(cleanQuiz);
 
     if (
       !Array.isArray(questions) ||
@@ -256,7 +235,7 @@ function renderQuiz(questions) {
     const optionButtons = quizContainer.querySelectorAll('.quiz-option');
     optionButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
-        optionButtons.forEach((b) => (b.disabled = true)); // Disable all buttons
+        optionButtons.forEach((b) => (b.disabled = true));
 
         if (btn.textContent === q.answer) {
           btn.classList.add('correct');
@@ -318,16 +297,6 @@ examples.forEach((li) =>
 
 startQuizBtn.addEventListener('click', startQuiz);
 
-// ✅ Send button event for mobile
-sendPromptBtn?.addEventListener('click', async () => {
-  const message = userInput.value.trim();
-  if (message) {
-    await generate(message);
-  }
-});
-
-
-// ✅ Send button event for mobile
 sendPromptBtn?.addEventListener('click', async () => {
   const message = userInput.value.trim();
   if (message) {
