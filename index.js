@@ -15,8 +15,23 @@ async function callGenerateAPI(prompt) {
     throw new Error('Failed to fetch from server');
   }
 
-  const data = await response.json();
-  return data.text;
+const { text } = await response.json();
+
+if (!text) throw new Error("The API didn't return any text.");
+
+// 🧹 Clean up the response (remove ```json fences and trim)
+let cleanText = text
+  .replace(/```json|```/gi, '') // remove markdown fences
+  .trim();
+
+// Cut off anything after the JSON array closes
+const jsonEndIndex = cleanText.lastIndexOf(']');
+if (jsonEndIndex !== -1) {
+  cleanText = cleanText.substring(0, jsonEndIndex + 1);
+}
+
+return cleanText;
+
 }
 
 const userInput = document.querySelector('#input');
