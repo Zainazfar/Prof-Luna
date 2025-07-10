@@ -1,38 +1,36 @@
 // api/generate.js
-let GoogleGenAI;
-try {
-  const module = await import('@google/genai');
-  GoogleGenAI = module.GoogleGenAI;
-} catch (err) {
-  console.error('Package import error:', err);
-  throw new Error('Please install @google/genai: npm install @google/genai');
-}
+const { GoogleGenAI } = require('@google/genai');
 
 const ai = new GoogleGenAI({
   apiKey: process.env.API_KEY || '',
 });
 
-// Model configuration
 const MODEL_CONFIG = {
   model: 'gemini-2.5-flash-preview-04-17',
   generationConfig: {
     responseMimeType: 'application/json',
-    temperature: 0.7, // Added for more creative responses
+    temperature: 0.7,
     topP: 0.9,
   },
 };
 
-// Request schema validation
-const validateRequest = (body) => {
-  if (!body?.prompt) {
-    throw new Error('Missing required field: prompt');
-  }
-  if (typeof body.prompt !== 'string') {
-    throw new Error('Prompt must be a string');
-  }
-};
+async function generateContent(prompt) {
+  const result = await ai.models.generateContent({
+    ...MODEL_CONFIG,
+    contents: [{
+      role: 'user',
+      parts: [{ text: prompt }]
+    }],
+  });
 
-export default async function handler(req, res) {
+  const responseText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!responseText) {
+    throw new Error('Malformed API response');
+  }
+  return responseText;
+}
+
+module.exports = async (req, res) => {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST');
@@ -50,24 +48,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    validateRequest(req.body);
-    const { prompt } = req.body;
-
-    console.log('Processing prompt:', prompt.substring(0, 100));
-
-    const result = await ai.models.generateContent({
-      ...MODEL_CONFIG,
-      contents: [{
-        role: 'user',
-        parts: [{ text: prompt }]
-      }],
-    });
-
-    const responseText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!responseText) {
-      throw new Error('Malformed API response');
+    if (!req.body?.prompt) {
+      throw new Error('Missing required field: prompt');
     }
 
+    const responseText = await generateContent(req.body.prompt);
+    
     return res.status(200).json({ 
       success: true,
       data: {
@@ -90,4 +76,4 @@ export default async function handler(req, res) {
       }
     });
   }
-}
+};
