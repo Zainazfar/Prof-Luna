@@ -5,11 +5,10 @@
     <title>Explain Things with Professor Luna</title>
     <link rel="stylesheet" href="index.css" />
     <style>
-      /* Temporary in-document CSS to prevent FOUC */
+      
       .container { opacity: 0; }
       .site-header { opacity: 0; }
-
-      /* 🔥 Surprise Me & Quiz Buttons Styling (Equal Sizes) */
+      
       .action-buttons {
         margin: 1rem 0;
         text-align: center;
@@ -32,7 +31,7 @@
         text-transform: uppercase;
         transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
         box-shadow: 0 0 12px rgba(0, 255, 255, 0.4), 0 0 24px rgba(0, 255, 255, 0.2);
-        width: 220px; /* 🎯 FORCE SAME WIDTH */
+        width: 220px; 
         text-align: center;
       }
       .surprise-btn:hover, .quiz-btn:hover {
@@ -51,7 +50,6 @@
     </script>
   </head>
   <body>
-    <!-- Matrix Binary Rain -->
     <div class="matrix-rain"></div>
 
 <header class="site-header">
@@ -74,13 +72,11 @@
       <p>Or enter your own prompt:</p>
         <textarea
         id="input"
-        placeholder="Enter some prompt and press Send."
+        placeholder="Enter some prompt(Start your prompt with 'explain'...) and press Send."
       ></textarea>
-
-<!-- 🆕 Send Button -->
+      
       <button id="send-prompt" class="send-btn">📤 Send</button>
 
-      <!-- 🎲 Action Buttons -->
       <div class="action-buttons">
         <button id="surprise-me" class="surprise-btn">🎲 Surprise Me!</button>
         <button id="start-quiz" class="quiz-btn">🧠 Start Quiz</button>
@@ -90,28 +86,24 @@
       <div id="error" hidden></div>
     </main>
 
-    <!-- 📽️ Slideshow Section -->
     <section id="slideshow-wrapper">
       <div id="slideshow" hidden></div>
     </section>
 
-    <!-- 📖 Quiz Container -->
     <section id="quiz-wrapper" hidden>
       <div id="quiz-container" class="quiz-container"></div>
     </section>
 
-    <!-- Local environment API key config -->
     <script src="dev.env.js"></script>
-    <!-- Main application logic -->
+    
     <script type="module" src="index.js"></script>
 
-    <!-- Enhanced Animation Script -->
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.container').style.opacity = '1';
         document.querySelector('.site-header').style.opacity = '1';
 
-        // Matrix Rain Animation
+  
         const matrixRain = document.querySelector('.matrix-rain');
         for (let i = 0; i < 100; i++) {
           const digit = document.createElement('span');
@@ -134,7 +126,6 @@
         }, 100);
       });
 
-      // 🎲 Surprise Me Button Logic
       document.getElementById('surprise-me')?.addEventListener('click', () => {
         const randomTopics = [
           "Explain how black holes work in simple terms",
