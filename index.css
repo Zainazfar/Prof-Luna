@@ -453,6 +453,36 @@ textarea#input:focus {
                0 0 30px rgba(0, 255, 153, 0.6);
   color: #bfffd6; 
 }
+<style>
+
+  .logo-glow-container {
+    display: inline-block;
+    padding: 5px;
+  }
+
+  .header-logo.glow-effect {
+    filter: 
+      drop-shadow(0 0 8px #00ff00)
+      drop-shadow(0 0 15px #00cc00) 
+      drop-shadow(0 0 20px #008800); 
+  
+    border: none;
+    outline: none;
+    box-shadow: none;
+    
+    -webkit-filter: 
+      drop-shadow(0 0 8px #00ff00)
+      drop-shadow(0 0 15px #00cc00)
+      drop-shadow(0 0 20px #008800);
+  }
+
+  .site-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+  }
+</style>
 
 #examples li {
   transition: all 0.3s ease, text-shadow 0.3s ease; 
