@@ -449,8 +449,8 @@ textarea#input:focus {
 }
 
 .site-header .creator-credit:hover {
-  text-shadow: 0 0 20px rgba(0, 255, 153, 0.8), 
-               0 0 30px rgba(0, 255, 153, 0.6);
+  text-shadow: 0 0 10px rgba(0, 255, 153, 0.8), 
+               0 0 20px rgba(0, 255, 153, 0.6);
   color: #bfffd6; 
 }
 <style>
