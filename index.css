@@ -21,9 +21,6 @@ body {
   overflow-y: auto;
 }
 
-/* ==================== */
-/* ENHANCED ANIMATIONS  */
-/* ==================== */
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -50,16 +47,12 @@ body {
   animation-delay: 0.6s;
 }
 
-/* Initial state for animations */
 .site-header,
 .main-title,
 .container > *:not(.main-title) {
   opacity: 0;
 }
 
-/* ==================== */
-/* MATRIX BINARY RAIN   */
-/* ==================== */
 .matrix-rain {
   position: fixed;
   top: 0;
@@ -100,9 +93,6 @@ body {
   }
 }
 
-/* ==================== */
-/* BACKGROUND EFFECTS   */
-/* ==================== */
 body::before {
   content: "0101010101101010010101010101010101010101 1010101010010101 0101010101010101 0101101010101010 1010101010010101";
   position: fixed;
@@ -152,9 +142,6 @@ body::after {
   }
 }
 
-/* ==================== */
-/* HEADER STYLES       */
-/* ==================== */
 .site-header {
   display: flex;
   align-items: center;
@@ -184,9 +171,6 @@ body::after {
   text-shadow: 0 0 8px #0ff, 0 0 12px #0ff;
 }
 
-/* ==================== */
-/* MAIN CONTENT STYLES  */
-/* ==================== */
 .main-title {
   margin-bottom: 28px;
   color: #f8f8f8;
@@ -207,9 +191,6 @@ body::after {
   z-index: 10;
 }
 
-/* ==================== */
-/* INTERACTIVE ELEMENTS */
-/* ==================== */
 #examples {
   list-style: none;
   padding: 0;
@@ -235,9 +216,6 @@ body::after {
   box-shadow: 0 0 16px rgba(0, 255, 255, 0.3);
 }
 
-/* ==================== */
-/* SLIDESHOW STYLES     */
-/* ==================== */
 #slideshow {
   display: flex;
   flex-direction: row;
@@ -301,9 +279,6 @@ body::after {
   line-height: 2;
 }
 
-/* ==================== */
-/* FORM ELEMENTS        */
-/* ==================== */
 textarea#input {
   width: 100%;
   padding: 16px 20px;
@@ -325,9 +300,6 @@ textarea#input:focus {
   box-shadow: 0 0 0 3px rgba(102, 178, 255, 0.4);
 }
 
-/* ==================== */
-/* QUIZ STYLES          */
-/* ==================== */
 #quiz-wrapper {
   margin-top: 30px;
   text-align: center;
@@ -383,7 +355,7 @@ textarea#input:focus {
 
 .quiz-btn {
   display: inline-block;
-  width: 200px; /* Equal width for all buttons */
+  width: 200px;
   text-align: center;
   padding: 14px 24px;
   background: #00ffff;
@@ -429,9 +401,6 @@ textarea#input:focus {
   transform: translateY(-2px) scale(1.05);
   box-shadow: 0 0 20px rgba(0, 255, 136, 0.7), 0 0 40px rgba(0, 255, 136, 0.4);
 }
-/* ==================== */
-/* UTILITY CLASSES      */
-/* ==================== */
 .user-turn {
   font-weight: bold;
   padding: 16px 22px;
@@ -468,8 +437,8 @@ textarea#input:focus {
 #examples li:hover {
   background-color: #3a3a3a;
   transform: scale(1.04);
-  box-shadow: 0 0 16px rgba(0, 255, 0, 0.3); /* subtle green box glow */
-  text-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 20px #0f0; /* green glow on text */
+  box-shadow: 0 0 16px rgba(0, 255, 0, 0.3);
+  text-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 20px #0f0; 
 }
 .site-header .creator-credit {
   font-size: 0.9rem;
@@ -482,20 +451,17 @@ textarea#input:focus {
 .site-header .creator-credit:hover {
   text-shadow: 0 0 20px rgba(0, 255, 153, 0.8), 
                0 0 30px rgba(0, 255, 153, 0.6);
-  color: #bfffd6; /* Slight color change on hover */
+  color: #bfffd6; 
 }
 
 #examples li {
-  transition: all 0.3s ease, text-shadow 0.3s ease; /* smooth glow transition */
+  transition: all 0.3s ease, text-shadow 0.3s ease; 
 }
 
 #examples li {
   text-shadow: 0 0 3px #0f0;
 }
 
-/* ==================== */
-/* RESPONSIVE ADJUSTMENTS */
-/* ==================== */
 @media (max-width: 768px) {
   .main-title {
     font-size: 1.8rem;
