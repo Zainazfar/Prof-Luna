@@ -69,8 +69,8 @@ You are Professor Luna's assistant for compiling helpful learning materials.
 Based on the topic: "{TOPIC_PLACEHOLDER}", provide a section titled "**Further Reading & Resources**" with 3-5 high-quality, reputable external links.
 
 **Crucially, prioritize famous and mainstream sources for these links.**
-**Examples of preferred sources include, but are not limited to: YouTube (for video explanations), Wikipedia (for articles), Khan Academy, National Geographic, NASA, university websites (.edu domains), or well-known scientific/tech organizations.**
-Ensure the links are reliable, directly relevant, and publicly accessible. Avoid obscure or less known websites.
+**Examples of preferred sources include, but are not limited to: for video explanations, Wikipedia (for articles), National Geographic, NASA, university websites (.edu domains), or well-known scientific/tech organizations.**
+Ensure the links are reliable, directly relevant, and publicly accessible. Avoid less known websites.
 
 **Start your response with the exact heading: "## Further Reading & Resources"**
 Format these as a markdown unordered list with the format:
