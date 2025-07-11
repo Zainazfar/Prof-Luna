@@ -4,6 +4,7 @@
  */
 import { marked } from 'marked';
 
+// 🛠 Call the backend API
 async function callGenerateAPI(prompt) {
   const response = await fetch('/api/generate', {
     method: 'POST',
@@ -12,13 +13,18 @@ async function callGenerateAPI(prompt) {
   });
 
   if (!response.ok) {
-    throw new Error('Failed to fetch from server');
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `Server error: ${response.status}`);
   }
 
   const data = await response.json();
-  return data.text;
+  return {
+    text: data.text,
+    resources: data.resources || []
+  };
 }
 
+// 🎯 Grab DOM elements
 const userInput = document.querySelector('#input');
 const modelOutput = document.querySelector('#output');
 const slideshow = document.querySelector('#slideshow');
@@ -29,6 +35,7 @@ const quizWrapper = document.querySelector('#quiz-wrapper');
 const startQuizBtn = document.querySelector('#start-quiz');
 const sendPromptBtn = document.querySelector('#send-prompt');
 
+// ✅ Ensure all required elements are present
 if (
   !userInput ||
   !modelOutput ||
@@ -41,11 +48,12 @@ if (
   throw new Error('One or more required DOM elements are missing.');
 }
 
+// 📝 Prompt templates
 const professorInstructions = `
 You are Professor Luna, an experienced teacher who loves explaining concepts using fun metaphors, mnemonic devices and analogies.
-Every explanation should sound like you’re talking directly to a curious student.
+Every explanation should sound like you're talking directly to a curious student.
 
-Keep it casual, funny, and slightly witty. Occasionally add rhetorical questions (“Interesting, right?”), engaging remarks (“Let’s draw that out.”), or calls to imagine (“Picture this in your mind.”), but **don’t overuse them**. Vary your phrasing naturally and use these sparingly for emphasis.
+Keep it casual, funny, and slightly witty. Occasionally add rhetorical questions ("Interesting, right?"), engaging remarks ("Let's draw that out."), or calls to imagine ("Picture this in your mind."), but **don't overuse them**. Vary your phrasing naturally and use these sparingly for emphasis.
 
 Your task is to break down a given topic into a series of **concise** steps for a slideshow.
 Each slide should have **no more than 7 short sentences**, written in simple, engaging language.
@@ -66,6 +74,7 @@ Each question should have:
 Do not add any explanation or formatting outside the JSON array.
 `;
 
+// 🔥 Helper functions
 function splitIntoSlides(text, maxLength = 180) {
   const sentences = text.split(/(?<=[.!?])\s+/);
   let slides = [];
@@ -113,9 +122,31 @@ function parseError(e) {
   return 'An unknown error occurred.';
 }
 
+function renderResources(resources) {
+  if (!resources || resources.length === 0) return '';
+
+  return `
+    <div class="resources">
+      <h3>🔍 Further Reading</h3>
+      <ul>
+        ${resources.map(res => `
+          <li>
+            <a href="${res.url}" target="_blank" rel="noopener noreferrer">
+              ${res.title} (${res.type})
+            </a>
+            ${res.description ? `<p>${res.description}</p>` : ''}
+          </li>
+        `).join('')}
+      </ul>
+    </div>
+  `;
+}
+
+// 🌟 Generate slideshow
 async function generate(message) {
   userInput.disabled = true;
 
+  // Reset UI
   modelOutput.innerHTML = '';
   slideshow.innerHTML = '';
   error.innerHTML = '';
@@ -130,11 +161,11 @@ async function generate(message) {
     modelOutput.append(userTurn);
     userInput.value = '';
 
-    const scriptText = await callGenerateAPI(
+    const result = await callGenerateAPI(
       `${professorInstructions}\n\nTopic: "${message}"`
     );
 
-    let cleanText = scriptText.trim();
+    let cleanText = result.text.trim();
     const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
     const match = cleanText.match(fenceRegex);
     if (match && match[2]) {
@@ -157,6 +188,11 @@ async function generate(message) {
     for (const [index, chunk] of allSlides.entries()) {
       setTimeout(() => addSlide(chunk), index * 800);
     }
+
+    // Add resources section
+    if (result.resources?.length > 0) {
+      modelOutput.insertAdjacentHTML('beforeend', renderResources(result.resources));
+    }
   } catch (e) {
     const msg = parseError(e);
     error.innerHTML = `Something went wrong: ${msg}`;
@@ -167,6 +203,7 @@ async function generate(message) {
   }
 }
 
+// 🧠 Quiz logic
 async function startQuiz() {
   quizContainer.innerHTML = '';
   slideshow.setAttribute('hidden', 'true');
@@ -175,7 +212,8 @@ async function startQuiz() {
   quizWrapper.removeAttribute('hidden');
 
   try {
-    const quizText = await callGenerateAPI(quizInstructions);
+    const result = await callGenerateAPI(quizInstructions);
+    const quizText = result.text;
 
     let cleanQuiz = quizText.trim();
     const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
@@ -266,6 +304,7 @@ function renderQuiz(questions) {
   showQuestion(currentQuestion);
 }
 
+// ✨ Event listeners
 userInput.addEventListener('keydown', async (e) => {
   if (e.code === 'Enter' && !e.shiftKey) {
     e.preventDefault();
