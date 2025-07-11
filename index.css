@@ -13,13 +13,31 @@ body {
   animation: gradientShift 15s ease infinite;
   color: #f1f1f1;
   line-height: 1.6;
-  max-width: 1300px;
-  margin: 0 auto;
-  padding: 20px;
-  position: relative;
-  overflow-x: hidden;
-  overflow-y: auto;
+  /* Removed max-width, margin: 0 auto, and padding from body to let matrix cover full screen */
+  position: relative; /* Needed for matrix background positioning */
+  overflow-x: hidden; /* Prevent horizontal scroll due to matrix */
+  overflow-y: auto; /* Allow vertical scroll for content */
+  min-height: 100vh; /* Ensure body takes at least full viewport height */
+  display: flex; /* Helps structure for content over background */
+  flex-direction: column; /* Content flows vertically */
+  z-index: 0; /* Ensure body content is on top of matrix-background */
 }
+
+/* IMPORTANT: Wrapper for content to allow independent scrolling and proper z-index */
+/* The main content of your page should be wrapped in a div with this class */
+.content-wrapper {
+  position: relative; /* Ensures it sits above the fixed background */
+  z-index: 10; /* Higher than matrix-background */
+  padding: 20px; /* Re-add the body padding here */
+  max-width: 1300px; /* Re-add the max-width here */
+  margin: 0 auto; /* Re-add the margin here */
+  width: 100%; /* Ensure it takes full width within max-width */
+  background-color: rgba(27, 27, 27, 0.5); /* Semi-transparent background for readability */
+  backdrop-filter: blur(3px); /* Subtle blur for elements over matrix */
+  border-radius: 15px; /* Rounded corners for the content area */
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.1); /* Outer glow for the content area */
+}
+
 
 @keyframes fadeUp {
   from {
@@ -93,6 +111,8 @@ body {
   }
 }
 
+/* Your previous body::before and body::after for binary numbers were replaced by .matrix-rain and JS for generation */
+/* Keep these if they serve a different purpose (e.g., global overlay/vignette) but not for the rain effect itself */
 body::before {
   content: "0101010101101010010101010101010101010101 1010101010010101 0101010101010101 0101101010101010 1010101010010101";
   position: fixed;
@@ -106,7 +126,7 @@ body::before {
   white-space: pre;
   animation: binaryScroll 30s linear infinite;
   pointer-events: none;
-  z-index: 1;
+  z-index: 1; /* Note: This is now behind .content-wrapper (z-index 10) and .matrix-rain (z-index -1) */
 }
 
 body::after {
@@ -118,7 +138,7 @@ body::after {
   height: 100%;
   box-shadow: inset 0 0 120px rgba(0, 255, 255, 0.1);
   pointer-events: none;
-  z-index: 2;
+  z-index: 2; /* Note: This is now behind .content-wrapper (z-index 10) */
 }
 
 @keyframes gradientShift {
@@ -431,7 +451,7 @@ textarea#input:focus {
   opacity: 0.8;
   color: #00ff99;
   text-shadow: 0 0 6px rgba(0, 255, 153, 0.5),
-               0 0 12px rgba(0, 255, 153, 0.3);
+                0 0 12px rgba(0, 255, 153, 0.3);
 }
 
 #examples li:hover {
@@ -444,13 +464,13 @@ textarea#input:focus {
   font-size: 0.9rem;
   color: #ccc;
   text-shadow: 0 0 6px rgba(0, 255, 153, 0.4), 
-               0 0 14px rgba(0, 255, 153, 0.2);
+                0 0 14px rgba(0, 255, 153, 0.2);
   transition: text-shadow 0.4s ease, color 0.4s ease;
 }
 
 .site-header .creator-credit:hover {
   text-shadow: 0 0 10px rgba(0, 255, 153, 0.8), 
-               0 0 20px rgba(0, 255, 153, 0.6);
+                0 0 20px rgba(0, 255, 153, 0.6);
   color: #bfffd6; 
 }
 
@@ -481,7 +501,7 @@ textarea#input:focus {
       drop-shadow(0 0 4px #00ff00)
       drop-shadow(0 0 6px #00cc00) 
       drop-shadow(0 0 8px #008800); 
-  
+    
     border: none;
     outline: none;
     box-shadow: none;
