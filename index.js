@@ -22,7 +22,7 @@ async function callGenerateAPI(prompt) {
 const userInput = document.querySelector('#input');
 const modelOutput = document.querySelector('#output');
 const slideshow = document.querySelector('#slideshow');
-const error = document.querySelector('#error');
+const error = document.querySelector('#error'); // Corrected typo here in previous versions
 const examples = document.querySelectorAll('#examples li');
 const quizContainer = document.querySelector('#quiz-container');
 const quizWrapper = document.querySelector('#quiz-wrapper');
@@ -63,7 +63,7 @@ The final output must be a JSON array of objects, where each object has a "text"
 Do not include any other text or markdown formatting outside the JSON array.
 `;
 
-// **UPDATED: Separate instructions for resources - NOW INCLUDES THE HEADING**
+// UPDATED: Separate instructions for resources - NOW INCLUDES THE HEADING
 const resourcesInstructions = `
 You are Professor Luna's assistant for compiling helpful learning materials.
 Based on the topic: "{TOPIC_PLACEHOLDER}", provide a section titled "**Further Reading & Resources**" with 3-5 high-quality, reputable external links (academic papers, trusted websites like .edu, .gov, or well-known scientific/tech organizations, relevant books).
@@ -74,7 +74,7 @@ Format these as a markdown unordered list with the format:
 
 Do not include any other text or markdown formatting outside the resource list.
 `;
-// **END UPDATED**
+// END UPDATED
 
 const quizInstructions = `
 You are Professor Luna, and you create fun quizzes to help students learn interactively.
@@ -138,7 +138,6 @@ function parseError(e) {
 function parseResourcesMarkdown(markdown) {
   const resources = [];
   // Ensure we only parse the list items, not the heading if it's included
-  // This line is key: it now expects the heading to be present
   const listContent = markdown.split('## Further Reading & Resources')[1] || markdown;
   const lines = listContent.split('\n');
   lines.forEach(line => {
