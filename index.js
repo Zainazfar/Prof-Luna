@@ -22,7 +22,7 @@ async function callGenerateAPI(prompt) {
 const userInput = document.querySelector('#input');
 const modelOutput = document.querySelector('#output');
 const slideshow = document.querySelector('#slideshow');
-const error = document = document.querySelector('#error');
+const error = document.querySelector('#error'); // Corrected typo: `document = document` to `document.querySelector`
 const examples = document.querySelectorAll('#examples li');
 const quizContainer = document.querySelector('#quiz-container');
 const quizWrapper = document.querySelector('#quiz-wrapper');
@@ -48,7 +48,7 @@ if (
   throw new Error('One or more required DOM elements are missing.');
 }
 
-// **UPDATED professorInstructions**
+// **REVERTED & SLIGHTLY REFINED professorInstructions for SLIDES ONLY**
 const professorInstructions = `
 You are Professor Luna, an experienced teacher who loves explaining concepts using fun metaphors, mnemonic devices and analogies.
 Every explanation should sound like you’re talking directly to a curious student.
@@ -59,26 +59,20 @@ Your task is to break down a given topic into a series of **concise** steps for 
 Each slide should have **no more than 7 short sentences**, written in simple, engaging language.
 Make sure each slide can be read in under 10 seconds.
 
-After the slideshow content, also provide a section for "Further Reading & Resources" with 3-5 high-quality, reputable external links (academic papers, trusted websites like .edu, .gov, or well-known scientific/tech organizations, relevant books). Format these as a markdown unordered list with the format:
+The final output must be a JSON array of objects, where each object has a "text" key.
+Do not include any other text or markdown formatting outside the JSON array.
+`;
+// **NEW: Separate instructions for resources**
+const resourcesInstructions = `
+You are Professor Luna's assistant for compiling helpful learning materials.
+Based on the topic: "{TOPIC_PLACEHOLDER}", provide a section titled "**Further Reading & Resources**" with 3-5 high-quality, reputable external links (academic papers, trusted websites like .edu, .gov, or well-known scientific/tech organizations, relevant books).
+
+Format these as a markdown unordered list with the format:
 - [Link Title](URL) - Brief description of what the resource covers.
 
-The final output must be a **single JSON object** with two keys:
-1. "slides": A JSON array of objects, where each object has a "text" key for a slide.
-2. "resources_markdown": A string containing the "Further Reading & Resources" section formatted as markdown.
-
-Do not include any other text or markdown formatting outside this JSON object.
-Example format:
-\`\`\`json
-{
-  "slides": [
-    {"text": "Slide 1 text here."},
-    {"text": "Slide 2 text here."}
-  ],
-  "resources_markdown": "## Further Reading & Resources\\n- [Resource 1](url1) - Description 1.\\n- [Resource 2](url2) - Description 2."
-}
-\`\`\`
+Do not include any other text or markdown formatting outside the resource list.
 `;
-// **END UPDATED professorInstructions**
+// **END NEW**
 
 const quizInstructions = `
 You are Professor Luna, and you create fun quizzes to help students learn interactively.
@@ -92,9 +86,6 @@ Do not add any explanation or formatting outside the JSON array.
 `;
 
 function splitIntoSlides(text, maxLength = 180) {
-  // This function is now less critical for the primary slide generation
-  // if Gemini provides pre-formatted slides, but kept for potential use
-  // if content within a slide's 'text' still needs splitting.
   const sentences = text.split(/(?<=[.!?])\s+/);
   let slides = [];
   let current = '';
@@ -193,14 +184,15 @@ function displayResources(resources) {
 async function generate(message) {
   userInput.disabled = true;
 
-  modelOutput.innerHTML = ''; // Clear main output area
-  slideshow.innerHTML = ''; // Clear previous slides
+  // Clear all dynamic sections
+  modelOutput.innerHTML = '';
+  slideshow.innerHTML = '';
   error.innerHTML = '';
   quizWrapper.setAttribute('hidden', 'true');
-  slideshow.setAttribute('hidden', 'true'); // Hide slideshow initially
+  slideshow.setAttribute('hidden', 'true');
   error.setAttribute('hidden', 'true');
-  resourcesList.innerHTML = ''; // Clear previous resources
-  resourcesSection.style.display = 'none'; // Hide resources section initially
+  resourcesList.innerHTML = '';
+  resourcesSection.style.display = 'none';
   
   try {
     const userTurn = document.createElement('div');
@@ -209,58 +201,48 @@ async function generate(message) {
     modelOutput.append(userTurn); // Display the user's prompt
     userInput.value = '';
 
-    const rawResponseText = await callGenerateAPI(
+    // **FIRST API CALL: Get Slides (JSON)**
+    const scriptText = await callGenerateAPI(
       `${professorInstructions}\n\nTopic: "${message}"`
     );
 
-    // Clean the raw response text by removing markdown code fences
-    let cleanResponse = rawResponseText.trim();
-    const fenceRegex = /^```(?:json)?\s*\n?(.*?)\n?\s*```$/s; // Adjusted to match optional 'json'
-    const match = cleanResponse.match(fenceRegex);
-    if (match && match[1]) {
-      cleanResponse = match[1].trim();
+    let cleanScriptText = scriptText.trim();
+    const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
+    const match = cleanScriptText.match(fenceRegex);
+    if (match && match[2]) {
+      cleanScriptText = match[2].trim();
     }
 
-    // Parse the entire response as a JSON object
-    let parsedData;
-    try {
-        parsedData = JSON.parse(cleanResponse);
-    } catch (jsonError) {
-        throw new Error('Failed to parse AI response as JSON. Check AI output format.');
+    let slidesData = JSON.parse(cleanScriptText);
+
+    if (!Array.isArray(slidesData) || slidesData.some((s) => !s.text)) {
+      throw new Error('Malformed slideshow data from server.');
     }
 
-    // Validate parsedData structure
-    if (!parsedData || !Array.isArray(parsedData.slides) || typeof parsedData.resources_markdown !== 'string') {
-        throw new Error('Malformed data from server: Expected "slides" array and "resources_markdown" string.');
-    }
-
-    // Process and display slides
     let allSlides = [];
-    for (const slideData of parsedData.slides) {
-      if (slideData.text) { // Ensure slideData has a text property
-        const cleanedText = cleanRedundantPhrases(slideData.text);
-        const chunks = splitIntoSlides(cleanedText); // Still use splitIntoSlides for safety/consistency
-        allSlides.push(...chunks);
-      }
+    for (const slideData of slidesData) {
+      const cleanedText = cleanRedundantPhrases(slideData.text);
+      const chunks = splitIntoSlides(cleanedText);
+      allSlides.push(...chunks);
     }
 
+    // Populate slideshow if slides exist
     if (allSlides.length > 0) {
-      modelOutput.innerHTML = ''; // Clear modelOutput if slides are going to be shown in slideshow
+      modelOutput.innerHTML = ''; // Clear main output to make space for slides
       for (const [index, chunk] of allSlides.entries()) {
-        // Add a slight delay for a nice animation effect for each slide
         setTimeout(() => addSlide(chunk), index * 800);
       }
-      slideshow.removeAttribute('hidden'); // Show slideshow wrapper
     } else {
-        // If no slides, you might want to display a message or just keep slideshow hidden
-        modelOutput.innerHTML = marked.parse("Professor Luna couldn't generate slides for this topic, but here's some information:");
-        slideshow.setAttribute('hidden', 'true');
+      modelOutput.innerHTML = marked.parse("Professor Luna couldn't generate slides for this topic.");
     }
-
+    
+    // **SECOND API CALL: Get Resources (Markdown)**
+    const resourcePrompt = resourcesInstructions.replace('{TOPIC_PLACEHOLDER}', message);
+    const resourcesMarkdown = await callGenerateAPI(resourcePrompt);
 
     // Process and display resources
-    if (parsedData.resources_markdown) {
-      const parsedResources = parseResourcesMarkdown(parsedData.resources_markdown);
+    if (resourcesMarkdown) {
+      const parsedResources = parseResourcesMarkdown(resourcesMarkdown);
       if (parsedResources.length > 0) {
         displayResources(parsedResources);
       }
