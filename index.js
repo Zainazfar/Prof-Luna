@@ -165,17 +165,32 @@ async function generate(message) {
       `${professorInstructions}\n\nTopic: "${message}"`
     );
 
-    let cleanText = result.text.trim();
+    // FIX: Properly handle the response object
+    if (!result || typeof result !== 'object') {
+      throw new Error('Invalid response from server');
+    }
+
+    const responseText = result.text;
+    if (!responseText || typeof responseText !== 'string') {
+      throw new Error('No text content in response');
+    }
+
+    let cleanText = responseText.trim();
     const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
     const match = cleanText.match(fenceRegex);
     if (match && match[2]) {
       cleanText = match[2].trim();
     }
 
-    let slidesData = JSON.parse(cleanText);
+    let slidesData;
+    try {
+      slidesData = JSON.parse(cleanText);
+    } catch (e) {
+      throw new Error('Failed to parse response as JSON');
+    }
 
     if (!Array.isArray(slidesData) || slidesData.some((s) => !s.text)) {
-      throw new Error('Malformed slideshow data from server.');
+      throw new Error('Malformed slideshow data from server');
     }
 
     let allSlides = [];
@@ -189,7 +204,7 @@ async function generate(message) {
       setTimeout(() => addSlide(chunk), index * 800);
     }
 
-    // Add resources section
+    // Add resources if available
     if (result.resources?.length > 0) {
       modelOutput.insertAdjacentHTML('beforeend', renderResources(result.resources));
     }
