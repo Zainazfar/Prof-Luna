@@ -594,7 +594,7 @@ textarea#input:focus {
 /* Style for the description text after the link */
 .resource-container li .description {
   color: #ccc; /* Slightly muted color for description */
-  font-family: 'Indie Flower', cursive; /* Use Indie Flower for descriptions */
+  font-family: 'Space Mono', monospace; /* Use Indie Flower for descriptions */
   font-size: 1.1rem; /* Consistent font size with link, slightly larger overall */
   margin-left: 8px; /* Small spacing from the link */
 }
