@@ -22,7 +22,7 @@ async function callGenerateAPI(prompt) {
 const userInput = document.querySelector('#input');
 const modelOutput = document.querySelector('#output');
 const slideshow = document.querySelector('#slideshow');
-const error = document.querySelector('#error'); // Corrected typo here in previous versions
+const error = document.querySelector('#error');
 const examples = document.querySelectorAll('#examples li');
 const quizContainer = document.querySelector('#quiz-container');
 const quizWrapper = document.querySelector('#quiz-wrapper');
@@ -66,7 +66,11 @@ Do not include any other text or markdown formatting outside the JSON array.
 // UPDATED: Separate instructions for resources - NOW INCLUDES THE HEADING
 const resourcesInstructions = `
 You are Professor Luna's assistant for compiling helpful learning materials.
-Based on the topic: "{TOPIC_PLACEHOLDER}", provide a section titled "**Further Reading & Resources**" with 3-5 high-quality, reputable external links (academic papers, trusted websites like .edu, .gov, or well-known scientific/tech organizations, relevant books).
+Based on the topic: "{TOPIC_PLACEHOLDER}", provide a section titled "**Further Reading & Resources**" with 3-5 high-quality, reputable external links.
+
+**Crucially, prioritize famous and mainstream sources for these links.**
+**Examples of preferred sources include, but are not limited to: YouTube (for video explanations), Wikipedia (for articles), Khan Academy, National Geographic, NASA, university websites (.edu domains), or well-known scientific/tech organizations.**
+Ensure the links are reliable, directly relevant, and publicly accessible. Avoid obscure or less known websites.
 
 **Start your response with the exact heading: "## Further Reading & Resources"**
 Format these as a markdown unordered list with the format:
