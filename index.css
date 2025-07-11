@@ -13,31 +13,28 @@ body {
   animation: gradientShift 15s ease infinite;
   color: #f1f1f1;
   line-height: 1.6;
-  /* Removed max-width, margin: 0 auto, and padding from body to let matrix cover full screen */
-  position: relative; /* Needed for matrix background positioning */
-  overflow-x: hidden; /* Prevent horizontal scroll due to matrix */
-  overflow-y: auto; /* Allow vertical scroll for content */
-  min-height: 100vh; /* Ensure body takes at least full viewport height */
-  display: flex; /* Helps structure for content over background */
-  flex-direction: column; /* Content flows vertically */
-  z-index: 0; /* Ensure body content is on top of matrix-background */
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  z-index: 0;
 }
 
 /* IMPORTANT: Wrapper for content to allow independent scrolling and proper z-index */
-/* The main content of your page should be wrapped in a div with this class */
 .content-wrapper {
-  position: relative; /* Ensures it sits above the fixed background */
-  z-index: 10; /* Higher than matrix-background */
-  padding: 20px; /* Re-add the body padding here */
-  max-width: 1300px; /* Re-add the max-width here */
-  margin: 0 auto; /* Re-add the margin here */
-  width: 100%; /* Ensure it takes full width within max-width */
-  background-color: rgba(27, 27, 27, 0.5); /* Semi-transparent background for readability */
-  backdrop-filter: blur(3px); /* Subtle blur for elements over matrix */
-  border-radius: 15px; /* Rounded corners for the content area */
-  box-shadow: 0 0 30px rgba(0, 255, 255, 0.1); /* Outer glow for the content area */
+  position: relative;
+  z-index: 10;
+  padding: 20px;
+  max-width: 1300px;
+  margin: 0 auto;
+  width: 100%;
+  background-color: rgba(27, 27, 27, 0.5);
+  backdrop-filter: blur(3px);
+  border-radius: 15px;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
 }
-
 
 @keyframes fadeUp {
   from {
@@ -111,8 +108,6 @@ body {
   }
 }
 
-/* Your previous body::before and body::after for binary numbers were replaced by .matrix-rain and JS for generation */
-/* Keep these if they serve a different purpose (e.g., global overlay/vignette) but not for the rain effect itself */
 body::before {
   content: "0101010101101010010101010101010101010101 1010101010010101 0101010101010101 0101101010101010 1010101010010101";
   position: fixed;
@@ -126,7 +121,7 @@ body::before {
   white-space: pre;
   animation: binaryScroll 30s linear infinite;
   pointer-events: none;
-  z-index: 1; /* Note: This is now behind .content-wrapper (z-index 10) and .matrix-rain (z-index -1) */
+  z-index: 1;
 }
 
 body::after {
@@ -138,7 +133,7 @@ body::after {
   height: 100%;
   box-shadow: inset 0 0 120px rgba(0, 255, 255, 0.1);
   pointer-events: none;
-  z-index: 2; /* Note: This is now behind .content-wrapper (z-index 10) */
+  z-index: 2;
 }
 
 @keyframes gradientShift {
@@ -250,6 +245,8 @@ body::after {
   background-color: rgba(33, 33, 33, 0.85);
   box-shadow: 0 6px 16px rgba(0, 255, 255, 0.15);
   max-width: 100%;
+  /* This margin will ensure space before the new resource container */
+  margin-bottom: 40px; 
   z-index: 10;
 }
 
@@ -400,6 +397,7 @@ textarea#input:focus {
 .quiz-btn:active {
   transform: scale(0.98);
 }
+
 .send-btn {
   display: inline-block;
   padding: 12px 24px;
@@ -421,6 +419,7 @@ textarea#input:focus {
   transform: translateY(-2px) scale(1.05);
   box-shadow: 0 0 20px rgba(0, 255, 136, 0.7), 0 0 40px rgba(0, 255, 136, 0.4);
 }
+
 .user-turn {
   font-weight: bold;
   padding: 16px 22px;
@@ -446,6 +445,7 @@ textarea#input:focus {
   position: relative;
   z-index: 10;
 }
+
 .subtle-glow {
   font-size: 0.9rem;
   opacity: 0.8;
@@ -458,33 +458,33 @@ textarea#input:focus {
   background-color: #3a3a3a;
   transform: scale(1.04);
   box-shadow: 0 0 16px rgba(0, 255, 0, 0.3);
-  text-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 20px #0f0; 
+  text-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 20px #0f0;
 }
+
 .site-header .creator-credit {
   font-size: 0.9rem;
   color: #ccc;
-  text-shadow: 0 0 6px rgba(0, 255, 153, 0.4), 
+  text-shadow: 0 0 6px rgba(0, 255, 153, 0.4),
                 0 0 14px rgba(0, 255, 153, 0.2);
   transition: text-shadow 0.4s ease, color 0.4s ease;
 }
 
 .site-header .creator-credit:hover {
-  text-shadow: 0 0 10px rgba(0, 255, 153, 0.8), 
+  text-shadow: 0 0 10px rgba(0, 255, 153, 0.8),
                 0 0 20px rgba(0, 255, 153, 0.6);
-  color: #bfffd6; 
+  color: #bfffd6;
 }
 
 .logo-glow-container {
-  background-color: transparent !important; /* Remove any background */
-  padding: 0 !important; /* Remove padding */
-  border: none !important; /* Remove border */
+  background-color: transparent !important;
+  padding: 0 !important;
+  border: none !important;
 }
 
 .header-logo.glow-effect {
-  filter: 
+  filter:
     drop-shadow(0 0 5px #00ff00)
     drop-shadow(0 0 10px #00aa00);
-  /* Ensure no borders */
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
@@ -496,16 +496,14 @@ textarea#input:focus {
 }
 
 .header-logo.glow-effect {
-  filter: 
+  filter:
     drop-shadow(0 0 4px #00ff00)
-    drop-shadow(0 0 6px #00cc00) 
-    drop-shadow(0 0 8px #008800); 
-  
+    drop-shadow(0 0 6px #00cc00)
+    drop-shadow(0 0 8px #008800);
   border: none;
   outline: none;
   box-shadow: none;
-  
-  -webkit-filter: 
+  -webkit-filter:
     drop-shadow(0 0 8px #00ff00)
     drop-shadow(0 0 15px #00cc00)
     drop-shadow(0 0 20px #008800);
@@ -519,13 +517,90 @@ textarea#input:focus {
 }
 
 #examples li {
-  transition: all 0.3s ease, text-shadow 0.3s ease; 
+  transition: all 0.3s ease, text-shadow 0.3s ease;
 }
 
 #examples li {
   text-shadow: 0 0 3px #0f0;
 }
 
+
+/* GLOBAL RESOURCE CONTAINER STYLES (applies to all screen sizes by default) */
+.resource-container {
+  background-color: #1e1e1e; /* Dark background similar to individual slides */
+  border: 1px solid #444; /* Border similar to slides */
+  border-radius: 12px; /* Rounded corners like slides */
+  padding: 30px 20px; /* Padding similar to slides */
+  margin: 40px auto; /* Increased top margin to give space after slideshow, centered */
+  width: 90%; /* Adjust width to be a bit wider than slides but not full width */
+  max-width: 900px; /* A reasonable max-width */
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1); /* Subtle shadow like slides */
+  color: #f0f0f0; /* Light text color for readability */
+  font-family: 'Space Mono', monospace; /* Use Space Mono for general text */
+  line-height: 1.6;
+  position: relative; /* For z-index positioning if needed */
+  z-index: 10; /* Ensure it's above background effects */
+}
+
+/* Style for the heading inside the resource container */
+.resource-container h2 {
+  font-family: 'Space Mono', monospace; /* Consistent font for headings */
+  font-size: 1.8rem; /* Adjusted to be slightly smaller than main-title, but prominent */
+  color: #00ffff; /* Neon blue/green glow color */
+  text-align: center; /* Center the heading */
+  margin-bottom: 25px; /* More space below heading */
+  text-shadow: 0 0 8px #00ffff, 0 0 15px #00ffffb0; /* Glowing effect */
+}
+
+/* Style for the unordered list of resources */
+.resource-container ul {
+  list-style: none; /* Remove default bullet points */
+  padding: 0;
+  margin: 0;
+}
+
+/* Style for each list item */
+.resource-container li {
+  margin-bottom: 15px; /* More space between list items */
+  line-height: 1.5;
+  font-size: 1.1rem; /* Slightly larger font for resources for readability */
+  background-color: rgba(40, 40, 40, 0.7); /* Slightly lighter background for each item */
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid #3d3d3d;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.resource-container li:hover {
+  background-color: rgba(50, 50, 50, 0.8);
+  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.15); /* Subtle glow on hover */
+}
+
+/* Style for the links */
+.resource-container a {
+  color: #00ff88; /* Vibrant green for links, matching other glowing elements */
+  text-decoration: none; /* Remove default underline */
+  font-weight: bold;
+  text-shadow: 0 0 5px #00ff88, 0 0 10px #00aa00; /* Subtle link glow */
+  transition: text-shadow 0.3s ease;
+}
+
+.resource-container a:hover {
+  text-decoration: underline; /* Add underline on hover for clarity */
+  text-shadow: 0 0 8px #00ff88, 0 0 15px #00aa00, 0 0 20px #00ff88; /* Stronger glow on hover */
+}
+
+/* Style for the description text after the link */
+.resource-container li .description {
+  color: #ccc; /* Slightly muted color for description */
+  font-family: 'Indie Flower', cursive; /* Use Indie Flower for descriptions */
+  font-size: 1.1rem; /* Consistent font size with link, slightly larger overall */
+  margin-left: 8px; /* Small spacing from the link */
+}
+
+
+/* MEDIA QUERY FOR SMALLER SCREENS */
 @media (max-width: 768px) {
   .main-title {
     font-size: 1.8rem;
@@ -540,104 +615,21 @@ textarea#input:focus {
     font-size: 1.1rem;
   }
 
-  /* Add this to your style.css file */
-
-  /* Style for the new container that mimics the slide appearance */
+  /* Adjust resource container for smaller screens */
   .resource-container {
-    background-color: #1e1e1e; /* Dark background similar to individual slides */
-    border: 1px solid #444; /* Border similar to slides */
-    border-radius: 12px; /* Rounded corners like slides */
-    padding: 30px 20px; /* Padding similar to slides */
-    margin: 40px auto; /* Increased top margin to give space after slideshow, centered */
-    width: 90%; /* Adjust width to be a bit wider than slides but not full width */
-    max-width: 900px; /* A reasonable max-width */
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.1); /* Subtle shadow like slides */
-    color: #f0f0f0; /* Light text color for readability */
-    font-family: 'Space Mono', monospace; /* Use Space Mono for general text */
-    line-height: 1.6;
-    position: relative; /* For z-index positioning if needed */
-    z-index: 10; /* Ensure it's above background effects */
+    width: 95%; /* Make it take more width on smaller screens */
+    padding: 20px 15px;
+    margin: 30px auto;
   }
 
-  /* Style for the heading inside the resource container */
   .resource-container h2 {
-    font-family: 'Space Mono', monospace; /* Consistent font for headings */
-    font-size: 1.8rem; /* Adjusted to be slightly smaller than main-title, but prominent */
-    color: #00ffff; /* Neon blue/green glow color */
-    text-align: center; /* Center the heading */
-    margin-bottom: 25px; /* More space below heading */
-    text-shadow: 0 0 8px #00ffff, 0 0 15px #00ffffb0; /* Glowing effect */
+    font-size: 1.6rem;
   }
 
-  /* Style for the unordered list of resources */
-  .resource-container ul {
-    list-style: none; /* Remove default bullet points */
-    padding: 0;
-    margin: 0;
-  }
-
-  /* Style for each list item */
   .resource-container li {
-    margin-bottom: 15px; /* More space between list items */
-    line-height: 1.5;
-    font-size: 1.1rem; /* Slightly larger font for resources for readability */
-    background-color: rgba(40, 40, 40, 0.7); /* Slightly lighter background for each item */
-    padding: 10px 15px;
-    border-radius: 8px;
-    border: 1px solid #3d3d3d;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    font-size: 1rem;
   }
-
-  .resource-container li:hover {
-      background-color: rgba(50, 50, 50, 0.8);
-      box-shadow: 0 4px 12px rgba(0, 255, 255, 0.15); /* Subtle glow on hover */
-  }
-
-  /* Style for the links */
-  .resource-container a {
-    color: #00ff88; /* Vibrant green for links, matching other glowing elements */
-    text-decoration: none; /* Remove default underline */
-    font-weight: bold;
-    text-shadow: 0 0 5px #00ff88, 0 0 10px #00aa00; /* Subtle link glow */
-    transition: text-shadow 0.3s ease;
-  }
-
-  .resource-container a:hover {
-    text-decoration: underline; /* Add underline on hover for clarity */
-    text-shadow: 0 0 8px #00ff88, 0 0 15px #00aa00, 0 0 20px #00ff88; /* Stronger glow on hover */
-  }
-
-  /* Style for the description text after the link */
   .resource-container li .description {
-    color: #ccc; /* Slightly muted color for description */
-    font-family: 'Indie Flower', cursive; /* Use Indie Flower for descriptions */
-    font-size: 1.1rem; /* Consistent font size with link, slightly larger overall */
-    margin-left: 8px; /* Small spacing from the link */
-  }
-
-  /* Ensure the slideshow has a bottom margin so the resource container isn't jammed against it */
-  #slideshow {
-    margin-bottom: 40px; /* This margin will ensure space before the new resource container */
-  }
-
-  /* Adjust media query for smaller screens */
-  @media (max-width: 768px) {
-    .resource-container {
-      width: 95%; /* Make it take more width on smaller screens */
-      padding: 20px 15px;
-      margin: 30px auto;
-    }
-
-    .resource-container h2 {
-      font-size: 1.6rem;
-    }
-
-    .resource-container li {
-      font-size: 1rem;
-    }
-    .resource-container li .description {
-      font-size: 1rem;
-    }
+    font-size: 1rem;
   }
 }
