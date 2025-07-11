@@ -36,7 +36,40 @@ async function generateContent(prompt) {
   });
 
   // Extract the text safely
-  const responseText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+const responseText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+// Add this RIGHT AFTER getting responseText
+const resourcesPrompt = `
+Based on this explanation: "${responseText}"
+Provide 3-5 authoritative resources in JSON format:
+{
+  "resources": [
+    {
+      "title": "",
+      "url": "",
+      "type": "book|paper|website|video",
+      "description": ""
+    }
+  ]
+}`;
+
+const resourcesResult = await ai.models.generateContent({
+  model: 'gemini-1.5-flash',
+  contents: [{ role: 'user', parts: [{ text: resourcesPrompt }] }]
+});
+
+let resources = [];
+try {
+  const resourcesJson = JSON.parse(resourcesResult?.candidates?.[0]?.content?.parts?.[0]?.text || '{}');
+  resources = resourcesJson.resources || [];
+} catch (e) {
+  console.error("Failed to parse resources:", e);
+}
+
+return { 
+  text: responseText,
+  resources // Add this line
+};
 
   if (!responseText) {
     console.error('❌ No text in API response:', JSON.stringify(result, null, 2));
