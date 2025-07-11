@@ -1,3 +1,4 @@
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -5,7 +6,7 @@
     <title>Explain Things with Professor Luna</title>
     <link rel="stylesheet" href="index.css" />
     <style>
-      
+      /* These styles are already in your provided HTML and will remain here */
       .container { opacity: 0; }
       .site-header { opacity: 0; }
       
@@ -53,7 +54,6 @@
     <div class="matrix-rain"></div>
 
 <header class="site-header">
-  <!-- Modified logo with glow effect -->
   <div class="logo-glow-container">
     <img src="1653759690-akes_motif (1).png" alt="AKHSS Gilgit ICT Club Logo" class="header-logo glow-effect" />
   </div>
@@ -87,7 +87,13 @@
 
       <div id="output"></div>
       <div id="error" hidden></div>
-    </main>
+
+      <div id="resources-section">
+        <h2>Further Reading & Resources</h2>
+        <ul id="resources-list">
+          </ul>
+      </div>
+      </main>
 
     <section id="slideshow-wrapper">
       <div id="slideshow" hidden></div>
@@ -102,11 +108,11 @@
     <script type="module" src="index.js"></script>
 
     <script>
+      // Your existing inline script - no changes made here as per your instruction
       document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.container').style.opacity = '1';
         document.querySelector('.site-header').style.opacity = '1';
 
-  
         const matrixRain = document.querySelector('.matrix-rain');
         for (let i = 0; i < 100; i++) {
           const digit = document.createElement('span');
