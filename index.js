@@ -4,262 +4,293 @@
  */
 import { marked } from 'marked';
 
-// 🛠 Enhanced API call with better error handling
 async function callGenerateAPI(prompt) {
-  try {
-    const response = await fetch('/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt }),
-    });
+  const response = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt }),
+  });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `Server responded with ${response.status}`);
-    }
-
-    const data = await response.json();
-    
-    // Validate response structure
-    if (!data || typeof data !== 'object') {
-      throw new Error('Invalid response format from server');
-    }
-    
-    // Ensure we have either text or resources
-    if (!data.text && !data.resources) {
-      throw new Error('No content received from the API');
-    }
-
-    return {
-      text: data.text || "Professor Luna is thinking... Please try again later.",
-      resources: data.resources || []
-    };
-
-  } catch (error) {
-    console.error('API call failed:', error);
-    throw new Error(`Failed to get response: ${error.message}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch from server');
   }
+
+  const data = await response.json();
+  return data.text;
 }
 
-// 🎯 DOM elements
-const elements = {
-  userInput: document.querySelector('#input'),
-  modelOutput: document.querySelector('#output'),
-  slideshow: document.querySelector('#slideshow'),
-  error: document.querySelector('#error'),
-  examples: document.querySelectorAll('#examples li'),
-  quizContainer: document.querySelector('#quiz-container'),
-  quizWrapper: document.querySelector('#quiz-wrapper'),
-  startQuizBtn: document.querySelector('#start-quiz'),
-  sendPromptBtn: document.querySelector('#send-prompt')
-};
+const userInput = document.querySelector('#input');
+const modelOutput = document.querySelector('#output');
+const slideshow = document.querySelector('#slideshow');
+const error = document.querySelector('#error');
+const examples = document.querySelectorAll('#examples li');
+const quizContainer = document.querySelector('#quiz-container');
+const quizWrapper = document.querySelector('#quiz-wrapper');
+const startQuizBtn = document.querySelector('#start-quiz');
+const sendPromptBtn = document.querySelector('#send-prompt');
 
-// ✅ Validate all required elements exist
-Object.entries(elements).forEach(([name, element]) => {
-  if (!element && name !== 'sendPromptBtn') {
-    throw new Error(`Missing required element: ${name}`);
-  }
-});
+if (
+  !userInput ||
+  !modelOutput ||
+  !slideshow ||
+  !error ||
+  !examples.length ||
+  !startQuizBtn ||
+  !quizContainer
+) {
+  throw new Error('One or more required DOM elements are missing.');
+}
 
-// 📝 Updated Professor Luna prompt
 const professorInstructions = `
-You are Professor Luna, an enthusiastic educator who explains complex topics using:
-- Creative metaphors and analogies
-- Memorable mnemonic devices
-- Relatable real-world examples
+You are Professor Luna, an experienced teacher who loves explaining concepts using fun metaphors, mnemonic devices and analogies.
+Every explanation should sound like you’re talking directly to a curious student.
 
-Guidelines:
-1. Speak directly to the student in a friendly, conversational tone
-2. Use humor and wit sparingly but effectively
-3. Structure explanations as JSON arrays with 3-5 key points
-4. Each point should be 1-2 concise sentences
-5. Include occasional interactive elements like:
-   * "Picture this..." (for visualization)
-   * "Let's break this down..." (for complex ideas)
-   * "Interesting, right?" (for engagement)
+Keep it casual, funny, and slightly witty. Occasionally add rhetorical questions (“Interesting, right?”), engaging remarks (“Let’s draw that out.”), or calls to imagine (“Picture this in your mind.”), but **don’t overuse them**. Vary your phrasing naturally and use these sparingly for emphasis.
 
-Response Format (strict JSON):
-[
-  {"text": "First key point..."},
-  {"text": "Second key point..."},
-  {"text": "Third key point..."}
-]
+Your task is to break down a given topic into a series of **concise** steps for a slideshow.
+Each slide should have **no more than 7 short sentences**, written in simple, engaging language.
+Make sure each slide can be read in under 10 seconds.
+
+The final output must be a JSON array of objects, where each object has a "text" key.
+Do not include any other text or markdown formatting outside the JSON array.
 `;
 
 const quizInstructions = `
-You are Professor Luna creating an interactive quiz. Generate:
+You are Professor Luna, and you create fun quizzes to help students learn interactively.
+Create a JSON array of 5 quiz questions based on general science and technology knowledge challenging enough for students of grade 8-12.
+Each question should have:
+- "question": the quiz question text
+- "options": an array of 4 answer options
+- "answer": the correct option text
 
-{
-  "questions": [
-    {
-      "question": "...",
-      "options": ["...", "...", "...", "..."],
-      "answer": "..."
-    }
-  ]
-}
-
-Requirements:
-- 5 questions on STEM topics
-- Grade 8-12 level
-- Clear correct answers
-- No explanations in response
+Do not add any explanation or formatting outside the JSON array.
 `;
 
-// 🔥 Helper functions
-function splitIntoSlides(text, maxLength = 160) {
-  return text.match(/[^.!?]+[.!?]+/g)?.reduce((slides, sentence) => {
-    const lastSlide = slides[slides.length - 1] || '';
-    return (lastSlide + sentence).length <= maxLength
-      ? [...slides.slice(0, -1), lastSlide + sentence]
-      : [...slides, sentence];
-  }, []) || [text];
+function splitIntoSlides(text, maxLength = 180) {
+  const sentences = text.split(/(?<=[.!?])\s+/);
+  let slides = [];
+  let current = '';
+
+  for (let sentence of sentences) {
+    if ((current + sentence).length <= maxLength) {
+      current += sentence + ' ';
+    } else {
+      slides.push(current.trim());
+      current = sentence + ' ';
+    }
+  }
+  if (current.trim()) slides.push(current.trim());
+  return slides;
 }
 
 function cleanRedundantPhrases(text) {
   const phrases = [
     'Interesting, right?',
     'Picture this in your mind.',
-    "Let's draw that out."
+    "Let's draw that out.",
   ];
-  return phrases.reduce((str, phrase) => 
-    str.replace(new RegExp(`(${phrase})(\\s*${phrase})+`, 'gi'), '$1'), 
-    text
-  );
+  let cleaned = text;
+  phrases.forEach((phrase) => {
+    const regex = new RegExp(`(${phrase})(\\s*${phrase})+`, 'gi');
+    cleaned = cleaned.replace(regex, '$1');
+  });
+  return cleaned;
 }
 
 async function addSlide(text) {
   const slide = document.createElement('div');
   slide.className = 'slide text-only fade-in';
-  slide.innerHTML = `<div>${text}</div>`;
-  slideshow.appendChild(slide);
-  slideshow.hidden = false;
+  const caption = document.createElement('div');
+  caption.textContent = text;
+  slide.append(caption);
+  slideshow.append(slide);
+  slideshow.removeAttribute('hidden');
 }
 
-function parseError(error) {
-  return error instanceof Error ? error.message : String(error);
+function parseError(e) {
+  if (e instanceof Error) return e.message;
+  if (typeof e === 'string') return e;
+  return 'An unknown error occurred.';
 }
 
-function renderResources(resources) {
-  if (!resources?.length) return '';
-  
-  return `
-    <div class="resources">
-      <h3>🔍 Further Reading</h3>
-      <ul>${resources.map(res => `
-        <li>
-          <a href="${res.url}" target="_blank" rel="noopener">
-            <strong>${res.title}</strong> (${res.type})
-          </a>
-          ${res.description ? `<p>${res.description}</p>` : ''}
-        </li>`).join('')}
-      </ul>
-    </div>
-  `;
-}
-
-// 🌟 Enhanced generate function
 async function generate(message) {
-  const { userInput, modelOutput, slideshow, error, quizWrapper } = elements;
-  
+  userInput.disabled = true;
+
+  modelOutput.innerHTML = '';
+  slideshow.innerHTML = '';
+  error.innerHTML = '';
+  quizWrapper.setAttribute('hidden', 'true');
+  slideshow.setAttribute('hidden', 'true');
+  error.setAttribute('hidden', 'true');
+
   try {
-    // Reset UI state
-    userInput.disabled = true;
-    modelOutput.innerHTML = '';
-    slideshow.innerHTML = '';
-    error.hidden = true;
-    quizWrapper.hidden = true;
-    slideshow.hidden = true;
+    const userTurn = document.createElement('div');
+    userTurn.innerHTML = await marked.parse(message);
+    userTurn.className = 'user-turn';
+    modelOutput.append(userTurn);
+    userInput.value = '';
 
-    // Show user's question
-    modelOutput.appendChild(createUserTurnElement(message));
+    const scriptText = await callGenerateAPI(
+      `${professorInstructions}\n\nTopic: "${message}"`
+    );
 
-    // Get API response
-    const result = await callGenerateAPI(`${professorInstructions}\nTopic: ${message}`);
-    
-    // Process response
-    const processed = processResponse(result.text);
-    const slidesData = validateSlidesData(processed);
-    
-    // Display content
-    createSlideshow(slidesData);
-    if (result.resources?.length) {
-      modelOutput.insertAdjacentHTML('beforeend', renderResources(result.resources));
+    let cleanText = scriptText.trim();
+    const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
+    const match = cleanText.match(fenceRegex);
+    if (match && match[2]) {
+      cleanText = match[2].trim();
     }
 
-  } catch (error) {
-    elements.error.innerHTML = `Something went wrong: ${parseError(error)}`;
-    elements.error.hidden = false;
+    let slidesData = JSON.parse(cleanText);
+
+    if (!Array.isArray(slidesData) || slidesData.some((s) => !s.text)) {
+      throw new Error('Malformed slideshow data from server.');
+    }
+
+    let allSlides = [];
+    for (const slideData of slidesData) {
+      const cleanedText = cleanRedundantPhrases(slideData.text);
+      const chunks = splitIntoSlides(cleanedText);
+      allSlides.push(...chunks);
+    }
+
+    for (const [index, chunk] of allSlides.entries()) {
+      setTimeout(() => addSlide(chunk), index * 800);
+    }
+  } catch (e) {
+    const msg = parseError(e);
+    error.innerHTML = `Something went wrong: ${msg}`;
+    error.removeAttribute('hidden');
   } finally {
     userInput.disabled = false;
     userInput.focus();
   }
 }
 
-// Helper functions for generate
-function createUserTurnElement(message) {
-  const div = document.createElement('div');
-  div.className = 'user-turn';
-  div.innerHTML = marked.parse(message);
-  return div;
-}
-
-function processResponse(text) {
-  const cleanText = text.trim();
-  const match = cleanText.match(/^```(?:json)?\s*\n?(.*?)\n?\s*```$/s);
-  return match ? match[1].trim() : cleanText;
-}
-
-function validateSlidesData(data) {
-  try {
-    const slides = JSON.parse(data);
-    if (!Array.isArray(slides) throw new Error('Expected array');
-    return slides.map(slide => ({
-      text: cleanRedundantPhrases(slide.text || '')
-    }));
-  } catch (e) {
-    throw new Error('Failed to parse explanation');
-  }
-}
-
-function createSlideshow(slides) {
-  slides.flatMap(slide => 
-    splitIntoSlides(slide.text)
-  ).forEach((chunk, i) => {
-    setTimeout(() => addSlide(chunk), i * 800);
-  });
-}
-
-// 🧠 Quiz logic (similar improvements applied)
 async function startQuiz() {
-  // ... (maintain your existing quiz logic with similar error handling)
+  quizContainer.innerHTML = '';
+  slideshow.setAttribute('hidden', 'true');
+  modelOutput.innerHTML = '';
+  error.innerHTML = '';
+  quizWrapper.removeAttribute('hidden');
+
+  try {
+    const quizText = await callGenerateAPI(quizInstructions);
+
+    let cleanQuiz = quizText.trim();
+    const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
+    const match = cleanQuiz.match(fenceRegex);
+    if (match && match[2]) {
+      cleanQuiz = match[2].trim();
+    }
+
+    let questions = JSON.parse(cleanQuiz);
+
+    if (
+      !Array.isArray(questions) ||
+      questions.some((q) => !q.question || !q.options || !q.answer)
+    ) {
+      throw new Error('Quiz data is malformed.');
+    }
+
+    renderQuiz(questions);
+  } catch (e) {
+    const msg = parseError(e);
+    quizContainer.innerHTML = `<p style="color: #ff5555;">Failed to load quiz: ${msg}</p>`;
+  }
 }
 
 function renderQuiz(questions) {
-  // ... (your existing quiz rendering)
+  quizContainer.innerHTML = '';
+  let score = 0;
+  let currentQuestion = 0;
+
+  function showQuestion(index) {
+    quizContainer.innerHTML = '';
+
+    const q = questions[index];
+    const qElem = document.createElement('div');
+    qElem.className = 'quiz-question';
+    qElem.innerHTML = `
+      <h3>${q.question}</h3>
+      <ul>
+        ${q.options
+          .map(
+            (opt) =>
+              `<li><button class="quiz-option">${opt}</button></li>`
+          )
+          .join('')}
+      </ul>
+    `;
+    quizContainer.appendChild(qElem);
+
+    const optionButtons = quizContainer.querySelectorAll('.quiz-option');
+    optionButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        optionButtons.forEach((b) => (b.disabled = true));
+
+        if (btn.textContent === q.answer) {
+          btn.classList.add('correct');
+          score++;
+        } else {
+          btn.classList.add('wrong');
+          optionButtons.forEach((b) => {
+            if (b.textContent === q.answer) {
+              b.classList.add('correct');
+            }
+          });
+        }
+
+        setTimeout(() => {
+          if (currentQuestion + 1 < questions.length) {
+            currentQuestion++;
+            showQuestion(currentQuestion);
+          } else {
+            showResult();
+          }
+        }, 1000);
+      });
+    });
+  }
+
+  function showResult() {
+    quizContainer.innerHTML = `
+      <h2>Your Score: ${score} / ${questions.length}</h2>
+      <button id="retry-quiz" class="quiz-btn">🔁 Retry Quiz</button>
+    `;
+    document
+      .getElementById('retry-quiz')
+      .addEventListener('click', startQuiz);
+  }
+
+  showQuestion(currentQuestion);
 }
 
-// ✨ Event listeners
-elements.userInput.addEventListener('keydown', async (e) => {
+userInput.addEventListener('keydown', async (e) => {
   if (e.code === 'Enter' && !e.shiftKey) {
     e.preventDefault();
-    const message = elements.userInput.value.trim();
-    message && await generate(message);
+    const message = userInput.value.trim();
+    if (message) {
+      await generate(message);
+    }
   }
 });
 
-elements.examples.forEach(li => 
+examples.forEach((li) =>
   li.addEventListener('click', async () => {
     const message = li.textContent?.trim();
     if (message) {
-      elements.userInput.value = message;
+      userInput.value = message;
       await generate(message);
     }
   })
 );
 
-elements.startQuizBtn.addEventListener('click', startQuiz);
-elements.sendPromptBtn?.addEventListener('click', async () => {
-  const message = elements.userInput.value.trim();
-  message && await generate(message);
+startQuizBtn.addEventListener('click', startQuiz);
+
+sendPromptBtn?.addEventListener('click', async () => {
+  const message = userInput.value.trim();
+  if (message) {
+    await generate(message);
+  }
 });
