@@ -536,6 +536,107 @@ textarea#input:focus {
   .slide {
     min-width: 300px;
     min-height: 400px;
+  /* Add this to your style.css file */
+
+/* Style for the new container that mimics the slide appearance */
+.resource-container {
+  background-color: #1e1e1e; /* Dark background similar to individual slides */
+  border: 1px solid #444; /* Border similar to slides */
+  border-radius: 12px; /* Rounded corners like slides */
+  padding: 30px 20px; /* Padding similar to slides */
+  margin: 40px auto; /* Increased top margin to give space after slideshow, centered */
+  width: 90%; /* Adjust width to be a bit wider than slides but not full width */
+  max-width: 900px; /* A reasonable max-width */
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1); /* Subtle shadow like slides */
+  color: #f0f0f0; /* Light text color for readability */
+  font-family: 'Space Mono', monospace; /* Use Space Mono for general text */
+  line-height: 1.6;
+  position: relative; /* For z-index positioning if needed */
+  z-index: 10; /* Ensure it's above background effects */
+}
+
+/* Style for the heading inside the resource container */
+.resource-container h2 {
+  font-family: 'Space Mono', monospace; /* Consistent font for headings */
+  font-size: 1.8rem; /* Adjusted to be slightly smaller than main-title, but prominent */
+  color: #00ffff; /* Neon blue/green glow color */
+  text-align: center; /* Center the heading */
+  margin-bottom: 25px; /* More space below heading */
+  text-shadow: 0 0 8px #00ffff, 0 0 15px #00ffffb0; /* Glowing effect */
+}
+
+/* Style for the unordered list of resources */
+.resource-container ul {
+  list-style: none; /* Remove default bullet points */
+  padding: 0;
+  margin: 0;
+}
+
+/* Style for each list item */
+.resource-container li {
+  margin-bottom: 15px; /* More space between list items */
+  line-height: 1.5;
+  font-size: 1.1rem; /* Slightly larger font for resources for readability */
+  background-color: rgba(40, 40, 40, 0.7); /* Slightly lighter background for each item */
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid #3d3d3d;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.resource-container li:hover {
+    background-color: rgba(50, 50, 50, 0.8);
+    box-shadow: 0 4px 12px rgba(0, 255, 255, 0.15); /* Subtle glow on hover */
+}
+
+
+/* Style for the links */
+.resource-container a {
+  color: #00ff88; /* Vibrant green for links, matching other glowing elements */
+  text-decoration: none; /* Remove default underline */
+  font-weight: bold;
+  text-shadow: 0 0 5px #00ff88, 0 0 10px #00aa00; /* Subtle link glow */
+  transition: text-shadow 0.3s ease;
+}
+
+.resource-container a:hover {
+  text-decoration: underline; /* Add underline on hover for clarity */
+  text-shadow: 0 0 8px #00ff88, 0 0 15px #00aa00, 0 0 20px #00ff88; /* Stronger glow on hover */
+}
+
+/* Style for the description text after the link */
+.resource-container li .description {
+  color: #ccc; /* Slightly muted color for description */
+  font-family: 'Indie Flower', cursive; /* Use Indie Flower for descriptions */
+  font-size: 1.1rem; /* Consistent font size with link, slightly larger overall */
+  margin-left: 8px; /* Small spacing from the link */
+}
+
+/* Ensure the slideshow has a bottom margin so the resource container isn't jammed against it */
+#slideshow {
+  margin-bottom: 40px; /* This margin will ensure space before the new resource container */
+}
+
+/* Adjust media query for smaller screens */
+@media (max-width: 768px) {
+  .resource-container {
+    width: 95%; /* Make it take more width on smaller screens */
+    padding: 20px 15px;
+    margin: 30px auto;
+  }
+
+  .resource-container h2 {
+    font-size: 1.6rem;
+  }
+
+  .resource-container li {
+    font-size: 1rem;
+  }
+  .resource-container li .description {
+    font-size: 1rem;
+  }
+}
   }
 
   .site-header h1 {
