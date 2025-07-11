@@ -22,7 +22,7 @@ async function callGenerateAPI(prompt) {
 const userInput = document.querySelector('#input');
 const modelOutput = document.querySelector('#output');
 const slideshow = document.querySelector('#slideshow');
-const error = document.querySelector('#error'); // Corrected typo: `document = document` to `document.querySelector`
+const error = document.querySelector('#error');
 const examples = document.querySelectorAll('#examples li');
 const quizContainer = document.querySelector('#quiz-container');
 const quizWrapper = document.querySelector('#quiz-wrapper');
@@ -48,7 +48,7 @@ if (
   throw new Error('One or more required DOM elements are missing.');
 }
 
-// **REVERTED & SLIGHTLY REFINED professorInstructions for SLIDES ONLY**
+// REVERTED & SLIGHTLY REFINED professorInstructions for SLIDES ONLY
 const professorInstructions = `
 You are Professor Luna, an experienced teacher who loves explaining concepts using fun metaphors, mnemonic devices and analogies.
 Every explanation should sound like you’re talking directly to a curious student.
@@ -62,17 +62,19 @@ Make sure each slide can be read in under 10 seconds.
 The final output must be a JSON array of objects, where each object has a "text" key.
 Do not include any other text or markdown formatting outside the JSON array.
 `;
-// **NEW: Separate instructions for resources**
+
+// **UPDATED: Separate instructions for resources - NOW INCLUDES THE HEADING**
 const resourcesInstructions = `
 You are Professor Luna's assistant for compiling helpful learning materials.
 Based on the topic: "{TOPIC_PLACEHOLDER}", provide a section titled "**Further Reading & Resources**" with 3-5 high-quality, reputable external links (academic papers, trusted websites like .edu, .gov, or well-known scientific/tech organizations, relevant books).
 
+**Start your response with the exact heading: "## Further Reading & Resources"**
 Format these as a markdown unordered list with the format:
 - [Link Title](URL) - Brief description of what the resource covers.
 
 Do not include any other text or markdown formatting outside the resource list.
 `;
-// **END NEW**
+// **END UPDATED**
 
 const quizInstructions = `
 You are Professor Luna, and you create fun quizzes to help students learn interactively.
@@ -136,6 +138,7 @@ function parseError(e) {
 function parseResourcesMarkdown(markdown) {
   const resources = [];
   // Ensure we only parse the list items, not the heading if it's included
+  // This line is key: it now expects the heading to be present
   const listContent = markdown.split('## Further Reading & Resources')[1] || markdown;
   const lines = listContent.split('\n');
   lines.forEach(line => {
@@ -201,7 +204,7 @@ async function generate(message) {
     modelOutput.append(userTurn); // Display the user's prompt
     userInput.value = '';
 
-    // **FIRST API CALL: Get Slides (JSON)**
+    // FIRST API CALL: Get Slides (JSON)
     const scriptText = await callGenerateAPI(
       `${professorInstructions}\n\nTopic: "${message}"`
     );
@@ -236,7 +239,7 @@ async function generate(message) {
       modelOutput.innerHTML = marked.parse("Professor Luna couldn't generate slides for this topic.");
     }
     
-    // **SECOND API CALL: Get Resources (Markdown)**
+    // SECOND API CALL: Get Resources (Markdown)
     const resourcePrompt = resourcesInstructions.replace('{TOPIC_PLACEHOLDER}', message);
     const resourcesMarkdown = await callGenerateAPI(resourcePrompt);
 
