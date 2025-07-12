@@ -22,49 +22,22 @@ body {
   z-index: 0;
 }
 
-/* IMPORTANT: Wrapper for content to allow independent scrolling and proper z-index */
-/* This was outside the main flow in your HTML, adjusting to cover the whole main content area */
-/* This class isn't explicitly in the HTML provided in the first prompt, but if it exists,
-   it should wrap the <header>, <main>, and <section> elements. */
-/* Assuming a structure like:
-   <body>
-     <div class="matrix-rain"></div>
-     <header class="site-header">...</header>
-     <main class="container">...</main>
-     <section id="slideshow-wrapper">...</section>
-     <section id="resources-section">...</section>
-     <section id="quiz-wrapper">...</section>
-   </body>
-   If you had a `<div class="content-wrapper">` wrapping <header>, <main>, <sections>, then this rule would apply.
-   For now, I'll remove the body > .content-wrapper selector to avoid conflicts if it's not implemented that way.
+/* IMPORTANT: Wrapper for content. Assuming a central content-wrapper or similar structure */
+/* If you don't have a specific `content-wrapper` div in your HTML wrapping everything,
+   these styles might be better applied to the `<main>` or directly to the `body` or its immediate children.
+   For now, I'll apply these to a common main container. If `main.container` is your primary content holder,
+   the background/backdrop-filter/shadow is applied there below.
 */
 
-/* Initial states for elements that fade in on load */
-/* These were already in your HTML's <style> block and are critical for initial load animation */
-.container,
-.site-header {
+
+/* Initial states for elements that fade in on load, controlled by JS adding .loaded */
+.site-header,
+.main-title,
+.container > *:not(.main-title) { /* Target initial elements for fade-in */
   opacity: 0;
-  /* transition: opacity 0.8s ease-out; Removed to let the JS-triggered animation handle it */
+  /* These will be animated by @keyframes fadeUp when .loaded class is added by JS */
 }
 
-/* This targets the elements after they are set to opacity: 1 in JS */
-/* The JS `setTimeout` and `classList.add('loaded')` handle this */
-.site-header.loaded {
-  animation: fadeUp 0.8s ease-out forwards; /* Use forwards to retain final state */
-  animation-delay: 0.1s;
-}
-
-.main-title.loaded {
-  animation: fadeUp 0.8s ease-out forwards;
-  animation-delay: 0.3s;
-}
-
-.container.loaded > *:not(.main-title) {
-  animation: fadeUp 0.6s ease-out forwards;
-  animation-delay: 0.6s;
-}
-
-/* Base animation for initial load */
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -76,8 +49,23 @@ body {
   }
 }
 
+/* Animations apply when .loaded class is added by JavaScript */
+.site-header.loaded {
+  animation: fadeUp 0.8s ease-out both;
+  animation-delay: 0.1s;
+}
 
-/* MATRIX RAIN AND BACKGROUND EFFECTS - RESTORED */
+.main-title.loaded {
+  animation: fadeUp 0.8s ease-out both;
+  animation-delay: 0.3s;
+}
+
+.container.loaded > *:not(.main-title) { /* Apply to direct children of .container, excluding main-title */
+  animation: fadeUp 0.6s ease-out both;
+  animation-delay: 0.6s; /* Staggered fade-up */
+}
+
+/* MATRIX RAIN AND BACKGROUND EFFECTS - Confirmed from your images, these are essential */
 .matrix-rain {
   position: fixed;
   top: 0;
@@ -167,7 +155,7 @@ body::after {
   }
 }
 
-/* HEADER STYLES - RESTORED AND ADJUSTED FOR CONTAINER */
+/* SITE HEADER - Looks good in your image */
 .site-header {
   display: flex;
   align-items: center;
@@ -180,7 +168,7 @@ body::after {
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.3);
   position: relative;
   z-index: 10;
-  max-width: 1300px; /* Aligned with main content */
+  max-width: 1300px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -212,18 +200,18 @@ body::after {
   z-index: 10;
 }
 
+/* CONTAINER - Main content wrapper, including the prompt examples */
 .container {
   display: flex;
   flex-direction: column;
   gap: 16px;
   position: relative;
   z-index: 10;
-  /* Applying background/blur/shadow here for main content area if not using a separate wrapper */
-  background-color: rgba(27, 27, 27, 0.5);
-  backdrop-filter: blur(3px);
-  border-radius: 15px;
-  box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
-  padding: 20px; /* Consistent padding */
+  background-color: rgba(27, 27, 27, 0.5); /* From your earlier content-wrapper styles */
+  backdrop-filter: blur(3px); /* From your earlier content-wrapper styles */
+  border-radius: 15px; /* From your earlier content-wrapper styles */
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.1); /* From your earlier content-wrapper styles */
+  padding: 20px; /* From your earlier content-wrapper styles */
   max-width: 1300px;
   margin: 0 auto;
 }
@@ -242,45 +230,46 @@ body::after {
   background-color: #252525;
   color: #f1f1f1;
   box-shadow: 0 0 8px rgba(0, 255, 255, 0.1);
-  transition: all 0.3s ease;
+  transition: all 0.3s ease, text-shadow 0.3s ease; /* Ensure text-shadow transitions */
   position: relative;
   z-index: 10;
-  text-shadow: 0 0 3px #0f0;
+  text-shadow: 0 0 3px #0f0; /* Existing glow */
 }
 
 #examples li:hover {
   background-color: #3a3a3a;
   transform: scale(1.04);
-  box-shadow: 0 0 16px rgba(0, 255, 255, 0.3);
-  text-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 20px #0f0;
+  box-shadow: 0 0 16px rgba(0, 255, 255, 0.3); /* Match example image glow */
+  text-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 20px #0f0; /* Stronger glow on hover */
 }
 
-/* SLIDESHOW ANIMATIONS - CRITICAL FIXES FOR VISIBILITY */
+/* SLIDESHOW ANIMATIONS - THIS IS WHERE THE PROBLEM LIKELY WAS */
 #slideshow-wrapper {
-  /* This wrapper should manage the overall visibility of the slideshow area */
+  /* This container needs to start hidden and become visible */
   opacity: 0;
-  visibility: hidden; /* Start hidden */
-  transform: translateY(30px);
-  /* The visibility transition ensures it doesn't block content when hidden */
-  transition: opacity 0.8s ease-out, transform 0.8s ease-out, visibility 0.8s step-end;
+  visibility: hidden; /* Crucial: ensures it's not interactable when hidden */
+  transform: translateY(30px); /* Start slightly below */
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out, visibility 0.8s step-end; /* step-end hides before opacity hits 0 */
+
+  /* Layout properties for the wrapper */
   max-width: 1300px; /* Align with main content */
-  margin: 25px auto 40px auto;
+  margin: 25px auto 40px auto; /* Centered, consistent margin */
   position: relative;
   z-index: 10;
-  padding: 0 20px; /* Consistent padding */
+  padding: 0 20px; /* Add some padding for alignment with main content */
 }
 
 #slideshow-wrapper.visible {
   opacity: 1;
-  visibility: visible; /* Become visible */
+  visibility: visible; /* Becomes visible */
   transform: translateY(0);
-  transition: opacity 0.8s ease-out, transform 0.8s ease-out, visibility 0.8s step-start;
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out, visibility 0.8s step-start; /* step-start makes visible before opacity hits 1 */
 }
 
-#slideshow { /* This is the scrollable container for individual slides */
-  display: flex;
+#slideshow {
+  display: flex; /* CRITICAL: Ensure it's a flex container to show slides side-by-side */
   flex-direction: row;
-  overflow-x: auto;
+  overflow-x: auto; /* Allows horizontal scrolling */
   scroll-snap-type: x mandatory;
   overscroll-behavior-x: contain;
   gap: 24px;
@@ -289,9 +278,9 @@ body::after {
   border-radius: 12px;
   background-color: rgba(33, 33, 33, 0.85);
   box-shadow: 0 6px 16px rgba(0, 255, 255, 0.15);
-  max-width: 100%;
+  max-width: 100%; /* Ensure it fits its parent */
   position: relative;
-  z-index: 1;
+  z-index: 1; /* Relative to its wrapper */
 }
 
 #slideshow::-webkit-scrollbar {
@@ -303,30 +292,29 @@ body::after {
   border-radius: 4px;
 }
 
-/* INDIVIDUAL SLIDE ANIMATIONS - CRITICAL FIXES FOR VISIBILITY */
 .slide {
   border: 1px solid #444;
   padding: 30px 20px;
-  font-family: 'Indie Flower', cursive;
+  font-family: 'Indie Flower', cursive; /* Specific font for slide content */
   scroll-snap-align: center;
   background-color: #1e1e1e;
   border-radius: 12px;
-  display: flex; /* Ensure slides display as flex */
+  display: flex; /* CRITICAL: Ensure individual slides display as flex items */
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-width: 400px;
+  min-width: 400px; /* Ensure slides have a minimum width */
   max-width: 650px;
   min-height: 500px;
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
   position: relative;
   z-index: 10;
 
-  /* Animation properties for individual slides */
+  /* Animation properties for individual slides, controlled by .active class from JS */
   opacity: 0;
   visibility: hidden; /* Start hidden */
   transform: translateY(20px);
-  /* Use 'all' for hover transitions, and specific properties for entry/exit animations */
+  /* Combine with existing hover transition, making sure opacity/transform/visibility are included */
   transition: opacity 0.6s ease-out, transform 0.6s ease-out, visibility 0.6s step-end, all 0.3s ease;
 }
 
@@ -350,7 +338,7 @@ body::after {
   line-height: 2;
 }
 
-/* INPUT AND BUTTONS - RESTORED */
+/* INPUT AND BUTTONS */
 textarea#input {
   width: 100%;
   padding: 16px 20px;
@@ -394,14 +382,14 @@ textarea#input:focus {
   box-shadow: 0 0 20px rgba(0, 255, 136, 0.7), 0 0 40px rgba(0, 255, 136, 0.4);
 }
 
-/* QUIZ STYLES - RESTORED */
+/* QUIZ STYLES */
 #quiz-wrapper {
   margin-top: 30px;
   text-align: center;
-  max-width: 1300px; /* Align with main content */
+  max-width: 1300px;
   margin-left: auto;
   margin-right: auto;
-  padding: 0 20px; /* Consistent padding */
+  padding: 0 20px;
 }
 
 #quiz-container {
@@ -480,7 +468,7 @@ textarea#input:focus {
   transform: scale(0.98);
 }
 
-/* MISC. ELEMENTS AND GLOWS - RESTORED */
+/* MISC. ELEMENTS AND GLOWS */
 .user-turn {
   font-weight: bold;
   padding: 16px 22px;
@@ -550,13 +538,13 @@ textarea#input:focus {
 }
 
 
-/* RESOURCE SECTION ANIMATIONS - REFINED */
-#resources-section {
+/* RESOURCE SECTION - Confirmed from your images */
+#resources-section { /* This needs to be the container for the resources */
   opacity: 0;
   visibility: hidden;
   transform: translateY(40px);
   transition: opacity 1s ease-out, transform 1s ease-out, visibility 1s step-end;
-  max-width: 1300px; /* Align with main content */
+  max-width: 1300px;
   margin: 40px auto;
   position: relative;
   z-index: 10;
@@ -570,22 +558,20 @@ textarea#input:focus {
   transition: opacity 1s ease-out, transform 1s ease-out, visibility 1s step-start;
 }
 
-/* GLOBAL RESOURCE CONTAINER STYLES */
-.resource-container {
+.resource-container { /* This appears to be the internal styled block within #resources-section */
   background-color: #1e1e1e;
   border: 1px solid #444;
   border-radius: 12px;
   padding: 30px 20px;
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
+  width: 100%; /* Take full width of its parent (#resources-section) */
+  max-width: 900px; /* Still constrain internal content width if needed */
+  margin: 0 auto; /* Center within #resources-section */
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
   color: #f0f0f0;
   font-family: 'Space Mono', monospace;
   line-height: 1.6;
 }
 
-/* Style for the heading inside the resource container */
 .resource-container h2 {
   font-family: 'Space Mono', monospace;
   font-size: 1.8rem;
@@ -595,14 +581,12 @@ textarea#input:focus {
   text-shadow: 0 0 8px #00ffff, 0 0 15px #00ffffb0;
 }
 
-/* Style for the unordered list of resources */
 .resource-container ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-/* Style for each list item */
 .resource-container li {
   margin-bottom: 15px;
   line-height: 1.5;
@@ -620,7 +604,6 @@ textarea#input:focus {
   box-shadow: 0 4px 12px rgba(0, 255, 255, 0.15);
 }
 
-/* Style for the links */
 .resource-container a {
   color: #00ff88;
   text-decoration: none;
@@ -634,7 +617,6 @@ textarea#input:focus {
   text-shadow: 0 0 8px #00ff88, 0 0 15px #00aa00, 0 0 20px #00ff88;
 }
 
-/* Style for the description text after the link */
 .resource-container li .description {
   color: #ccc;
   font-family: 'Space Mono', monospace;
@@ -643,7 +625,7 @@ textarea#input:focus {
 }
 
 
-/* MEDIA QUERY FOR SMALLER SCREENS - RESTORED & ADJUSTED */
+/* MEDIA QUERY FOR SMALLER SCREENS */
 @media (max-width: 768px) {
   .main-title {
     font-size: 1.8rem;
@@ -658,7 +640,6 @@ textarea#input:focus {
     font-size: 1.1rem;
   }
 
-  /* Adjust resource container for smaller screens */
   .resource-container {
     width: 95%;
     padding: 20px 15px;
@@ -675,5 +656,4 @@ textarea#input:focus {
   .resource-container li .description {
     font-size: 1rem;
   }
-}  
 }
