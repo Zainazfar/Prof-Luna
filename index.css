@@ -47,25 +47,27 @@ body {
   }
 }
 
-.site-header {
-  animation: fadeUp 0.8s ease-out both;
-  animation-delay: 0.1s;
-}
-
-.main-title {
-  animation: fadeUp 0.8s ease-out both;
-  animation-delay: 0.3s;
-}
-
-.container > *:not(.main-title) {
-  animation: fadeUp 0.6s ease-out both;
-  animation-delay: 0.6s;
-}
-
+/* Initial opacity 0 for elements that fade in on load */
 .site-header,
 .main-title,
 .container > *:not(.main-title) {
   opacity: 0;
+}
+
+/* Animations that apply when JavaScript adds a 'loaded' class */
+.site-header.loaded {
+  animation: fadeUp 0.8s ease-out both;
+  animation-delay: 0.1s;
+}
+
+.main-title.loaded {
+  animation: fadeUp 0.8s ease-out both;
+  animation-delay: 0.3s;
+}
+
+.container.loaded > *:not(.main-title) {
+  animation: fadeUp 0.6s ease-out both;
+  animation-delay: 0.6s;
 }
 
 .matrix-rain {
@@ -220,16 +222,42 @@ body::after {
   background-color: #252525;
   color: #f1f1f1;
   box-shadow: 0 0 8px rgba(0, 255, 255, 0.1);
-  transition: all 0.3s ease;
+  transition: all 0.3s ease, text-shadow 0.3s ease;
   position: relative;
   z-index: 10;
+  text-shadow: 0 0 3px #0f0;
 }
 
 #examples li:hover {
   background-color: #3a3a3a;
   transform: scale(1.04);
   box-shadow: 0 0 16px rgba(0, 255, 255, 0.3);
+  text-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 20px #0f0;
 }
+
+/* *** MODIFIED FOR SMOOTHER ANIMATION *** */
+/* Add a wrapper for the slideshow to control its overall visibility and animation */
+#slideshow-wrapper {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(30px); /* Start slightly off-screen */
+  /* transition property: opacity and transform for smooth motion, visibility with step timing to prevent interaction when invisible */
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out, visibility 0.8s step-end;
+  max-width: 1300px;
+  margin: 25px auto 40px auto;
+  position: relative;
+  z-index: 10;
+  padding: 0 20px; /* Adjust padding if needed to align with content-wrapper */
+}
+
+/* When the 'visible' class is added by JS, animate it in */
+#slideshow-wrapper.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out, visibility 0.8s step-start; /* step-start makes it visible immediately as opacity starts to transition */
+}
+/* *** END MODIFIED *** */
 
 #slideshow {
   display: flex;
@@ -238,16 +266,14 @@ body::after {
   scroll-snap-type: x mandatory;
   overscroll-behavior-x: contain;
   gap: 24px;
-  margin: 25px auto;
   padding: 16px;
   border: 1px solid #3d3d3d;
   border-radius: 12px;
   background-color: rgba(33, 33, 33, 0.85);
   box-shadow: 0 6px 16px rgba(0, 255, 255, 0.15);
   max-width: 100%;
-  /* This margin will ensure space before the new resource container */
-  margin-bottom: 40px; 
-  z-index: 10;
+  position: relative;
+  z-index: 1;
 }
 
 #slideshow::-webkit-scrollbar {
@@ -259,9 +285,10 @@ body::after {
   border-radius: 4px;
 }
 
-#slideshow[hidden] {
+/* Remove this, as the wrapper now handles visibility transition */
+/* #slideshow[hidden] {
   display: none;
-}
+} */
 
 .slide {
   border: 1px solid #444;
@@ -278,10 +305,25 @@ body::after {
   max-width: 650px;
   min-height: 500px;
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
-  transition: all 0.3s ease;
   position: relative;
   z-index: 10;
+
+  /* *** MODIFIED FOR SMOOTHER ANIMATION OF INDIVIDUAL SLIDES *** */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  /* Use 'all' for hover transitions, and specific properties for entry/exit animations */
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out, visibility 0.6s step-end, all 0.3s ease;
 }
+
+/* Add a class that JavaScript will apply to make slides visible and active */
+.slide.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out, visibility 0.6s step-start, all 0.3s ease;
+}
+/* *** END MODIFIED *** */
 
 .slide:hover {
   transform: translateY(-8px) scale(1.02);
@@ -440,8 +482,7 @@ textarea#input:focus {
   z-index: 10;
 }
 
-#output,
-#slideshow-wrapper {
+#output {
   position: relative;
   z-index: 10;
 }
@@ -454,11 +495,8 @@ textarea#input:focus {
                 0 0 12px rgba(0, 255, 153, 0.3);
 }
 
-#examples li:hover {
-  background-color: #3a3a3a;
-  transform: scale(1.04);
-  box-shadow: 0 0 16px rgba(0, 255, 0, 0.3);
-  text-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 20px #0f0;
+#examples li {
+  text-shadow: 0 0 3px #0f0;
 }
 
 .site-header .creator-credit {
@@ -476,23 +514,10 @@ textarea#input:focus {
 }
 
 .logo-glow-container {
-  background-color: transparent !important;
-  padding: 0 !important;
-  border: none !important;
-}
-
-.header-logo.glow-effect {
-  filter:
-    drop-shadow(0 0 5px #00ff00)
-    drop-shadow(0 0 10px #00aa00);
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-.logo-glow-container {
   display: inline-block;
-  padding: 5px;
+  padding: 5px; /* Re-added padding based on original styles */
+  background-color: transparent !important;
+  border: none !important;
 }
 
 .header-logo.glow-effect {
@@ -500,71 +525,78 @@ textarea#input:focus {
     drop-shadow(0 0 4px #00ff00)
     drop-shadow(0 0 6px #00cc00)
     drop-shadow(0 0 8px #008800);
-  border: none;
-  outline: none;
-  box-shadow: none;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
   -webkit-filter:
     drop-shadow(0 0 8px #00ff00)
     drop-shadow(0 0 15px #00cc00)
     drop-shadow(0 0 20px #008800);
 }
 
-.site-header {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 15px;
+/* *** MODIFIED FOR SMOOTHER ANIMATION *** */
+/* Add a wrapper for the resources section to control its overall visibility and animation */
+#resources-section {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(40px); /* Start slightly off-screen */
+  transition: opacity 1s ease-out, transform 1s ease-out, visibility 1s step-end;
+  max-width: 1300px; /* To match content-wrapper width */
+  margin: 40px auto; /* Centered with top margin */
+  position: relative;
+  z-index: 10;
+  padding: 0 20px; /* Consistent padding */
 }
 
-#examples li {
-  transition: all 0.3s ease, text-shadow 0.3s ease;
+/* When the 'visible' class is added by JS, animate it in */
+#resources-section.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 1s ease-out, transform 1s ease-out, visibility 1s step-start;
 }
-
-#examples li {
-  text-shadow: 0 0 3px #0f0;
-}
-
+/* *** END MODIFIED *** */
 
 /* GLOBAL RESOURCE CONTAINER STYLES (applies to all screen sizes by default) */
 .resource-container {
-  background-color: #1e1e1e; /* Dark background similar to individual slides */
-  border: 1px solid #444; /* Border similar to slides */
-  border-radius: 12px; /* Rounded corners like slides */
-  padding: 30px 20px; /* Padding similar to slides */
-  margin: 40px auto; /* Increased top margin to give space after slideshow, centered */
-  width: 90%; /* Adjust width to be a bit wider than slides but not full width */
-  max-width: 900px; /* A reasonable max-width */
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1); /* Subtle shadow like slides */
-  color: #f0f0f0; /* Light text color for readability */
-  font-family: 'Space Mono', monospace; /* Use Space Mono for general text */
+  background-color: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 12px;
+  padding: 30px 20px;
+  width: 90%; /* Original width */
+  max-width: 900px;
+  margin: 0 auto; /* Center within its parent (#resources-section) */
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+  color: #f0f0f0;
+  font-family: 'Space Mono', monospace;
   line-height: 1.6;
-  position: relative; /* For z-index positioning if needed */
-  z-index: 10; /* Ensure it's above background effects */
+  position: relative;
+  z-index: 10;
 }
 
 /* Style for the heading inside the resource container */
 .resource-container h2 {
-  font-family: 'Space Mono', monospace; /* Consistent font for headings */
-  font-size: 1.8rem; /* Adjusted to be slightly smaller than main-title, but prominent */
-  color: #00ffff; /* Neon blue/green glow color */
-  text-align: center; /* Center the heading */
-  margin-bottom: 25px; /* More space below heading */
-  text-shadow: 0 0 8px #00ffff, 0 0 15px #00ffffb0; /* Glowing effect */
+  font-family: 'Space Mono', monospace;
+  font-size: 1.8rem;
+  color: #00ffff;
+  text-align: center;
+  margin-bottom: 25px;
+  text-shadow: 0 0 8px #00ffff, 0 0 15px #00ffffb0;
 }
 
 /* Style for the unordered list of resources */
 .resource-container ul {
-  list-style: none; /* Remove default bullet points */
+  list-style: none;
   padding: 0;
   margin: 0;
 }
 
 /* Style for each list item */
 .resource-container li {
-  margin-bottom: 15px; /* More space between list items */
+  margin-bottom: 15px;
   line-height: 1.5;
-  font-size: 1.1rem; /* Slightly larger font for resources for readability */
-  background-color: rgba(40, 40, 40, 0.7); /* Slightly lighter background for each item */
+  font-size: 1.1rem;
+  background-color: rgba(40, 40, 40, 0.7);
   padding: 10px 15px;
   border-radius: 8px;
   border: 1px solid #3d3d3d;
@@ -574,29 +606,29 @@ textarea#input:focus {
 
 .resource-container li:hover {
   background-color: rgba(50, 50, 50, 0.8);
-  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.15); /* Subtle glow on hover */
+  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.15);
 }
 
 /* Style for the links */
 .resource-container a {
-  color: #00ff88; /* Vibrant green for links, matching other glowing elements */
-  text-decoration: none; /* Remove default underline */
+  color: #00ff88;
+  text-decoration: none;
   font-weight: bold;
-  text-shadow: 0 0 5px #00ff88, 0 0 10px #00aa00; /* Subtle link glow */
+  text-shadow: 0 0 5px #00ff88, 0 0 10px #00aa00;
   transition: text-shadow 0.3s ease;
 }
 
 .resource-container a:hover {
-  text-decoration: underline; /* Add underline on hover for clarity */
-  text-shadow: 0 0 8px #00ff88, 0 0 15px #00aa00, 0 0 20px #00ff88; /* Stronger glow on hover */
+  text-decoration: underline;
+  text-shadow: 0 0 8px #00ff88, 0 0 15px #00aa00, 0 0 20px #00ff88;
 }
 
 /* Style for the description text after the link */
 .resource-container li .description {
-  color: #ccc; /* Slightly muted color for description */
-  font-family: 'Space Mono', monospace; /* Use Indie Flower for descriptions */
-  font-size: 1.1rem; /* Consistent font size with link, slightly larger overall */
-  margin-left: 8px; /* Small spacing from the link */
+  color: #ccc;
+  font-family: 'Space Mono', monospace; /* Keep Space Mono for descriptions based on your images */
+  font-size: 1.1rem;
+  margin-left: 8px;
 }
 
 
@@ -617,7 +649,7 @@ textarea#input:focus {
 
   /* Adjust resource container for smaller screens */
   .resource-container {
-    width: 95%; /* Make it take more width on smaller screens */
+    width: 95%;
     padding: 20px 15px;
     margin: 30px auto;
   }
