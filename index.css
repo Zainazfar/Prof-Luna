@@ -629,9 +629,32 @@ textarea#input:focus {
   .resource-container li .description {
     font-size: 1rem;
   }
+  /* Scrollbar Styling for Webkit browsers (Chrome, Edge, Safari) */
+#slideshow::-webkit-scrollbar {
+  height: 10px; /* make it slimmer */
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
+#slideshow::-webkit-scrollbar-track {
+  background: rgba(0, 255, 255, 0.1); /* subtle track color */
+  border-radius: 5px;
+}
+
+#slideshow::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 255, 0.4); /* glowing thumb */
+  border-radius: 5px;
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+}
+
+#slideshow::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 255, 0.7);
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.8);
+}
+
+/* Firefox Scrollbar */
+#slideshow {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 255, 255, 0.4) rgba(0, 255, 255, 0.1);
+}
+
 }
 }
