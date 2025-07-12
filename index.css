@@ -23,19 +23,40 @@ body {
 }
 
 /* IMPORTANT: Wrapper for content to allow independent scrolling and proper z-index */
-.content-wrapper {
+/* This was outside the main flow in your HTML, adjusting to cover the whole main content area */
+body > .content-wrapper { /* Target directly if it wraps main sections */
   position: relative;
   z-index: 10;
-  padding: 20px;
+  padding: 20px; /* Adjusted to give more overall padding */
   max-width: 1300px;
   margin: 0 auto;
   width: 100%;
+  /* These were on .container, moving them up to the wrapper */
   background-color: rgba(27, 27, 27, 0.5);
   backdrop-filter: blur(3px);
   border-radius: 15px;
   box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+  padding-top: 40px; /* Space for header if it's outside this wrapper */
+  padding-bottom: 40px;
 }
 
+
+/* Initial states for elements that fade in on load */
+/* These were already in your HTML's <style> block and are critical for initial load animation */
+.container,
+.site-header {
+  opacity: 0;
+  transition: opacity 0.8s ease-out; /* Smooth fade-in for these */
+}
+
+/* This targets the elements after they are set to opacity: 1 in JS */
+.container.loaded,
+.site-header.loaded {
+    opacity: 1;
+}
+
+
+/* Animations for initial page load */
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -47,27 +68,24 @@ body {
   }
 }
 
-.site-header {
+/* Ensure these initial load animations work correctly */
+/* The JS applies .loaded class, which then triggers these */
+.site-header.loaded {
   animation: fadeUp 0.8s ease-out both;
   animation-delay: 0.1s;
 }
 
-.main-title {
+.main-title.loaded {
   animation: fadeUp 0.8s ease-out both;
   animation-delay: 0.3s;
 }
 
-.container > *:not(.main-title) {
+.container.loaded > *:not(.main-title) {
   animation: fadeUp 0.6s ease-out both;
   animation-delay: 0.6s;
 }
 
-.site-header,
-.main-title,
-.container > *:not(.main-title) {
-  opacity: 0;
-}
-
+/* MATRIX RAIN AND BACKGROUND EFFECTS - RESTORED */
 .matrix-rain {
   position: fixed;
   top: 0;
@@ -157,18 +175,22 @@ body::after {
   }
 }
 
+/* HEADER STYLES - RESTORED */
 .site-header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 15px; /* Restored original gap */
   background-color: rgba(20, 20, 20, 0.7);
-  padding: 14px 24px;
+  padding: 15px; /* Restored original padding */
   border-bottom: 2px solid #333;
   border-radius: 10px;
   margin-bottom: 25px;
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.3);
   position: relative;
   z-index: 10;
+  max-width: 1300px; /* Align with content-wrapper */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .site-header img.header-logo {
@@ -204,6 +226,7 @@ body::after {
   gap: 16px;
   position: relative;
   z-index: 10;
+  /* Removed background/blur/shadow as it's now on .content-wrapper */
 }
 
 #examples {
@@ -223,31 +246,51 @@ body::after {
   transition: all 0.3s ease;
   position: relative;
   z-index: 10;
+  text-shadow: 0 0 3px #0f0; /* Restored this specific example hover */
 }
 
 #examples li:hover {
   background-color: #3a3a3a;
   transform: scale(1.04);
-  box-shadow: 0 0 16px rgba(0, 255, 255, 0.3);
+  box-shadow: 0 0 16px rgba(0, 255, 255, 0.3); /* Restored original glow */
+  text-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 20px #0f0; /* Kept this glow for examples */
 }
 
-#slideshow {
+/* SLIDESHOW ANIMATIONS - REFINED */
+#slideshow-wrapper { /* The wrapper should manage overall visibility */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out, visibility 0.8s step-end;
+  max-width: 1300px; /* Align with content-wrapper */
+  margin: 25px auto 40px auto; /* Centered, consistent margin */
+  position: relative; /* For z-index */
+  z-index: 10;
+  padding: 0 20px; /* Add some padding to prevent content from touching edges */
+}
+
+#slideshow-wrapper.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out, visibility 0.8s step-start;
+}
+
+#slideshow { /* This is the scrollable container for individual slides */
   display: flex;
   flex-direction: row;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   overscroll-behavior-x: contain;
   gap: 24px;
-  margin: 25px auto;
   padding: 16px;
   border: 1px solid #3d3d3d;
   border-radius: 12px;
   background-color: rgba(33, 33, 33, 0.85);
   box-shadow: 0 6px 16px rgba(0, 255, 255, 0.15);
-  max-width: 100%;
-  /* This margin will ensure space before the new resource container */
-  margin-bottom: 40px; 
-  z-index: 10;
+  max-width: 100%; /* Ensure it fits within its parent */
+  position: relative;
+  z-index: 1; /* Within wrapper, keep its z-index */
 }
 
 #slideshow::-webkit-scrollbar {
@@ -259,10 +302,7 @@ body::after {
   border-radius: 4px;
 }
 
-#slideshow[hidden] {
-  display: none;
-}
-
+/* INDIVIDUAL SLIDE ANIMATIONS - REFINED */
 .slide {
   border: 1px solid #444;
   padding: 30px 20px;
@@ -278,9 +318,22 @@ body::after {
   max-width: 650px;
   min-height: 500px;
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
-  transition: all 0.3s ease;
   position: relative;
   z-index: 10;
+
+  /* Animation properties for individual slides */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  /* Combine with existing hover transition, making sure opacity/transform is included */
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out, visibility 0.6s step-end, all 0.3s ease;
+}
+
+.slide.active { /* This class will be added by JS to show the slide */
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out, visibility 0.6s step-start, all 0.3s ease;
 }
 
 .slide:hover {
@@ -296,6 +349,7 @@ body::after {
   line-height: 2;
 }
 
+/* INPUT AND BUTTONS - RESTORED */
 textarea#input {
   width: 100%;
   padding: 16px 20px;
@@ -317,9 +371,36 @@ textarea#input:focus {
   box-shadow: 0 0 0 3px rgba(102, 178, 255, 0.4);
 }
 
+.send-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #00ff88, #00ffaa);
+  color: #111;
+  border: none;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-family: 'Space Mono', monospace;
+  font-weight: bold;
+  text-align: center;
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.4), 0 0 24px rgba(0, 255, 136, 0.2);
+  cursor: pointer;
+  margin: 10px 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.send-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.7), 0 0 40px rgba(0, 255, 136, 0.4);
+}
+
+/* QUIZ STYLES - RESTORED */
 #quiz-wrapper {
   margin-top: 30px;
   text-align: center;
+  max-width: 1300px; /* Align with content-wrapper */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px; /* Added padding */
 }
 
 #quiz-container {
@@ -398,28 +479,7 @@ textarea#input:focus {
   transform: scale(0.98);
 }
 
-.send-btn {
-  display: inline-block;
-  padding: 12px 24px;
-  background: linear-gradient(135deg, #00ff88, #00ffaa);
-  color: #111;
-  border: none;
-  border-radius: 50px;
-  font-size: 1rem;
-  font-family: 'Space Mono', monospace;
-  font-weight: bold;
-  text-align: center;
-  box-shadow: 0 0 12px rgba(0, 255, 136, 0.4), 0 0 24px rgba(0, 255, 136, 0.2);
-  cursor: pointer;
-  margin: 10px 0;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.send-btn:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 0 20px rgba(0, 255, 136, 0.7), 0 0 40px rgba(0, 255, 136, 0.4);
-}
-
+/* MISC. ELEMENTS AND GLOWS - RESTORED */
 .user-turn {
   font-weight: bold;
   padding: 16px 22px;
@@ -440,10 +500,9 @@ textarea#input:focus {
   z-index: 10;
 }
 
-#output,
-#slideshow-wrapper {
-  position: relative;
-  z-index: 10;
+#output {
+    position: relative;
+    z-index: 10;
 }
 
 .subtle-glow {
@@ -452,13 +511,6 @@ textarea#input:focus {
   color: #00ff99;
   text-shadow: 0 0 6px rgba(0, 255, 153, 0.5),
                 0 0 12px rgba(0, 255, 153, 0.3);
-}
-
-#examples li:hover {
-  background-color: #3a3a3a;
-  transform: scale(1.04);
-  box-shadow: 0 0 16px rgba(0, 255, 0, 0.3);
-  text-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 20px #0f0;
 }
 
 .site-header .creator-credit {
@@ -471,28 +523,15 @@ textarea#input:focus {
 
 .site-header .creator-credit:hover {
   text-shadow: 0 0 10px rgba(0, 255, 153, 0.8),
-                0 0 20px rgba(0, 255, 153, 0.6);
+    0 0 20px rgba(0, 255, 153, 0.6);
   color: #bfffd6;
-}
-
-.logo-glow-container {
-  background-color: transparent !important;
-  padding: 0 !important;
-  border: none !important;
-}
-
-.header-logo.glow-effect {
-  filter:
-    drop-shadow(0 0 5px #00ff00)
-    drop-shadow(0 0 10px #00aa00);
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
 }
 
 .logo-glow-container {
   display: inline-block;
   padding: 5px;
+  background-color: transparent !important; /* Ensure no unwanted background */
+  border: none !important; /* Ensure no unwanted border */
 }
 
 .header-logo.glow-effect {
@@ -500,71 +539,75 @@ textarea#input:focus {
     drop-shadow(0 0 4px #00ff00)
     drop-shadow(0 0 6px #00cc00)
     drop-shadow(0 0 8px #008800);
-  border: none;
-  outline: none;
-  box-shadow: none;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
   -webkit-filter:
     drop-shadow(0 0 8px #00ff00)
     drop-shadow(0 0 15px #00cc00)
     drop-shadow(0 0 20px #008800);
 }
 
-.site-header {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 15px;
-}
 
-#examples li {
-  transition: all 0.3s ease, text-shadow 0.3s ease;
-}
-
-#examples li {
-  text-shadow: 0 0 3px #0f0;
-}
-
-
-/* GLOBAL RESOURCE CONTAINER STYLES (applies to all screen sizes by default) */
-.resource-container {
-  background-color: #1e1e1e; /* Dark background similar to individual slides */
-  border: 1px solid #444; /* Border similar to slides */
-  border-radius: 12px; /* Rounded corners like slides */
-  padding: 30px 20px; /* Padding similar to slides */
+/* RESOURCE SECTION ANIMATIONS - REFINED */
+#resources-section { /* The main container for resources */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(40px); /* Start further below */
+  transition: opacity 1s ease-out, transform 1s ease-out, visibility 1s step-end;
+  max-width: 1300px; /* Align with content-wrapper */
   margin: 40px auto; /* Increased top margin to give space after slideshow, centered */
-  width: 90%; /* Adjust width to be a bit wider than slides but not full width */
-  max-width: 900px; /* A reasonable max-width */
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1); /* Subtle shadow like slides */
-  color: #f0f0f0; /* Light text color for readability */
-  font-family: 'Space Mono', monospace; /* Use Space Mono for general text */
-  line-height: 1.6;
   position: relative; /* For z-index positioning if needed */
   z-index: 10; /* Ensure it's above background effects */
+  padding: 0 20px; /* Add some padding */
+}
+
+#resources-section.visible { /* This class will be added by JS to show it */
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 1s ease-out, transform 1s ease-out, visibility 1s step-start;
+}
+
+
+/* GLOBAL RESOURCE CONTAINER STYLES */
+.resource-container {
+  background-color: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 12px;
+  padding: 30px 20px;
+  width: 100%; /* Take full width of its parent (#resources-section) */
+  max-width: 900px; /* Still constrain internal content width */
+  margin: 0 auto; /* Center within #resources-section */
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+  color: #f0f0f0;
+  font-family: 'Space Mono', monospace;
+  line-height: 1.6;
 }
 
 /* Style for the heading inside the resource container */
 .resource-container h2 {
-  font-family: 'Space Mono', monospace; /* Consistent font for headings */
-  font-size: 1.8rem; /* Adjusted to be slightly smaller than main-title, but prominent */
-  color: #00ffff; /* Neon blue/green glow color */
-  text-align: center; /* Center the heading */
-  margin-bottom: 25px; /* More space below heading */
-  text-shadow: 0 0 8px #00ffff, 0 0 15px #00ffffb0; /* Glowing effect */
+  font-family: 'Space Mono', monospace;
+  font-size: 1.8rem;
+  color: #00ffff;
+  text-align: center;
+  margin-bottom: 25px;
+  text-shadow: 0 0 8px #00ffff, 0 0 15px #00ffffb0;
 }
 
 /* Style for the unordered list of resources */
 .resource-container ul {
-  list-style: none; /* Remove default bullet points */
+  list-style: none;
   padding: 0;
   margin: 0;
 }
 
 /* Style for each list item */
 .resource-container li {
-  margin-bottom: 15px; /* More space between list items */
+  margin-bottom: 15px;
   line-height: 1.5;
-  font-size: 1.1rem; /* Slightly larger font for resources for readability */
-  background-color: rgba(40, 40, 40, 0.7); /* Slightly lighter background for each item */
+  font-size: 1.1rem;
+  background-color: rgba(40, 40, 40, 0.7);
   padding: 10px 15px;
   border-radius: 8px;
   border: 1px solid #3d3d3d;
@@ -574,33 +617,33 @@ textarea#input:focus {
 
 .resource-container li:hover {
   background-color: rgba(50, 50, 50, 0.8);
-  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.15); /* Subtle glow on hover */
+  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.15);
 }
 
 /* Style for the links */
 .resource-container a {
-  color: #00ff88; /* Vibrant green for links, matching other glowing elements */
-  text-decoration: none; /* Remove default underline */
+  color: #00ff88;
+  text-decoration: none;
   font-weight: bold;
-  text-shadow: 0 0 5px #00ff88, 0 0 10px #00aa00; /* Subtle link glow */
+  text-shadow: 0 0 5px #00ff88, 0 0 10px #00aa00;
   transition: text-shadow 0.3s ease;
 }
 
 .resource-container a:hover {
-  text-decoration: underline; /* Add underline on hover for clarity */
-  text-shadow: 0 0 8px #00ff88, 0 0 15px #00aa00, 0 0 20px #00ff88; /* Stronger glow on hover */
+  text-decoration: underline;
+  text-shadow: 0 0 8px #00ff88, 0 0 15px #00aa00, 0 0 20px #00ff88;
 }
 
 /* Style for the description text after the link */
 .resource-container li .description {
-  color: #ccc; /* Slightly muted color for description */
-  font-family: 'Space Mono', monospace; /* Use Indie Flower for descriptions */
-  font-size: 1.1rem; /* Consistent font size with link, slightly larger overall */
-  margin-left: 8px; /* Small spacing from the link */
+  color: #ccc;
+  font-family: 'Space Mono', monospace;
+  font-size: 1.1rem;
+  margin-left: 8px;
 }
 
 
-/* MEDIA QUERY FOR SMALLER SCREENS */
+/* MEDIA QUERY FOR SMALLER SCREENS - RESTORED & ADJUSTED */
 @media (max-width: 768px) {
   .main-title {
     font-size: 1.8rem;
@@ -617,7 +660,7 @@ textarea#input:focus {
 
   /* Adjust resource container for smaller screens */
   .resource-container {
-    width: 95%; /* Make it take more width on smaller screens */
+    width: 95%;
     padding: 20px 15px;
     margin: 30px auto;
   }
