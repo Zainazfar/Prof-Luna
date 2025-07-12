@@ -233,7 +233,7 @@ body::after {
   text-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 20px #0f0;
 }
 
-/* --- Slideshow animations (minimal changes for smoothness) --- */
+/* --- Enhanced Slideshow Animations --- */
 #slideshow {
   display: flex;
   flex-direction: row;
@@ -250,23 +250,16 @@ body::after {
   max-width: 100%;
   margin-bottom: 40px;
   z-index: 10;
-
-  /* Added for smooth transition when 'hidden' attribute is removed/added by JS */
-  opacity: 1; /* Default to visible */
-  visibility: visible; /* Default to visible */
-  transition: opacity 0.6s ease-in-out, visibility 0.6s step-end; /* Smooth fade, then hide fully */
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.6s ease-in-out, visibility 0.6s step-end;
 }
 
 #slideshow[hidden] {
-  /* When 'hidden' attribute is present, make it fade out */
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.6s ease-in-out, visibility 0.6s step-start; /* Fade out, then hide fully */
-  /* Do NOT use display: none here if you want a transition. Keep the original 'display: flex' */
-  /* The browser will set display: none after the transition if 'hidden' is managed by JS in a certain way,
-     but we control the visual fade here. */
+  transition: opacity 0.6s ease-in-out, visibility 0.6s step-start;
 }
-
 
 .slide {
   border: 1px solid #444;
@@ -283,13 +276,24 @@ body::after {
   max-width: 650px;
   min-height: 500px;
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
-  transition: all 0.3s ease; /* Keep original hover transition */
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   position: relative;
   z-index: 10;
+  opacity: 0;
+  transform: translateY(20px) scale(0.98);
+  animation: slideAppear 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--slide-index) * 0.15s);
+}
+
+@keyframes slideAppear {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .slide:hover {
-  transform: translateY(-8px) scale(1.02);
+  transform: translateY(-8px) scale(1.02) !important;
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
 }
 
@@ -505,7 +509,7 @@ textarea#input:focus {
   padding: 15px;
 }
 
-/* --- Resource Container (minimal changes for smoothness) --- */
+/* --- Enhanced Resource Container Animations --- */
 .resource-container {
   background-color: #1e1e1e;
   border: 1px solid #444;
@@ -520,23 +524,17 @@ textarea#input:focus {
   line-height: 1.6;
   position: relative;
   z-index: 10;
-
-  /* Added for smooth transition when this element needs to appear/disappear */
-  opacity: 1; /* Default to visible */
-  visibility: visible; /* Default to visible */
-  transition: opacity 0.8s ease-in-out, visibility 0.8s step-end; /* Smooth fade, then hide fully */
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.8s ease-in-out, visibility 0.8s step-end;
 }
 
-/* Assuming JavaScript adds a 'hidden' class to make it fade out smoothly */
 .resource-container.hidden {
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.8s ease-in-out, visibility 0.8s step-start; /* Fade out, then hide fully */
-  /* You may need to also ensure display: none is eventually applied by JS after transition if it should take no space */
+  transition: opacity 0.8s ease-in-out, visibility 0.8s step-start;
 }
 
-
-/* Style for the heading inside the resource container */
 .resource-container h2 {
   font-family: 'Space Mono', monospace;
   font-size: 1.8rem;
@@ -546,14 +544,12 @@ textarea#input:focus {
   text-shadow: 0 0 8px #00ffff, 0 0 15px #00ffffb0;
 }
 
-/* Style for the unordered list of resources */
 .resource-container ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-/* Style for each list item */
 .resource-container li {
   margin-bottom: 15px;
   line-height: 1.5;
@@ -563,7 +559,18 @@ textarea#input:focus {
   border-radius: 8px;
   border: 1px solid #3d3d3d;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: resourceItemAppear 0.5s ease-out forwards;
+  animation-delay: calc(var(--item-index) * 0.1s + 0.3s);
+}
+
+@keyframes resourceItemAppear {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .resource-container li:hover {
@@ -571,7 +578,6 @@ textarea#input:focus {
   box-shadow: 0 4px 12px rgba(0, 255, 255, 0.15);
 }
 
-/* Style for the links */
 .resource-container a {
   color: #00ff88;
   text-decoration: none;
@@ -585,14 +591,12 @@ textarea#input:focus {
   text-shadow: 0 0 8px #00ff88, 0 0 15px #00aa00, 0 0 20px #00ff88;
 }
 
-/* Style for the description text after the link */
 .resource-container li .description {
   color: #ccc;
   font-family: 'Space Mono', monospace;
   font-size: 1.1rem;
   margin-left: 8px;
 }
-
 
 /* MEDIA QUERY FOR SMALLER SCREENS */
 @media (max-width: 768px) {
@@ -609,7 +613,6 @@ textarea#input:focus {
     font-size: 1.1rem;
   }
 
-  /* Adjust resource container for smaller screens */
   .resource-container {
     width: 95%;
     padding: 20px 15px;
