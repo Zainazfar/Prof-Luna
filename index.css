@@ -629,17 +629,17 @@ textarea#input:focus {
   .resource-container li .description {
     font-size: 1rem;
   }
-/* Fully custom scrollbar for #slideshow */
+/* Custom scrollbar for the slideshow */
 #slideshow::-webkit-scrollbar {
-  height: 8px; /* Smaller scrollbar height */
+  height: 8px; /* Slim horizontal scrollbar */
 }
 
 #slideshow::-webkit-scrollbar-track {
-  background: transparent; /* Make the track transparent */
+  background: transparent; /* Transparent track */
 }
 
 #slideshow::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 255, 0.5); /* Neon glow thumb */
+  background: rgba(0, 255, 255, 0.5); /* Neon blue thumb */
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
 }
@@ -649,10 +649,11 @@ textarea#input:focus {
   box-shadow: 0 0 15px rgba(0, 255, 255, 0.9);
 }
 
-/* For Firefox */
+/* Firefox Support */
 #slideshow {
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 255, 255, 0.5) transparent;
 }
+
 
 }
