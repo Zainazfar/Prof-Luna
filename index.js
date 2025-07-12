@@ -122,14 +122,18 @@ function cleanRedundantPhrases(text) {
   return cleaned;
 }
 
-async function addSlide(text) {
+// MODIFIED: addSlide now applies the 'active' class
+async function addSlide(text, delay) {
   const slide = document.createElement('div');
-  slide.className = 'slide text-only fade-in';
+  slide.className = 'slide text-only'; // 'fade-in' is not needed as 'active' handles it
   const caption = document.createElement('div');
   caption.textContent = text;
   slide.append(caption);
   slideshow.append(slide);
-  slideshow.removeAttribute('hidden');
+  // Add 'active' class after a short delay to trigger the animation
+  setTimeout(() => {
+    slide.classList.add('active');
+  }, delay);
 }
 
 function parseError(e) {
@@ -159,11 +163,11 @@ function parseResourcesMarkdown(markdown) {
   return resources;
 }
 
-// Function to display resources in the HTML list
+// MODIFIED: displayResources now toggles the 'visible' class
 function displayResources(resources) {
   resourcesList.innerHTML = ''; // Clear existing resources
   if (resources.length === 0) {
-    resourcesSection.style.display = 'none'; // Hide if no resources
+    resourcesSection.classList.remove('visible'); // Fade out if no resources
     return;
   }
   
@@ -183,23 +187,25 @@ function displayResources(resources) {
     listItem.appendChild(descriptionSpan);
     resourcesList.appendChild(listItem);
   });
-  resourcesSection.style.display = 'block'; // Show the section
+  resourcesSection.classList.add('visible'); // Add the visible class to trigger fade-in
 }
 
 
 async function generate(message) {
   userInput.disabled = true;
 
-  // Clear all dynamic sections
+  // Clear all dynamic sections and hide them with class removal
   modelOutput.innerHTML = '';
   slideshow.innerHTML = '';
   error.innerHTML = '';
-  quizWrapper.setAttribute('hidden', 'true');
-  slideshow.setAttribute('hidden', 'true');
-  error.setAttribute('hidden', 'true');
-  resourcesList.innerHTML = '';
-  resourcesSection.style.display = 'none';
   
+  quizWrapper.setAttribute('hidden', 'true'); // Quiz wrapper still uses hidden
+  error.setAttribute('hidden', 'true'); // Error still uses hidden
+
+  slideshow.classList.remove('visible'); // Fade out slideshow if visible
+  resourcesSection.classList.remove('visible'); // Fade out resources if visible
+  resourcesList.innerHTML = ''; // Clear resources list content immediately
+
   try {
     const userTurn = document.createElement('div');
     userTurn.innerHTML = await marked.parse(message);
@@ -235,11 +241,13 @@ async function generate(message) {
     // Populate slideshow if slides exist
     if (allSlides.length > 0) {
       modelOutput.innerHTML = ''; // Clear main output to make space for slides
+      slideshow.classList.add('visible'); // Make the slideshow container visible first
       for (const [index, chunk] of allSlides.entries()) {
-        setTimeout(() => addSlide(chunk), index * 800);
+        setTimeout(() => addSlide(chunk, 50), index * 800); // Add a small initial delay and then a delay between slides
       }
     } else {
       modelOutput.innerHTML = marked.parse("Professor Luna couldn't generate slides for this topic.");
+      slideshow.classList.remove('visible'); // Ensure it's hidden if no slides
     }
     
     // SECOND API CALL: Get Resources (Markdown)
@@ -251,7 +259,11 @@ async function generate(message) {
       const parsedResources = parseResourcesMarkdown(resourcesMarkdown);
       if (parsedResources.length > 0) {
         displayResources(parsedResources);
+      } else {
+        resourcesSection.classList.remove('visible'); // Ensure hidden if no parsed resources
       }
+    } else {
+      resourcesSection.classList.remove('visible'); // Ensure hidden if no markdown returned
     }
 
   } catch (e) {
@@ -259,9 +271,9 @@ async function generate(message) {
     error.innerHTML = `Something went wrong: ${msg}`;
     error.removeAttribute('hidden');
     // Ensure all dynamic sections are hidden on error
-    slideshow.setAttribute('hidden', 'true');
+    slideshow.classList.remove('visible');
     quizWrapper.setAttribute('hidden', 'true');
-    resourcesSection.style.display = 'none';
+    resourcesSection.classList.remove('visible');
   } finally {
     userInput.disabled = false;
     userInput.focus();
@@ -270,12 +282,12 @@ async function generate(message) {
 
 async function startQuiz() {
   quizContainer.innerHTML = '';
-  slideshow.setAttribute('hidden', 'true');
+  slideshow.classList.remove('visible'); // Fade out slideshow
   modelOutput.innerHTML = '';
   error.innerHTML = '';
   quizWrapper.removeAttribute('hidden');
   resourcesList.innerHTML = ''; // Clear previous resources
-  resourcesSection.style.display = 'none'; // Hide resources section
+  resourcesSection.classList.remove('visible'); // Fade out resources section
   
   try {
     const quizText = await callGenerateAPI(quizInstructions);
@@ -301,7 +313,7 @@ async function startQuiz() {
     const msg = parseError(e);
     quizContainer.innerHTML = `<p style="color: #ff5555;">Failed to load quiz: ${msg}</p>`;
     // Ensure resources section is hidden on error too
-    resourcesSection.style.display = 'none';
+    resourcesSection.classList.remove('visible');
   }
 }
 
