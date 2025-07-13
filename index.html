@@ -91,24 +91,28 @@
       <div id="output"></div>
       <div id="error" hidden></div>
 
-      <section id="resources-section">
+      <!-- Slides section first -->
+      <section id="slideshow-wrapper">
+        <div id="slideshow" hidden>
+          <!-- Example slide for testing -->
+          <div class="slide">
+            <h2>Slide 1: Welcome to Professor Luna</h2>
+            <p>This is a placeholder slide. Replace this with dynamic content later.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Resources section BELOW slides -->
+      <section id="resources-section" style="display: none;">
         <div class="resource-container">
           <h2>Further Reading & Resources</h2>
           <ul id="resources-list">
-            <li><a href="https://en.wikipedia.org/wiki/Artificial_neural_network" target="_blank">Neural Networks (Wikipedia)</a></li>
+            <li>Neural Networks</li>
           </ul>
         </div>
       </section>
-    </main>
 
-    <section id="slideshow-wrapper">
-      <div id="slideshow">
-        <div class="slide">
-          <h2>Slide 1: Welcome to Professor Luna</h2>
-          <p>This is a test slide. Connect your backend logic to dynamically update this!</p>
-        </div>
-      </div>
-    </section>
+    </main>
 
     <section id="quiz-wrapper" hidden>
       <div id="quiz-container" class="quiz-container"></div>
@@ -142,6 +146,10 @@
             el.classList.add('loaded');
           });
         }, 100);
+
+        // For testing: show slides and resources
+        document.getElementById('slideshow').hidden = false;
+        document.getElementById('resources-section').style.display = 'block';
       });
 
       document.getElementById('surprise-me')?.addEventListener('click', () => {
@@ -177,4 +185,3 @@
     </script>
   </body>
 </html>
-
