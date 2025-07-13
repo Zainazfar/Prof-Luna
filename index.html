@@ -31,18 +31,16 @@
         letter-spacing: 1px;
         text-transform: uppercase;
         transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
-        box-shadow: 0 0 12px rgba(0, 255, 255, 0.4), 0 0 24px rgba(0, 255, 255, 0.2);
         width: 220px; 
         text-align: center;
       }
 
       .surprise-btn:hover, .quiz-btn:hover {
         transform: translateY(-3px) scale(1.08);
-        box-shadow: 0 0 24px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.6);
         background: linear-gradient(135deg, #33ffff, #66ffff);
       }
 
-      /* 🔥 BIGGER SLIDE STYLING */
+      /* Bigger and cleaner slides */
       #slideshow-wrapper {
         display: flex;
         justify-content: center;
@@ -50,13 +48,14 @@
       }
 
       #slideshow {
-        width: 90%; /* Wider slides */
-        max-width: 1200px; /* Limit max width for big screens */
-        border-radius: 20px;
+        width: 95%; /* More width */
+        max-width: 1400px; /* Maximum width for large screens */
+        min-height: 400px; /* Taller slides */
+        border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
-        background: linear-gradient(135deg, #0ff2ff, #00e1e1);
-        padding: 2rem;
+        background: #f0f0f0; /* Clean background */
+        border: 2px solid #ccc;
+        padding: 3rem;
         animation: fadeIn 0.8s ease forwards;
       }
 
@@ -65,15 +64,15 @@
       }
 
       .slide h2 {
-        font-size: 2.5rem; /* Bigger title */
-        margin-bottom: 1rem;
-        color: #0f0f0f;
+        font-size: 2.8rem; /* Larger heading */
+        margin-bottom: 1.2rem;
+        color: #222;
       }
 
       .slide p {
-        font-size: 1.3rem;
-        color: #333;
-        line-height: 1.8;
+        font-size: 1.5rem;
+        color: #444;
+        line-height: 1.9;
       }
 
       /* Resources Styling */
@@ -85,16 +84,16 @@
       #resources-section h2 {
         font-size: 2rem;
         margin-bottom: 1rem;
-        color: #00ffff;
+        color: #0aa;
       }
 
       #resources-section p {
-        color: #999;
+        color: #777;
         font-style: italic;
       }
 
       @keyframes fadeIn {
-        from { opacity: 0; transform: scale(0.9); }
+        from { opacity: 0; transform: scale(0.95); }
         to { opacity: 1; transform: scale(1); }
       }
     </style>
@@ -113,9 +112,6 @@
     <div class="matrix-rain"></div>
 
     <header class="site-header">
-      <div class="logo-glow-container">
-        <img src="1653759690-akes_motif (1).png" alt="AKHSS Gilgit ICT Club Logo" class="header-logo glow-effect" />
-      </div>
       <div>
         <h1>Made for AKHSS Gilgit ICT Club</h1>
         <p style="font-size: 0.9rem; opacity: 0.7;"><span class="creator-credit">By Zain Azfar</span></p>
@@ -147,7 +143,7 @@
       <div id="output"></div>
       <div id="error" hidden></div>
 
-      <!-- Slides section first -->
+      <!-- Slides section -->
       <section id="slideshow-wrapper">
         <div id="slideshow" hidden>
           <div class="slide">
@@ -157,14 +153,14 @@
         </div>
       </section>
 
-      <!-- Resources section BELOW slides -->
+      <!-- Resources section -->
       <section id="resources-section" style="display: none;">
         <div class="resource-container">
           <h2>Further Reading & Resources</h2>
+          <p><em>Resources will appear here once content is loaded...</em></p>
           <ul id="resources-list"></ul>
         </div>
       </section>
-
     </main>
 
     <section id="quiz-wrapper" hidden>
@@ -178,19 +174,6 @@
       document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.container').style.opacity = '1';
         document.querySelector('.site-header').style.opacity = '1';
-
-        const matrixRain = document.querySelector('.matrix-rain');
-        for (let i = 0; i < 100; i++) {
-          const digit = document.createElement('span');
-          digit.className = 'binary-digit';
-          digit.textContent = Math.random() > 0.5 ? '0' : '1';
-          digit.style.left = `${Math.random() * 100}vw`;
-          digit.style.setProperty('--delay', Math.random() * 5);
-          digit.style.animationDuration = `${5 + Math.random() * 10}s`;
-          digit.style.fontSize = `${12 + Math.random() * 12}px`;
-          digit.style.opacity = `${0.2 + Math.random() * 0.5}`;
-          matrixRain.appendChild(digit);
-        }
 
         setTimeout(() => {
           document.getElementById('slideshow').hidden = false;
