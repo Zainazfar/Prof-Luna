@@ -6,10 +6,9 @@
     <title>Explain Things with Professor Luna</title>
     <link rel="stylesheet" href="index.css" />
     <style>
-      /* These styles are already in your provided HTML and will remain here */
       .container { opacity: 0; }
       .site-header { opacity: 0; }
-      
+
       .action-buttons {
         margin: 1rem 0;
         text-align: center;
@@ -18,6 +17,7 @@
         gap: 15px;
         flex-wrap: wrap;
       }
+
       .surprise-btn, .quiz-btn {
         font-family: 'Space Mono', monospace;
         background: linear-gradient(135deg, #00ffff, #0ff);
@@ -35,12 +35,14 @@
         width: 220px; 
         text-align: center;
       }
+
       .surprise-btn:hover, .quiz-btn:hover {
         transform: translateY(-3px) scale(1.08);
         box-shadow: 0 0 24px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.6);
         background: linear-gradient(135deg, #33ffff, #66ffff);
       }
     </style>
+
     <script type="importmap">
     {
       "imports": {
@@ -50,19 +52,19 @@
     }
     </script>
   </head>
+
   <body>
     <div class="matrix-rain"></div>
 
-<header class="site-header">
-  <div class="logo-glow-container">
-    <img src="1653759690-akes_motif (1).png" alt="AKHSS Gilgit ICT Club Logo" class="header-logo glow-effect" />
-  </div>
-  <div>
-    <h1>Made for AKHSS Gilgit ICT Club</h1>
-    <p style="font-size: 0.9rem; opacity: 0.7;"><p class="creator-credit">By Zain Azfar</p>
-  </div>
-</header>
-
+    <header class="site-header">
+      <div class="logo-glow-container">
+        <img src="1653759690-akes_motif (1).png" alt="AKHSS Gilgit ICT Club Logo" class="header-logo glow-effect" />
+      </div>
+      <div>
+        <h1>Made for AKHSS Gilgit ICT Club</h1>
+        <p style="font-size: 0.9rem; opacity: 0.7;"><span class="creator-credit">By Zain Azfar</span></p>
+      </div>
+    </header>
 
     <main class="container">
       <h1 class="main-title">Explain Things with Professor Luna</h1>
@@ -73,11 +75,12 @@
         <li>Explain how spaghettification works.</li>
       </ul>
       <p>Or enter your own prompt:</p>
-        <textarea
+
+      <textarea
         id="input"
         placeholder="Enter some prompt(Start your prompt with 'explain'...) and press Send."
       ></textarea>
-      
+
       <button id="send-prompt" class="send-btn">📤 Send</button>
 
       <div class="action-buttons">
@@ -88,15 +91,23 @@
       <div id="output"></div>
       <div id="error" hidden></div>
 
-<section id="resources-section" style="display: none;">
-  <div class="resource-container"> <h2>Further Reading & Resources</h2>
-    <ul id="resources-list">
-      </ul>
-  </div> </section>
-      </main>
+      <section id="resources-section">
+        <div class="resource-container">
+          <h2>Further Reading & Resources</h2>
+          <ul id="resources-list">
+            <li><a href="https://en.wikipedia.org/wiki/Artificial_neural_network" target="_blank">Neural Networks (Wikipedia)</a></li>
+          </ul>
+        </div>
+      </section>
+    </main>
 
     <section id="slideshow-wrapper">
-      <div id="slideshow" hidden></div>
+      <div id="slideshow">
+        <div class="slide">
+          <h2>Slide 1: Welcome to Professor Luna</h2>
+          <p>This is a test slide. Connect your backend logic to dynamically update this!</p>
+        </div>
+      </div>
     </section>
 
     <section id="quiz-wrapper" hidden>
@@ -104,11 +115,9 @@
     </section>
 
     <script src="dev.env.js"></script>
-    
     <script type="module" src="index.js"></script>
 
     <script>
-      // Your existing inline script - no changes made here as per your instruction
       document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.container').style.opacity = '1';
         document.querySelector('.site-header').style.opacity = '1';
@@ -165,7 +174,7 @@
         });
         document.getElementById('input').dispatchEvent(event);
       });
-      
     </script>
   </body>
 </html>
+
