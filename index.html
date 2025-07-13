@@ -1,173 +1,345 @@
 <!doctype html>
+
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Explain Things with Professor Luna</title>
-    <link rel="stylesheet" href="index.css" />
-    <style>
-      /* These styles are already in your provided HTML and will remain here */
-      /* These were for initial fade-in of the main content on page load */
-      .container { opacity: 0; }
-      .site-header { opacity: 0; }
-      
-      .action-buttons {
-        margin: 1rem 0;
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        flex-wrap: wrap;
-      }
-      .surprise-btn, .quiz-btn {
-        font-family: 'Space Mono', monospace;
-        background: linear-gradient(135deg, #00ffff, #0ff);
-        color: #0f0f0f;
-        border: none;
-        padding: 0.8rem 1.5rem;
-        border-radius: 50px;
-        cursor: pointer;
-        font-weight: bold;
-        font-size: 1rem;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
-        box-shadow: 0 0 12px rgba(0, 255, 255, 0.4), 0 0 24px rgba(0, 255, 255, 0.2);
-        width: 220px; 
-        text-align: center;
-      }
-      .surprise-btn:hover, .quiz-btn:hover {
-        transform: translateY(-3px) scale(1.08);
-        box-shadow: 0 0 24px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.6);
-        background: linear-gradient(135deg, #33ffff, #66ffff);
-      }
-    </style>
-    <script type="importmap">
-    {
-      "imports": {
-        "@google/genai": "https://esm.sh/@google/genai@^1.8.0",
-        "marked": "https://esm.sh/marked@^16.0.0"
-      }
-    }
-    </script>
-  </head>
-  <body>
-    <div class="matrix-rain"></div>
 
-    <header class="site-header">
-      <div class="logo-glow-container">
-        <img src="1653759690-akes_motif (1).png" alt="AKHSS Gilgit ICT Club Logo" class="header-logo glow-effect" />
-      </div>
-      <div>
-        <h1>Made for AKHSS Gilgit ICT Club</h1>
-        <p style="font-size: 0.9rem; opacity: 0.7;"><p class="creator-credit">By Zain Azfar</p>
-      </div>
-    </header>
+  <head>
 
-    <div class="content-wrapper"> <main class="container">
-        <h1 class="main-title">Explain Things with Professor Luna</h1>
-        <p><strong>Examples:</strong></p>
-        <ul id="examples">
-          <li>Explain how neural networks work.</li>
-          <li>Explain how The Matrix works.</li>
-          <li>Explain how spaghettification works.</li>
-        </ul>
-        <p>Or enter your own prompt:</p>
-          <textarea
-          id="input"
-          placeholder="Enter some prompt(Start your prompt with 'explain'...) and press Send."
-        ></textarea>
-        
-        <button id="send-prompt" class="send-btn">📤 Send</button>
+    <meta charset="UTF-8" />
 
-        <div class="action-buttons">
-          <button id="surprise-me" class="surprise-btn">🎲 Surprise Me!</button>
-          <button id="start-quiz" class="quiz-btn">🧠 Start Quiz</button>
-        </div>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <div id="output"></div>
-        <div id="error" hidden></div>
+    <title>Explain Things with Professor Luna</title>
 
-      </main>
+    <link rel="stylesheet" href="index.css" />
 
-      <section id="slideshow-wrapper"> 
-        <div id="slideshow"></div>
-      </section>
+    <style>
 
-      <section id="resources-section"> 
-        <div class="resource-container">
-          <h2>Further Reading & Resources</h2>
-          <ul id="resources-list">
-          </ul>
-        </div>
-      </section>
-      <section id="quiz-wrapper" hidden> 
-        <div id="quiz-container" class="quiz-container"></div>
-      </section>
+      /* These styles are already in your provided HTML and will remain here */
 
-    </div> <script src="dev.env.js"></script>
-    
-    <script type="module" src="index.js"></script>
+      .container { opacity: 0; }
 
-    <script>
-      // Your existing inline script - no changes made here as per your instruction
-      document.addEventListener('DOMContentLoaded', () => {
-        document.querySelector('.container').style.opacity = '1';
-        document.querySelector('.site-header').style.opacity = '1';
+      .site-header { opacity: 0; }
 
-        const matrixRain = document.querySelector('.matrix-rain');
-        for (let i = 0; i < 100; i++) {
-          const digit = document.createElement('span');
-          digit.className = 'binary-digit';
-          digit.textContent = Math.random() > 0.5 ? '0' : '1';
-          digit.style.left = `${Math.random() * 100}vw`;
-          digit.style.setProperty('--delay', Math.random() * 5);
-          digit.style.animationDuration = `${5 + Math.random() * 10}s`;
-          digit.style.fontSize = `${12 + Math.random() * 12}px`;
-          digit.style.opacity = `${0.2 + Math.random() * 0.5}`;
-          matrixRain.appendChild(digit);
-        }
+      
 
-        setTimeout(() => {
-          document.querySelector('.main-title').classList.add('loaded');
-          document.querySelector('.site-header').classList.add('loaded');
-          document.querySelectorAll('.container > *:not(h1)').forEach(el => {
-            el.classList.add('loaded');
-          });
-        }, 100);
-      });
+      .action-buttons {
 
-      document.getElementById('surprise-me')?.addEventListener('click', () => {
-        const randomTopics = [
-          "Explain how black holes work in simple terms",
-          "Explain quantum computing like I'm 5",
-          "Explain why the sky is blue",
-          "Explain how airplanes stay in the air",
-          "Explain blockchain technology simply",
-          "Explain photosynthesis step by step",
-          "Explain how GPS works",
-          "Explain why we dream at night",
-          "Explain how vaccines work",
-          "Explain the theory of relativity simply",
-          "Explain how the internet works",
-          "Explain what dark matter is",
-          "Explain how nuclear power plants work",
-          "Explain the water cycle",
-          "Explain how cryptocurrencies work"
-        ];
-        const randomTopic = randomTopics[Math.floor(Math.random() * randomTopics.length)];
-        document.getElementById('input').value = randomTopic;
+        margin: 1rem 0;
 
-        const event = new KeyboardEvent('keydown', {
-          key: 'Enter',
-          code: 'Enter',
-          keyCode: 13,
-          which: 13,
-          bubbles: true
-        });
-        document.getElementById('input').dispatchEvent(event);
-      });
-      
-    </script>
-  </body>
+        text-align: center;
+
+        display: flex;
+
+        justify-content: center;
+
+        gap: 15px;
+
+        flex-wrap: wrap;
+
+      }
+
+      .surprise-btn, .quiz-btn {
+
+        font-family: 'Space Mono', monospace;
+
+        background: linear-gradient(135deg, #00ffff, #0ff);
+
+        color: #0f0f0f;
+
+        border: none;
+
+        padding: 0.8rem 1.5rem;
+
+        border-radius: 50px;
+
+        cursor: pointer;
+
+        font-weight: bold;
+
+        font-size: 1rem;
+
+        letter-spacing: 1px;
+
+        text-transform: uppercase;
+
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+
+        box-shadow: 0 0 12px rgba(0, 255, 255, 0.4), 0 0 24px rgba(0, 255, 255, 0.2);
+
+        width: 220px; 
+
+        text-align: center;
+
+      }
+
+      .surprise-btn:hover, .quiz-btn:hover {
+
+        transform: translateY(-3px) scale(1.08);
+
+        box-shadow: 0 0 24px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.6);
+
+        background: linear-gradient(135deg, #33ffff, #66ffff);
+
+      }
+
+    </style>
+
+    <script type="importmap">
+
+    {
+
+      "imports": {
+
+        "@google/genai": "https://esm.sh/@google/genai@^1.8.0",
+
+        "marked": "https://esm.sh/marked@^16.0.0"
+
+      }
+
+    }
+
+    </script>
+
+  </head>
+
+  <body>
+
+    <div class="matrix-rain"></div>
+
+
+
+<header class="site-header">
+
+  <div class="logo-glow-container">
+
+    <img src="1653759690-akes_motif (1).png" alt="AKHSS Gilgit ICT Club Logo" class="header-logo glow-effect" />
+
+  </div>
+
+  <div>
+
+    <h1>Made for AKHSS Gilgit ICT Club</h1>
+
+    <p style="font-size: 0.9rem; opacity: 0.7;"><p class="creator-credit">By Zain Azfar</p>
+
+  </div>
+
+</header>
+
+
+
+
+
+    <main class="container">
+
+      <h1 class="main-title">Explain Things with Professor Luna</h1>
+
+      <p><strong>Examples:</strong></p>
+
+      <ul id="examples">
+
+        <li>Explain how neural networks work.</li>
+
+        <li>Explain how The Matrix works.</li>
+
+        <li>Explain how spaghettification works.</li>
+
+      </ul>
+
+      <p>Or enter your own prompt:</p>
+
+        <textarea
+
+        id="input"
+
+        placeholder="Enter some prompt(Start your prompt with 'explain'...) and press Send."
+
+      ></textarea>
+
+      
+
+      <button id="send-prompt" class="send-btn">📤 Send</button>
+
+
+
+      <div class="action-buttons">
+
+        <button id="surprise-me" class="surprise-btn">🎲 Surprise Me!</button>
+
+        <button id="start-quiz" class="quiz-btn">🧠 Start Quiz</button>
+
+      </div>
+
+
+
+      <div id="output"></div>
+
+      <div id="error" hidden></div>
+
+
+
+    </main>
+
+
+
+    <section id="slideshow-wrapper">
+
+      <div id="slideshow" hidden></div>
+
+    </section>
+
+
+
+    <section id="resources-section" style="display: none;">
+
+      <div class="resource-container">
+
+        <h2>Further Reading & Resources</h2>
+
+        <ul id="resources-list">
+
+        </ul>
+
+      </div>
+
+    </section>
+
+    <section id="quiz-wrapper" hidden>
+
+      <div id="quiz-container" class="quiz-container"></div>
+
+    </section>
+
+
+
+    <script src="dev.env.js"></script>
+
+    
+
+    <script type="module" src="index.js"></script>
+
+
+
+    <script>
+
+      // Your existing inline script - no changes made here as per your instruction
+
+      document.addEventListener('DOMContentLoaded', () => {
+
+        document.querySelector('.container').style.opacity = '1';
+
+        document.querySelector('.site-header').style.opacity = '1';
+
+
+
+        const matrixRain = document.querySelector('.matrix-rain');
+
+        for (let i = 0; i < 100; i++) {
+
+          const digit = document.createElement('span');
+
+          digit.className = 'binary-digit';
+
+          digit.textContent = Math.random() > 0.5 ? '0' : '1';
+
+          digit.style.left = `${Math.random() * 100}vw`;
+
+          digit.style.setProperty('--delay', Math.random() * 5);
+
+          digit.style.animationDuration = `${5 + Math.random() * 10}s`;
+
+          digit.style.fontSize = `${12 + Math.random() * 12}px`;
+
+          digit.style.opacity = `${0.2 + Math.random() * 0.5}`;
+
+          matrixRain.appendChild(digit);
+
+        }
+
+
+
+        setTimeout(() => {
+
+          document.querySelector('.main-title').classList.add('loaded');
+
+          document.querySelector('.site-header').classList.add('loaded');
+
+          document.querySelectorAll('.container > *:not(h1)').forEach(el => {
+
+            el.classList.add('loaded');
+
+          });
+
+        }, 100);
+
+      });
+
+
+
+      document.getElementById('surprise-me')?.addEventListener('click', () => {
+
+        const randomTopics = [
+
+          "Explain how black holes work in simple terms",
+
+          "Explain quantum computing like I'm 5",
+
+          "Explain why the sky is blue",
+
+          "Explain how airplanes stay in the air",
+
+          "Explain blockchain technology simply",
+
+          "Explain photosynthesis step by step",
+
+          "Explain how GPS works",
+
+          "Explain why we dream at night",
+
+          "Explain how vaccines work",
+
+          "Explain the theory of relativity simply",
+
+          "Explain how the internet works",
+
+          "Explain what dark matter is",
+
+          "Explain how nuclear power plants work",
+
+          "Explain the water cycle",
+
+          "Explain how cryptocurrencies work"
+
+        ];
+
+        const randomTopic = randomTopics[Math.floor(Math.random() * randomTopics.length)];
+
+        document.getElementById('input').value = randomTopic;
+
+
+
+        const event = new KeyboardEvent('keydown', {
+
+          key: 'Enter',
+
+          code: 'Enter',
+
+          keyCode: 13,
+
+          which: 13,
+
+          bubbles: true
+
+        });
+
+        document.getElementById('input').dispatchEvent(event);
+
+      });
+
+      
+
+    </script>
+
+  </body>
+
 </html>
