@@ -40,7 +40,7 @@
         background: linear-gradient(135deg, #33ffff, #66ffff);
       }
 
-      /* Bigger and cleaner slides */
+      /* FULLSCREEN SLIDES */
       #slideshow-wrapper {
         display: flex;
         justify-content: center;
@@ -48,13 +48,12 @@
       }
 
       #slideshow {
-        width: 95%; /* More width */
-        max-width: 1400px; /* Maximum width for large screens */
-        min-height: 400px; /* Taller slides */
-        border-radius: 16px;
+        width: 98%; /* Almost fullscreen */
+        max-width: 100%; /* Remove any limits */
+        min-height: 500px; /* Taller slides */
+        border-radius: 0; /* No rounding */
         overflow: hidden;
-        background: #f0f0f0; /* Clean background */
-        border: 2px solid #ccc;
+        background: #fdfdfd; /* Clean background */
         padding: 3rem;
         animation: fadeIn 0.8s ease forwards;
       }
@@ -64,15 +63,15 @@
       }
 
       .slide h2 {
-        font-size: 2.8rem; /* Larger heading */
+        font-size: 3rem; /* Even bigger title */
         margin-bottom: 1.2rem;
-        color: #222;
+        color: #111;
       }
 
       .slide p {
-        font-size: 1.5rem;
-        color: #444;
-        line-height: 1.9;
+        font-size: 1.6rem;
+        color: #333;
+        line-height: 2;
       }
 
       /* Resources Styling */
@@ -82,7 +81,7 @@
       }
 
       #resources-section h2 {
-        font-size: 2rem;
+        font-size: 2.2rem;
         margin-bottom: 1rem;
         color: #0aa;
       }
@@ -183,3 +182,4 @@
     </script>
   </body>
 </html>
+
