@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="index.css" />
     <style>
       /* These styles are already in your provided HTML and will remain here */
+      /* These were for initial fade-in of the main content on page load */
       .container { opacity: 0; }
       .site-header { opacity: 0; }
       
@@ -53,59 +54,58 @@
   <body>
     <div class="matrix-rain"></div>
 
-<header class="site-header">
-  <div class="logo-glow-container">
-    <img src="1653759690-akes_motif (1).png" alt="AKHSS Gilgit ICT Club Logo" class="header-logo glow-effect" />
-  </div>
-  <div>
-    <h1>Made for AKHSS Gilgit ICT Club</h1>
-    <p style="font-size: 0.9rem; opacity: 0.7;"><p class="creator-credit">By Zain Azfar</p>
-  </div>
-</header>
-
-
-    <main class="container">
-      <h1 class="main-title">Explain Things with Professor Luna</h1>
-      <p><strong>Examples:</strong></p>
-      <ul id="examples">
-        <li>Explain how neural networks work.</li>
-        <li>Explain how The Matrix works.</li>
-        <li>Explain how spaghettification works.</li>
-      </ul>
-      <p>Or enter your own prompt:</p>
-        <textarea
-        id="input"
-        placeholder="Enter some prompt(Start your prompt with 'explain'...) and press Send."
-      ></textarea>
-      
-      <button id="send-prompt" class="send-btn">📤 Send</button>
-
-      <div class="action-buttons">
-        <button id="surprise-me" class="surprise-btn">🎲 Surprise Me!</button>
-        <button id="start-quiz" class="quiz-btn">🧠 Start Quiz</button>
+    <header class="site-header">
+      <div class="logo-glow-container">
+        <img src="1653759690-akes_motif (1).png" alt="AKHSS Gilgit ICT Club Logo" class="header-logo glow-effect" />
       </div>
+      <div>
+        <h1>Made for AKHSS Gilgit ICT Club</h1>
+        <p style="font-size: 0.9rem; opacity: 0.7;"><p class="creator-credit">By Zain Azfar</p>
+      </div>
+    </header>
 
-      <div id="output"></div>
-      <div id="error" hidden></div>
-
-    </main>
-
-    <section id="slideshow-wrapper" hidden> 
-      <div id="slideshow"></div>
-    </section>
-
-    <section id="resources-section" hidden> 
-      <div class="resource-container">
-        <h2>Further Reading & Resources</h2>
-        <ul id="resources-list">
+    <div class="content-wrapper"> <main class="container">
+        <h1 class="main-title">Explain Things with Professor Luna</h1>
+        <p><strong>Examples:</strong></p>
+        <ul id="examples">
+          <li>Explain how neural networks work.</li>
+          <li>Explain how The Matrix works.</li>
+          <li>Explain how spaghettification works.</li>
         </ul>
-      </div>
-    </section>
-    <section id="quiz-wrapper" hidden>
-      <div id="quiz-container" class="quiz-container"></div>
-    </section>
+        <p>Or enter your own prompt:</p>
+          <textarea
+          id="input"
+          placeholder="Enter some prompt(Start your prompt with 'explain'...) and press Send."
+        ></textarea>
+        
+        <button id="send-prompt" class="send-btn">📤 Send</button>
 
-    <script src="dev.env.js"></script>
+        <div class="action-buttons">
+          <button id="surprise-me" class="surprise-btn">🎲 Surprise Me!</button>
+          <button id="start-quiz" class="quiz-btn">🧠 Start Quiz</button>
+        </div>
+
+        <div id="output"></div>
+        <div id="error" hidden></div>
+
+      </main>
+
+      <section id="slideshow-wrapper"> 
+        <div id="slideshow"></div>
+      </section>
+
+      <section id="resources-section"> 
+        <div class="resource-container">
+          <h2>Further Reading & Resources</h2>
+          <ul id="resources-list">
+          </ul>
+        </div>
+      </section>
+      <section id="quiz-wrapper" hidden> 
+        <div id="quiz-container" class="quiz-container"></div>
+      </section>
+
+    </div> <script src="dev.env.js"></script>
     
     <script type="module" src="index.js"></script>
 
