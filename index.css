@@ -20,14 +20,16 @@ body {
   display: flex;
   flex-direction: column;
   z-index: 0;
+  /* Slightly reduce base font size */
+  font-size: 0.95rem; /* Adjusted */
 }
 
 /* IMPORTANT: Wrapper for content to allow independent scrolling and proper z-index */
 .content-wrapper {
   position: relative;
   z-index: 10;
-  padding: 20px;
-  max-width: 1300px;
+  padding: 18px; /* Adjusted from 20px */
+  max-width: 1200px; /* Adjusted from 1300px */
   margin: 0 auto;
   width: 100%;
   background-color: rgba(27, 27, 27, 0.5);
@@ -162,24 +164,24 @@ body::after {
   align-items: center;
   gap: 12px;
   background-color: rgba(20, 20, 20, 0.7);
-  padding: 14px 24px;
+  padding: 12px 20px; /* Adjusted from 14px 24px */
   border-bottom: 2px solid #333;
   border-radius: 10px;
-  margin-bottom: 25px;
+  margin-bottom: 22px; /* Adjusted from 25px */
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.3);
   position: relative;
   z-index: 10;
 }
 
 .site-header img.header-logo {
-  height: 48px;
+  height: 44px; /* Adjusted from 48px */
   width: auto;
   border-radius: 6px;
   box-shadow: 0 3px 10px rgba(0, 255, 255, 0.4);
 }
 
 .site-header h1 {
-  font-size: 1.4rem;
+  font-size: 1.3rem; /* Adjusted from 1.4rem */
   color: #f8f8f8;
   letter-spacing: 1.2px;
   font-weight: 700;
@@ -187,10 +189,10 @@ body::after {
 }
 
 .main-title {
-  margin-bottom: 28px;
+  margin-bottom: 24px; /* Adjusted from 28px */
   color: #f8f8f8;
   text-align: center;
-  font-size: 2.4rem;
+  font-size: 2.2rem; /* Adjusted from 2.4rem */
   letter-spacing: 1px;
   font-weight: 700;
   text-shadow: 0 0 10px #0ff, 0 0 20px #00ffffb0;
@@ -201,7 +203,7 @@ body::after {
 .container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px; /* Adjusted from 16px */
   position: relative;
   z-index: 10;
 }
@@ -213,8 +215,8 @@ body::after {
 }
 
 #examples li {
-  margin-bottom: 12px;
-  padding: 16px 22px;
+  margin-bottom: 10px; /* Adjusted from 12px */
+  padding: 14px 20px; /* Adjusted from 16px 22px */
   border: 1px solid #3d3d3d;
   border-radius: 10px;
   background-color: #252525;
@@ -224,6 +226,7 @@ body::after {
   position: relative;
   z-index: 10;
   text-shadow: 0 0 3px #0f0;
+  font-size: 0.98rem; /* Adjusted for list items */
 }
 
 #examples li:hover {
@@ -240,15 +243,15 @@ body::after {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   overscroll-behavior-x: contain;
-  gap: 24px;
-  margin: 25px auto;
-  padding: 16px;
+  gap: 20px; /* Adjusted from 24px */
+  margin: 22px auto; /* Adjusted from 25px */
+  padding: 14px; /* Adjusted from 16px */
   border: 1px solid #3d3d3d;
   border-radius: 12px;
   background-color: rgba(33, 33, 33, 0.85);
   box-shadow: 0 6px 16px rgba(0, 255, 255, 0.15);
   max-width: 100%;
-  margin-bottom: 40px;
+  margin-bottom: 35px; /* Adjusted from 40px */
   z-index: 10;
   opacity: 1;
   visibility: visible;
@@ -263,7 +266,7 @@ body::after {
 
 .slide {
   border: 1px solid #444;
-  padding: 30px 20px;
+  padding: 25px 18px; /* Adjusted from 30px 20px */
   font-family: 'Indie Flower', cursive;
   scroll-snap-align: center;
   background-color: #1e1e1e;
@@ -272,9 +275,9 @@ body::after {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-width: 400px;
-  max-width: 650px;
-  min-height: 500px;
+  min-width: 380px; /* Adjusted from 400px */
+  max-width: 600px; /* Adjusted from 650px */
+  min-height: 450px; /* Adjusted from 500px */
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   position: relative;
@@ -298,26 +301,27 @@ body::after {
 }
 
 .slide div {
-  font-size: 1.8rem;
+  font-size: 1.7rem; /* Adjusted from 1.8rem */
   text-align: center;
-  margin-top: 20px;
+  margin-top: 18px; /* Adjusted from 20px */
   color: #f0f0f0;
-  line-height: 2;
+  line-height: 1.8; /* Adjusted from 2 */
 }
 
 textarea#input {
   width: 100%;
-  padding: 16px 20px;
+  padding: 14px 18px; /* Adjusted from 16px 20px */
   border: 1px solid #444;
   border-radius: 10px;
   background-color: #2c2c2c;
   color: #f1f1f1;
-  margin-top: 10px;
-  min-height: 110px;
+  margin-top: 8px; /* Adjusted from 10px */
+  min-height: 100px; /* Adjusted from 110px */
   resize: vertical;
   transition: all 0.3s ease;
   position: relative;
   z-index: 10;
+  font-size: 0.95rem; /* Adjusted */
 }
 
 textarea#input:focus {
@@ -327,25 +331,25 @@ textarea#input:focus {
 }
 
 #quiz-wrapper {
-  margin-top: 30px;
+  margin-top: 25px; /* Adjusted from 30px */
   text-align: center;
 }
 
 #quiz-container {
-  margin: 20px auto;
-  max-width: 800px;
+  margin: 18px auto; /* Adjusted from 20px */
+  max-width: 750px; /* Adjusted from 800px */
   background: rgba(30, 30, 30, 0.9);
   border: 1px solid #3d3d3d;
   border-radius: 12px;
-  padding: 20px;
+  padding: 18px; /* Adjusted from 20px */
   box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
 }
 
 .quiz-question {
   font-family: 'Space Mono', monospace;
-  font-size: 1.6rem;
+  font-size: 1.5rem; /* Adjusted from 1.6rem */
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 18px; /* Adjusted from 20px */
   color: #f8f8f8;
   text-shadow: 0 0 5px #0ff;
 }
@@ -354,14 +358,15 @@ textarea#input:focus {
   font-family: 'Space Mono', monospace;
   display: block;
   width: 100%;
-  margin: 10px 0;
-  padding: 12px 18px;
+  margin: 8px 0; /* Adjusted from 10px */
+  padding: 10px 15px; /* Adjusted from 12px 18px */
   border: 1px solid #3d3d3d;
   border-radius: 10px;
   background: #252525;
   color: #f1f1f1;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 0.95rem; /* Adjusted */
 }
 
 .quiz-option:hover {
@@ -381,19 +386,19 @@ textarea#input:focus {
 
 .quiz-btn {
   display: inline-block;
-  width: 200px;
+  width: 180px; /* Adjusted from 200px */
   text-align: center;
-  padding: 14px 24px;
+  padding: 12px 20px; /* Adjusted from 14px 24px */
   background: #00ffff;
   color: #111;
   border: 2px solid #00ffff;
   border-radius: 50px;
-  font-size: 1.1rem;
+  font-size: 1rem; /* Adjusted from 1.1rem */
   font-family: 'Space Mono', monospace;
   font-weight: bold;
   box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff40;
   cursor: pointer;
-  margin: 10px;
+  margin: 8px; /* Adjusted from 10px */
   transition: all 0.3s ease, transform 0.2s ease;
 }
 
@@ -409,18 +414,18 @@ textarea#input:focus {
 
 .send-btn {
   display: inline-block;
-  padding: 12px 24px;
+  padding: 10px 20px; /* Adjusted from 12px 24px */
   background: linear-gradient(135deg, #00ff88, #00ffaa);
   color: #111;
   border: none;
   border-radius: 50px;
-  font-size: 1rem;
+  font-size: 0.95rem; /* Adjusted from 1rem */
   font-family: 'Space Mono', monospace;
   font-weight: bold;
   text-align: center;
   box-shadow: 0 0 12px rgba(0, 255, 136, 0.4), 0 0 24px rgba(0, 255, 136, 0.2);
   cursor: pointer;
-  margin: 10px 0;
+  margin: 8px 0; /* Adjusted from 10px */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -431,22 +436,24 @@ textarea#input:focus {
 
 .user-turn {
   font-weight: bold;
-  padding: 16px 22px;
+  padding: 14px 20px; /* Adjusted from 16px 22px */
   background-color: #292929;
   border-radius: 8px;
   border-left: 4px solid #66b2ff;
   color: #f1f1f1;
+  font-size: 0.95rem; /* Adjusted */
 }
 
 #error {
   font-weight: bold;
-  padding: 16px 20px;
+  padding: 14px 18px; /* Adjusted from 16px 20px */
   background-color: #7a0000;
   border-radius: 8px;
   border-left: 4px solid #ff4d4d;
   color: #f1f1f1;
   position: relative;
   z-index: 10;
+  font-size: 0.95rem; /* Adjusted */
 }
 
 #output,
@@ -456,7 +463,7 @@ textarea#input:focus {
 }
 
 .subtle-glow {
-  font-size: 0.9rem;
+  font-size: 0.85rem; /* Adjusted from 0.9rem */
   opacity: 0.8;
   color: #00ff99;
   text-shadow: 0 0 6px rgba(0, 255, 153, 0.5),
@@ -468,7 +475,7 @@ textarea#input:focus {
 }
 
 .site-header .creator-credit {
-  font-size: 0.9rem;
+  font-size: 0.85rem; /* Adjusted from 0.9rem */
   color: #ccc;
   text-shadow: 0 0 6px rgba(0, 255, 153, 0.4),
                 0 0 14px rgba(0, 255, 153, 0.2);
@@ -514,10 +521,10 @@ textarea#input:focus {
   background-color: #1e1e1e;
   border: 1px solid #444;
   border-radius: 12px;
-  padding: 30px 20px;
-  margin: 40px auto;
+  padding: 25px 18px; /* Adjusted from 30px 20px */
+  margin: 35px auto; /* Adjusted from 40px */
   width: 90%;
-  max-width: 900px;
+  max-width: 850px; /* Adjusted from 900px */
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
   color: #f0f0f0;
   font-family: 'Space Mono', monospace;
@@ -537,10 +544,10 @@ textarea#input:focus {
 
 .resource-container h2 {
   font-family: 'Space Mono', monospace;
-  font-size: 1.8rem;
+  font-size: 1.7rem; /* Adjusted from 1.8rem */
   color: #00ffff;
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 20px; /* Adjusted from 25px */
   text-shadow: 0 0 8px #00ffff, 0 0 15px #00ffffb0;
 }
 
@@ -551,11 +558,11 @@ textarea#input:focus {
 }
 
 .resource-container li {
-  margin-bottom: 15px;
+  margin-bottom: 12px; /* Adjusted from 15px */
   line-height: 1.5;
-  font-size: 1.1rem;
+  font-size: 1.05rem; /* Adjusted from 1.1rem */
   background-color: rgba(40, 40, 40, 0.7);
-  padding: 10px 15px;
+  padding: 8px 12px; /* Adjusted from 10px 15px */
   border-radius: 8px;
   border: 1px solid #3d3d3d;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -594,40 +601,45 @@ textarea#input:focus {
 .resource-container li .description {
   color: #ccc;
   font-family: 'Space Mono', monospace;
-  font-size: 1.1rem;
-  margin-left: 8px;
+  font-size: 1rem; /* Adjusted from 1.1rem */
+  margin-left: 6px; /* Adjusted from 8px */
 }
 
 /* MEDIA QUERY FOR SMALLER SCREENS */
 @media (max-width: 768px) {
   .main-title {
-    font-size: 1.8rem;
+    font-size: 1.6rem; /* Adjusted from 1.8rem */
   }
 
   .slide {
-    min-width: 300px;
-    min-height: 400px;
+    min-width: 280px; /* Adjusted from 300px */
+    min-height: 380px; /* Adjusted from 400px */
+    padding: 20px 15px; /* Adjusted */
+  }
+
+  .slide div {
+    font-size: 1.5rem; /* Adjusted */
   }
 
   .site-header h1 {
-    font-size: 1.1rem;
+    font-size: 1rem; /* Adjusted from 1.1rem */
   }
 
   .resource-container {
     width: 95%;
-    padding: 20px 15px;
-    margin: 30px auto;
+    padding: 18px 12px; /* Adjusted from 20px 15px */
+    margin: 25px auto; /* Adjusted from 30px */
   }
 
   .resource-container h2 {
-    font-size: 1.6rem;
+    font-size: 1.4rem; /* Adjusted from 1.6rem */
   }
 
   .resource-container li {
-    font-size: 1rem;
+    font-size: 0.95rem; /* Adjusted from 1rem */
   }
   .resource-container li .description {
-    font-size: 1rem;
+    font-size: 0.95rem; /* Adjusted from 1rem */
   }
 /* Custom scrollbar for the slideshow */
 #slideshow::-webkit-scrollbar {
@@ -654,6 +666,4 @@ textarea#input:focus {
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 255, 255, 0.5) transparent;
 }
-
-
 }
