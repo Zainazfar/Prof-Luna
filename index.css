@@ -216,7 +216,7 @@ body::after {
 
 #examples li {
   margin-bottom: 12px;
-  padding: 16px 22px; /* Slightly reduced from original */
+  padding: 16px 22px;
   border: 1px solid #3d3d3d;
   border-radius: 10px;
   background-color: #252525;
@@ -226,7 +226,7 @@ body::after {
   position: relative;
   z-index: 10;
   text-shadow: 0 0 3px #0f0;
-  width: 95%;
+  width: 90%; /* Reduced from 95% */
   margin-left: auto;
   margin-right: auto;
 }
@@ -311,7 +311,7 @@ body::after {
 }
 
 textarea#input {
-  width: 95%;
+  width: 90%; /* Reduced from 95% */
   max-width: 600px;
   padding: 16px 20px;
   border: 1px solid #444;
@@ -360,7 +360,7 @@ textarea#input:focus {
 .quiz-option {
   font-family: 'Space Mono', monospace;
   display: block;
-  width: 95%;
+  width: 90%; /* Reduced from 95% */
   max-width: 600px;
   margin: 10px auto;
   padding: 14px 20px;
@@ -390,7 +390,7 @@ textarea#input:focus {
 .quiz-btn {
   display: inline-block;
   width: auto;
-  min-width: 180px;
+  min-width: 160px; /* Reduced from 180px */
   text-align: center;
   padding: 14px 24px;
   background: #00ffff;
@@ -432,7 +432,7 @@ textarea#input:focus {
   margin: 10px 0;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   width: auto;
-  min-width: 160px;
+  min-width: 144px; /* Reduced from 160px (10% reduction) */
 }
 
 .send-btn:hover {
@@ -665,22 +665,17 @@ textarea#input:focus {
 
   /* Adjust buttons for mobile */
   #examples li {
-    width: 96%;
+    width: 92%; /* Reduced from 96% */
     padding: 14px 18px;
   }
 
   textarea#input {
-    width: 96%;
+    width: 92%; /* Reduced from 96% */
     padding: 14px 18px;
   }
 
   .quiz-option {
-    width: 96%;
+    width: 92%; /* Reduced from 96% */
     padding: 12px 18px;
-  }
-
-  .quiz-btn, .send-btn {
-    padding: 12px 20px;
-    min-width: 150px;
   }
 }
