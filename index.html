@@ -31,69 +31,15 @@
         letter-spacing: 1px;
         text-transform: uppercase;
         transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+        box-shadow: 0 0 12px rgba(0, 255, 255, 0.4), 0 0 24px rgba(0, 255, 255, 0.2);
         width: 220px; 
         text-align: center;
       }
 
       .surprise-btn:hover, .quiz-btn:hover {
         transform: translateY(-3px) scale(1.08);
+        box-shadow: 0 0 24px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.6);
         background: linear-gradient(135deg, #33ffff, #66ffff);
-      }
-
-      /* FULLSCREEN SLIDES */
-      #slideshow-wrapper {
-        display: flex;
-        justify-content: center;
-        margin: 2rem 0;
-      }
-
-      #slideshow {
-        width: 98%; /* Almost fullscreen */
-        max-width: 100%; /* Remove any limits */
-        min-height: 500px; /* Taller slides */
-        border-radius: 0; /* No rounding */
-        overflow: hidden;
-        background: #fdfdfd; /* Clean background */
-        padding: 3rem;
-        animation: fadeIn 0.8s ease forwards;
-      }
-
-      .slide {
-        text-align: center;
-      }
-
-      .slide h2 {
-        font-size: 3rem; /* Even bigger title */
-        margin-bottom: 1.2rem;
-        color: #111;
-      }
-
-      .slide p {
-        font-size: 1.6rem;
-        color: #333;
-        line-height: 2;
-      }
-
-      /* Resources Styling */
-      #resources-section {
-        margin-top: 3rem;
-        text-align: center;
-      }
-
-      #resources-section h2 {
-        font-size: 2.2rem;
-        margin-bottom: 1rem;
-        color: #0aa;
-      }
-
-      #resources-section p {
-        color: #777;
-        font-style: italic;
-      }
-
-      @keyframes fadeIn {
-        from { opacity: 0; transform: scale(0.95); }
-        to { opacity: 1; transform: scale(1); }
       }
     </style>
 
@@ -111,6 +57,9 @@
     <div class="matrix-rain"></div>
 
     <header class="site-header">
+      <div class="logo-glow-container">
+        <img src="1653759690-akes_motif (1).png" alt="AKHSS Gilgit ICT Club Logo" class="header-logo glow-effect" />
+      </div>
       <div>
         <h1>Made for AKHSS Gilgit ICT Club</h1>
         <p style="font-size: 0.9rem; opacity: 0.7;"><span class="creator-credit">By Zain Azfar</span></p>
@@ -142,25 +91,24 @@
       <div id="output"></div>
       <div id="error" hidden></div>
 
-      <!-- Slides section -->
-      <section id="slideshow-wrapper">
-        <div id="slideshow" hidden>
-          <div class="slide">
-            <h2>Slide 1: Welcome to Professor Luna</h2>
-            <p>This is a placeholder slide. Replace this with dynamic content later.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Resources section -->
-      <section id="resources-section" style="display: none;">
+      <section id="resources-section">
         <div class="resource-container">
           <h2>Further Reading & Resources</h2>
-          <p><em>Resources will appear here once content is loaded...</em></p>
-          <ul id="resources-list"></ul>
+          <ul id="resources-list">
+            <li><a href="https://en.wikipedia.org/wiki/Artificial_neural_network" target="_blank">Neural Networks (Wikipedia)</a></li>
+          </ul>
         </div>
       </section>
     </main>
+
+    <section id="slideshow-wrapper">
+      <div id="slideshow">
+        <div class="slide">
+          <h2>Slide 1: Welcome to Professor Luna</h2>
+          <p>This is a test slide. Connect your backend logic to dynamically update this!</p>
+        </div>
+      </div>
+    </section>
 
     <section id="quiz-wrapper" hidden>
       <div id="quiz-container" class="quiz-container"></div>
@@ -174,12 +122,60 @@
         document.querySelector('.container').style.opacity = '1';
         document.querySelector('.site-header').style.opacity = '1';
 
+        const matrixRain = document.querySelector('.matrix-rain');
+        for (let i = 0; i < 100; i++) {
+          const digit = document.createElement('span');
+          digit.className = 'binary-digit';
+          digit.textContent = Math.random() > 0.5 ? '0' : '1';
+          digit.style.left = `${Math.random() * 100}vw`;
+          digit.style.setProperty('--delay', Math.random() * 5);
+          digit.style.animationDuration = `${5 + Math.random() * 10}s`;
+          digit.style.fontSize = `${12 + Math.random() * 12}px`;
+          digit.style.opacity = `${0.2 + Math.random() * 0.5}`;
+          matrixRain.appendChild(digit);
+        }
+
         setTimeout(() => {
-          document.getElementById('slideshow').hidden = false;
-          document.getElementById('resources-section').style.display = 'block';
+          document.querySelector('.main-title').classList.add('loaded');
+          document.querySelector('.site-header').classList.add('loaded');
+          document.querySelectorAll('.container > *:not(h1)').forEach(el => {
+            el.classList.add('loaded');
+          });
         }, 100);
+      });
+
+      document.getElementById('surprise-me')?.addEventListener('click', () => {
+        const randomTopics = [
+          "Explain how black holes work in simple terms",
+          "Explain quantum computing like I'm 5",
+          "Explain why the sky is blue",
+          "Explain how airplanes stay in the air",
+          "Explain blockchain technology simply",
+          "Explain photosynthesis step by step",
+          "Explain how GPS works",
+          "Explain why we dream at night",
+          "Explain how vaccines work",
+          "Explain the theory of relativity simply",
+          "Explain how the internet works",
+          "Explain what dark matter is",
+          "Explain how nuclear power plants work",
+          "Explain the water cycle",
+          "Explain how cryptocurrencies work"
+        ];
+        const randomTopic = randomTopics[Math.floor(Math.random() * randomTopics.length)];
+        document.getElementById('input').value = randomTopic;
+
+        const event = new KeyboardEvent('keydown', {
+          key: 'Enter',
+          code: 'Enter',
+          keyCode: 13,
+          which: 13,
+          bubbles: true
+        });
+        document.getElementById('input').dispatchEvent(event);
       });
     </script>
   </body>
 </html>
+
 
