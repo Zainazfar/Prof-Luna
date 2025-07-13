@@ -20,16 +20,16 @@ body {
   display: flex;
   flex-direction: column;
   z-index: 0;
-  /* Further reduce base font size for overall smaller appearance */
-  font-size: 0.9rem; /* Adjusted more significantly */
+  /* Slightly reduce base font size, but not too small for readability */
+  font-size: 0.92rem; /* Re-adjusted, slightly larger than previous 0.9rem */
 }
 
 /* IMPORTANT: Wrapper for content to allow independent scrolling and proper z-index */
 .content-wrapper {
   position: relative;
   z-index: 10;
-  padding: 15px; /* Further adjusted from 18px */
-  max-width: 1000px; /* Significantly adjusted from 1200px to make the 'black box' narrower */
+  padding: 15px;
+  max-width: 900px; /* SIGNIFICANTLY REDUCED for width issue from 1000px */
   margin: 0 auto;
   width: 100%;
   background-color: rgba(27, 27, 27, 0.5);
@@ -162,26 +162,26 @@ body::after {
 .site-header {
   display: flex;
   align-items: center;
-  gap: 10px; /* Adjusted from 12px */
+  gap: 10px;
   background-color: rgba(20, 20, 20, 0.7);
-  padding: 10px 18px; /* Adjusted from 12px 20px */
+  padding: 10px 18px;
   border-bottom: 2px solid #333;
   border-radius: 10px;
-  margin-bottom: 20px; /* Adjusted from 22px */
+  margin-bottom: 20px;
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.3);
   position: relative;
   z-index: 10;
 }
 
 .site-header img.header-logo {
-  height: 40px; /* Adjusted from 44px */
+  height: 40px;
   width: auto;
   border-radius: 6px;
   box-shadow: 0 3px 10px rgba(0, 255, 255, 0.4);
 }
 
 .site-header h1 {
-  font-size: 1.2rem; /* Adjusted from 1.3rem */
+  font-size: 1.2rem;
   color: #f8f8f8;
   letter-spacing: 1.2px;
   font-weight: 700;
@@ -189,10 +189,10 @@ body::after {
 }
 
 .main-title {
-  margin-bottom: 20px; /* Adjusted from 24px */
+  margin-bottom: 20px;
   color: #f8f8f8;
   text-align: center;
-  font-size: 2rem; /* Adjusted from 2.2rem */
+  font-size: 2rem;
   letter-spacing: 1px;
   font-weight: 700;
   text-shadow: 0 0 10px #0ff, 0 0 20px #00ffffb0;
@@ -203,7 +203,7 @@ body::after {
 .container {
   display: flex;
   flex-direction: column;
-  gap: 12px; /* Adjusted from 14px */
+  gap: 12px;
   position: relative;
   z-index: 10;
 }
@@ -215,8 +215,8 @@ body::after {
 }
 
 #examples li {
-  margin-bottom: 8px; /* Adjusted from 10px */
-  padding: 12px 18px; /* Adjusted from 14px 20px */
+  margin-bottom: 8px;
+  padding: 12px 18px;
   border: 1px solid #3d3d3d;
   border-radius: 10px;
   background-color: #252525;
@@ -226,12 +226,12 @@ body::after {
   position: relative;
   z-index: 10;
   text-shadow: 0 0 3px #0f0;
-  font-size: 0.9rem; /* Adjusted for list items */
+  font-size: 0.9rem;
 }
 
 #examples li:hover {
   background-color: #3a3a3a;
-  transform: scale(1.03); /* Slightly reduced hover scale */
+  transform: scale(1.03);
   box-shadow: 0 0 16px rgba(0, 255, 255, 0.3);
   text-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 20px #0f0;
 }
@@ -243,15 +243,15 @@ body::after {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   overscroll-behavior-x: contain;
-  gap: 18px; /* Adjusted from 20px */
-  margin: 20px auto; /* Adjusted from 22px */
-  padding: 12px; /* Adjusted from 14px */
+  gap: 18px;
+  margin: 20px auto;
+  padding: 12px;
   border: 1px solid #3d3d3d;
   border-radius: 12px;
   background-color: rgba(33, 33, 33, 0.85);
   box-shadow: 0 6px 16px rgba(0, 255, 255, 0.15);
   max-width: 100%;
-  margin-bottom: 30px; /* Adjusted from 35px */
+  margin-bottom: 30px;
   z-index: 10;
   opacity: 1;
   visibility: visible;
@@ -266,7 +266,7 @@ body::after {
 
 .slide {
   border: 1px solid #444;
-  padding: 22px 16px; /* Adjusted from 25px 18px */
+  padding: 25px 18px; /* Reverted to closer to original padding for slides */
   font-family: 'Indie Flower', cursive;
   scroll-snap-align: center;
   background-color: #1e1e1e;
@@ -275,9 +275,9 @@ body::after {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-width: 350px; /* Adjusted from 380px, but still larger than 280px */
-  max-width: 550px; /* Adjusted from 600px */
-  min-height: 420px; /* Adjusted from 450px, but still larger than 380px */
+  min-width: 400px; /* Reverted to original for better slide size */
+  max-width: 650px; /* Reverted to original for better slide size */
+  min-height: 500px; /* Reverted to original for better slide size */
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   position: relative;
@@ -296,32 +296,32 @@ body::after {
 }
 
 .slide:hover {
-  transform: translateY(-6px) scale(1.01) !important; /* Slightly reduced hover effect */
-  box-shadow: 0 0 18px rgba(0, 255, 255, 0.3); /* Slightly reduced shadow */
+  transform: translateY(-8px) scale(1.02) !important; /* Reverted to original hover effect */
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3); /* Reverted to original shadow */
 }
 
 .slide div {
-  font-size: 1.6rem; /* Adjusted from 1.7rem */
+  font-size: 1.8rem; /* Reverted to original font size for slides */
   text-align: center;
-  margin-top: 15px; /* Adjusted from 18px */
+  margin-top: 20px; /* Reverted to original margin */
   color: #f0f0f0;
-  line-height: 1.7; /* Adjusted from 1.8 */
+  line-height: 2; /* Reverted to original line height */
 }
 
 textarea#input {
   width: 100%;
-  padding: 12px 16px; /* Adjusted from 14px 18px */
+  padding: 14px 18px; /* Slightly adjusted padding for consistency */
   border: 1px solid #444;
   border-radius: 10px;
   background-color: #2c2c2c;
   color: #f1f1f1;
-  margin-top: 7px; /* Adjusted from 8px */
-  min-height: 90px; /* Adjusted from 100px */
+  margin-top: 8px;
+  min-height: 100px; /* Reverted closer to original */
   resize: vertical;
   transition: all 0.3s ease;
   position: relative;
   z-index: 10;
-  font-size: 0.9rem; /* Adjusted */
+  font-size: 0.95rem; /* Slightly larger font than previous adjustment */
 }
 
 textarea#input:focus {
@@ -331,25 +331,25 @@ textarea#input:focus {
 }
 
 #quiz-wrapper {
-  margin-top: 20px; /* Adjusted from 25px */
+  margin-top: 25px; /* Reverted closer to original */
   text-align: center;
 }
 
 #quiz-container {
-  margin: 15px auto; /* Adjusted from 18px */
-  max-width: 700px; /* Adjusted from 750px */
+  margin: 18px auto; /* Reverted closer to original */
+  max-width: 750px; /* Reverted closer to original */
   background: rgba(30, 30, 30, 0.9);
   border: 1px solid #3d3d3d;
   border-radius: 12px;
-  padding: 16px; /* Adjusted from 18px */
+  padding: 18px; /* Reverted closer to original */
   box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
 }
 
 .quiz-question {
   font-family: 'Space Mono', monospace;
-  font-size: 1.4rem; /* Adjusted from 1.5rem */
+  font-size: 1.5rem; /* Reverted closer to original */
   font-weight: bold;
-  margin-bottom: 15px; /* Adjusted from 18px */
+  margin-bottom: 18px;
   color: #f8f8f8;
   text-shadow: 0 0 5px #0ff;
 }
@@ -358,20 +358,20 @@ textarea#input:focus {
   font-family: 'Space Mono', monospace;
   display: block;
   width: 100%;
-  margin: 6px 0; /* Adjusted from 8px */
-  padding: 9px 14px; /* Adjusted from 10px 15px */
+  margin: 10px 0; /* Reverted to original margin */
+  padding: 12px 18px; /* Reverted to original padding */
   border: 1px solid #3d3d3d;
   border-radius: 10px;
   background: #252525;
   color: #f1f1f1;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.9rem; /* Adjusted */
+  font-size: 0.98rem; /* Reverted closer to original */
 }
 
 .quiz-option:hover {
   background: #333;
-  box-shadow: 0 0 9px rgba(0, 255, 255, 0.3); /* Slightly reduced shadow */
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
 }
 
 .quiz-option.correct {
@@ -386,26 +386,26 @@ textarea#input:focus {
 
 .quiz-btn {
   display: inline-block;
-  width: 160px; /* Adjusted from 180px */
+  width: 200px; /* Reverted to ORIGINAL size */
   text-align: center;
-  padding: 10px 18px; /* Adjusted from 12px 20px */
+  padding: 14px 24px; /* Reverted to ORIGINAL size */
   background: #00ffff;
   color: #111;
   border: 2px solid #00ffff;
   border-radius: 50px;
-  font-size: 0.9rem; /* Adjusted from 1rem */
+  font-size: 1.1rem; /* Reverted to ORIGINAL size */
   font-family: 'Space Mono', monospace;
   font-weight: bold;
-  box-shadow: 0 0 18px #00ffff, 0 0 35px #00ffff40; /* Slightly reduced shadow */
+  box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff40;
   cursor: pointer;
-  margin: 6px; /* Adjusted from 8px */
+  margin: 10px; /* Reverted to ORIGINAL margin */
   transition: all 0.3s ease, transform 0.2s ease;
 }
 
 .quiz-btn:hover {
   background: #0ff;
-  box-shadow: 0 0 25px #00ffff, 0 0 50px #00ffff60; /* Slightly reduced shadow */
-  transform: scale(1.04); /* Slightly reduced scale */
+  box-shadow: 0 0 30px #00ffff, 0 0 60px #00ffff60;
+  transform: scale(1.05);
 }
 
 .quiz-btn:active {
@@ -414,46 +414,46 @@ textarea#input:focus {
 
 .send-btn {
   display: inline-block;
-  padding: 9px 18px; /* Adjusted from 10px 20px */
+  padding: 12px 24px; /* Reverted to ORIGINAL size */
   background: linear-gradient(135deg, #00ff88, #00ffaa);
   color: #111;
   border: none;
   border-radius: 50px;
-  font-size: 0.9rem; /* Adjusted from 0.95rem */
+  font-size: 1rem; /* Reverted to ORIGINAL size */
   font-family: 'Space Mono', monospace;
   font-weight: bold;
   text-align: center;
-  box-shadow: 0 0 10px rgba(0, 255, 136, 0.4), 0 0 20px rgba(0, 255, 136, 0.2); /* Slightly reduced shadow */
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.4), 0 0 24px rgba(0, 255, 136, 0.2);
   cursor: pointer;
-  margin: 6px 0; /* Adjusted from 8px */
+  margin: 10px 0; /* Reverted to ORIGINAL margin */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .send-btn:hover {
-  transform: translateY(-1px) scale(1.04); /* Slightly reduced effect */
-  box-shadow: 0 0 16px rgba(0, 255, 136, 0.7), 0 0 30px rgba(0, 255, 136, 0.4); /* Slightly reduced shadow */
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.7), 0 0 40px rgba(0, 255, 136, 0.4);
 }
 
 .user-turn {
   font-weight: bold;
-  padding: 12px 18px; /* Adjusted from 14px 20px */
+  padding: 16px 22px; /* Reverted to original padding */
   background-color: #292929;
   border-radius: 8px;
   border-left: 4px solid #66b2ff;
   color: #f1f1f1;
-  font-size: 0.9rem; /* Adjusted */
+  font-size: 1rem; /* Reverted to standard font size */
 }
 
 #error {
   font-weight: bold;
-  padding: 12px 16px; /* Adjusted from 14px 18px */
+  padding: 16px 20px; /* Reverted to original padding */
   background-color: #7a0000;
   border-radius: 8px;
   border-left: 4px solid #ff4d4d;
   color: #f1f1f1;
   position: relative;
   z-index: 10;
-  font-size: 0.9rem; /* Adjusted */
+  font-size: 1rem; /* Reverted to standard font size */
 }
 
 #output,
@@ -463,11 +463,11 @@ textarea#input:focus {
 }
 
 .subtle-glow {
-  font-size: 0.8rem; /* Adjusted from 0.85rem */
+  font-size: 0.9rem; /* Reverted to original, previous smaller was too small */
   opacity: 0.8;
   color: #00ff99;
-  text-shadow: 0 0 5px rgba(0, 255, 153, 0.5),
-                0 0 10px rgba(0, 255, 153, 0.3); /* Slightly reduced shadow */
+  text-shadow: 0 0 6px rgba(0, 255, 153, 0.5),
+                0 0 12px rgba(0, 255, 153, 0.3);
 }
 
 #examples li {
@@ -475,46 +475,46 @@ textarea#input:focus {
 }
 
 .site-header .creator-credit {
-  font-size: 0.8rem; /* Adjusted from 0.85rem */
+  font-size: 0.9rem; /* Reverted to original */
   color: #ccc;
-  text-shadow: 0 0 5px rgba(0, 255, 153, 0.4),
-                0 0 12px rgba(0, 255, 153, 0.2); /* Slightly reduced shadow */
+  text-shadow: 0 0 6px rgba(0, 255, 153, 0.4),
+                0 0 14px rgba(0, 255, 153, 0.2);
   transition: text-shadow 0.4s ease, color 0.4s ease;
 }
 
 .site-header .creator-credit:hover {
-  text-shadow: 0 0 8px rgba(0, 255, 153, 0.8),
-                0 0 16px rgba(0, 255, 153, 0.6); /* Slightly reduced shadow */
+  text-shadow: 0 0 10px rgba(0, 255, 153, 0.8),
+                0 0 20px rgba(0, 255, 153, 0.6);
   color: #bfffd6;
 }
 
 .logo-glow-container {
   display: inline-block;
-  padding: 4px; /* Adjusted from 5px */
+  padding: 5px; /* Reverted to original */
   background-color: transparent !important;
   border: none !important;
 }
 
 .header-logo.glow-effect {
   filter:
-    drop-shadow(0 0 3px #00ff00) /* Adjusted glow */
-    drop-shadow(0 0 5px #00cc00)
-    drop-shadow(0 0 7px #008800);
+    drop-shadow(0 0 4px #00ff00)
+    drop-shadow(0 0 6px #00cc00)
+    drop-shadow(0 0 8px #008800);
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
   -webkit-filter:
-    drop-shadow(0 0 7px #00ff00)
-    drop-shadow(0 0 12px #00cc00)
-    drop-shadow(0 0 18px #008800);
+    drop-shadow(0 0 8px #00ff00)
+    drop-shadow(0 0 15px #00cc00)
+    drop-shadow(0 0 20px #008800);
 }
 
 .site-header {
-  /* This rule is duplicated, let's ensure the adjusted one is kept and remove redundancy if any */
-  display: flex;
-  align-items: center;
-  gap: 12px; /* Reverted to 12px for header gap for better spacing */
-  padding: 10px 18px; /* Ensure this matches the specific adjustment above */
+  /* This rule is duplicated, let's keep the most specific one that's already defined above */
+  /* display: flex; */
+  /* align-items: center; */
+  /* gap: 15px; */
+  /* padding: 15px; */
 }
 
 /* --- Enhanced Resource Container Animations --- */
@@ -522,11 +522,11 @@ textarea#input:focus {
   background-color: #1e1e1e;
   border: 1px solid #444;
   border-radius: 12px;
-  padding: 20px 15px; /* Adjusted from 25px 18px */
-  margin: 30px auto; /* Adjusted from 35px */
+  padding: 25px 18px; /* Reverted closer to original padding */
+  margin: 35px auto; /* Reverted closer to original margin */
   width: 90%;
-  max-width: 800px; /* Adjusted from 850px */
-  box-shadow: 0 0 9px rgba(0, 255, 255, 0.1); /* Slightly reduced shadow */
+  max-width: 850px; /* Adjusted to fit within the new content-wrapper max-width */
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
   color: #f0f0f0;
   font-family: 'Space Mono', monospace;
   line-height: 1.6;
@@ -545,11 +545,11 @@ textarea#input:focus {
 
 .resource-container h2 {
   font-family: 'Space Mono', monospace;
-  font-size: 1.6rem; /* Adjusted from 1.7rem */
+  font-size: 1.7rem; /* Reverted closer to original */
   color: #00ffff;
   text-align: center;
-  margin-bottom: 18px; /* Adjusted from 20px */
-  text-shadow: 0 0 7px #00ffff, 0 0 12px #00ffffb0; /* Slightly reduced shadow */
+  margin-bottom: 20px;
+  text-shadow: 0 0 8px #00ffff, 0 0 15px #00ffffb0;
 }
 
 .resource-container ul {
@@ -559,14 +559,14 @@ textarea#input:focus {
 }
 
 .resource-container li {
-  margin-bottom: 10px; /* Adjusted from 12px */
-  line-height: 1.4; /* Slightly reduced line height */
-  font-size: 1rem; /* Adjusted from 1.05rem */
+  margin-bottom: 12px;
+  line-height: 1.5; /* Reverted to original line height */
+  font-size: 1.05rem; /* Reverted closer to original */
   background-color: rgba(40, 40, 40, 0.7);
-  padding: 7px 10px; /* Adjusted from 8px 12px */
+  padding: 10px 15px; /* Reverted to original padding */
   border-radius: 8px;
   border: 1px solid #3d3d3d;
-  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.2); /* Slightly reduced shadow */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
   opacity: 0;
   transform: translateY(10px);
@@ -583,68 +583,68 @@ textarea#input:focus {
 
 .resource-container li:hover {
   background-color: rgba(50, 50, 50, 0.8);
-  box-shadow: 0 3px 10px rgba(0, 255, 255, 0.15); /* Slightly reduced shadow */
+  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.15);
 }
 
 .resource-container a {
   color: #00ff88;
   text-decoration: none;
   font-weight: bold;
-  text-shadow: 0 0 4px #00ff88, 0 0 8px #00aa00; /* Slightly reduced shadow */
+  text-shadow: 0 0 5px #00ff88, 0 0 10px #00aa00;
   transition: text-shadow 0.3s ease;
 }
 
 .resource-container a:hover {
   text-decoration: underline;
-  text-shadow: 0 0 7px #00ff88, 0 0 12px #00aa00, 0 0 18px #00ff88; /* Slightly reduced shadow */
+  text-shadow: 0 0 8px #00ff88, 0 0 15px #00aa00, 0 0 20px #00ff88;
 }
 
 .resource-container li .description {
   color: #ccc;
   font-family: 'Space Mono', monospace;
-  font-size: 0.95rem; /* Adjusted from 1rem */
-  margin-left: 5px; /* Adjusted from 6px */
+  font-size: 1.05rem; /* Reverted closer to original */
+  margin-left: 8px; /* Reverted to original */
 }
 
 /* MEDIA QUERY FOR SMALLER SCREENS */
 @media (max-width: 768px) {
   .main-title {
-    font-size: 1.4rem; /* Adjusted from 1.6rem */
+    font-size: 1.8rem; /* Reverted to original */
   }
 
   .slide {
-    min-width: 300px; /* Reverted closer to original for better size on mobile */
-    min-height: 400px; /* Reverted closer to original for better size on mobile */
-    padding: 18px 12px; /* Adjusted */
+    min-width: 300px; /* Original size, good for mobile */
+    min-height: 400px; /* Original size, good for mobile */
+    padding: 30px 20px; /* Reverted to original */
   }
 
   .slide div {
-    font-size: 1.4rem; /* Adjusted from 1.5rem */
+    font-size: 1.8rem; /* Reverted to original */
   }
 
   .site-header h1 {
-    font-size: 0.9rem; /* Adjusted from 1rem */
+    font-size: 1.1rem; /* Reverted to original */
   }
 
   .resource-container {
     width: 95%;
-    padding: 15px 10px; /* Adjusted from 18px 12px */
-    margin: 20px auto; /* Adjusted from 25px */
+    padding: 20px 15px; /* Original padding */
+    margin: 30px auto; /* Original margin */
   }
 
   .resource-container h2 {
-    font-size: 1.3rem; /* Adjusted from 1.4rem */
+    font-size: 1.6rem; /* Original size */
   }
 
   .resource-container li {
-    font-size: 0.9rem; /* Adjusted from 0.95rem */
+    font-size: 1rem; /* Original size */
   }
   .resource-container li .description {
-    font-size: 0.9rem; /* Adjusted from 0.95rem */
+    font-size: 1rem; /* Original size */
   }
 /* Custom scrollbar for the slideshow */
 #slideshow::-webkit-scrollbar {
-  height: 7px; /* Slimmer horizontal scrollbar */
+  height: 8px; /* Slim horizontal scrollbar */
 }
 
 #slideshow::-webkit-scrollbar-track {
@@ -652,19 +652,19 @@ textarea#input:focus {
 }
 
 #slideshow::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 255, 0.4); /* Slightly less intense neon blue thumb */
+  background: rgba(0, 255, 255, 0.5); /* Neon blue thumb */
   border-radius: 10px;
-  box-shadow: 0 0 8px rgba(0, 255, 255, 0.6); /* Slightly less intense shadow */
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
 }
 
 #slideshow::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 255, 255, 0.7); /* Slightly less intense hover */
-  box-shadow: 0 0 12px rgba(0, 255, 255, 0.8); /* Slightly less intense hover shadow */
+  background: rgba(0, 255, 255, 0.8);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.9);
 }
 
 /* Firefox Support */
 #slideshow {
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 255, 255, 0.4) transparent; /* Matching adjusted webkit scrollbar */
+  scrollbar-color: rgba(0, 255, 255, 0.5) transparent;
 }
 }
