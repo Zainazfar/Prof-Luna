@@ -190,7 +190,7 @@ body::after {
   margin-bottom: 28px;
   color: #f8f8f8;
   text-align: center;
-  font-size: 2.4rem;
+  font-size: 2.2rem; /* Slightly reduced from 2.4rem */
   letter-spacing: 1px;
   font-weight: 700;
   text-shadow: 0 0 10px #0ff, 0 0 20px #00ffffb0;
@@ -204,6 +204,8 @@ body::after {
   gap: 16px;
   position: relative;
   z-index: 10;
+  max-width: 800px; /* Added to constrain container width */
+  margin: 0 auto; /* Center the container */
 }
 
 #examples {
@@ -214,7 +216,7 @@ body::after {
 
 #examples li {
   margin-bottom: 12px;
-  padding: 16px 22px;
+  padding: 14px 18px; /* Reduced from 16px 22px */
   border: 1px solid #3d3d3d;
   border-radius: 10px;
   background-color: #252525;
@@ -224,6 +226,9 @@ body::after {
   position: relative;
   z-index: 10;
   text-shadow: 0 0 3px #0f0;
+  width: 90%; /* Constrain width */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #examples li:hover {
@@ -306,18 +311,20 @@ body::after {
 }
 
 textarea#input {
-  width: 100%;
-  padding: 16px 20px;
+  width: 90%; /* Matches example buttons */
+  max-width: 500px; /* Added max-width */
+  padding: 14px 18px; /* Reduced from 16px 20px */
   border: 1px solid #444;
   border-radius: 10px;
   background-color: #2c2c2c;
   color: #f1f1f1;
-  margin-top: 10px;
+  margin: 10px auto 0; /* Centered */
   min-height: 110px;
   resize: vertical;
   transition: all 0.3s ease;
   position: relative;
   z-index: 10;
+  display: block; /* Ensures centering works */
 }
 
 textarea#input:focus {
@@ -353,8 +360,9 @@ textarea#input:focus {
 .quiz-option {
   font-family: 'Space Mono', monospace;
   display: block;
-  width: 100%;
-  margin: 10px 0;
+  width: 90%; /* Reduced width */
+  max-width: 500px; /* Added max-width */
+  margin: 10px auto; /* Centered */
   padding: 12px 18px;
   border: 1px solid #3d3d3d;
   border-radius: 10px;
@@ -381,9 +389,10 @@ textarea#input:focus {
 
 .quiz-btn {
   display: inline-block;
-  width: 200px;
+  width: auto; /* Changed from fixed 200px */
+  min-width: 150px; /* Minimum width */
   text-align: center;
-  padding: 14px 24px;
+  padding: 12px 20px; /* Reduced from 14px 24px */
   background: #00ffff;
   color: #111;
   border: 2px solid #00ffff;
@@ -409,7 +418,7 @@ textarea#input:focus {
 
 .send-btn {
   display: inline-block;
-  padding: 12px 24px;
+  padding: 10px 20px; /* Reduced from 12px 24px */
   background: linear-gradient(135deg, #00ff88, #00ffaa);
   color: #111;
   border: none;
@@ -422,6 +431,8 @@ textarea#input:focus {
   cursor: pointer;
   margin: 10px 0;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: auto; /* Changed from fixed width */
+  min-width: 120px; /* Added minimum width */
 }
 
 .send-btn:hover {
@@ -598,6 +609,32 @@ textarea#input:focus {
   margin-left: 8px;
 }
 
+/* Custom scrollbar for the slideshow */
+#slideshow::-webkit-scrollbar {
+  height: 8px;
+}
+
+#slideshow::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#slideshow::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 255, 0.5);
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+}
+
+#slideshow::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 255, 0.8);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.9);
+}
+
+/* Firefox Support */
+#slideshow {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 255, 255, 0.5) transparent;
+}
+
 /* MEDIA QUERY FOR SMALLER SCREENS */
 @media (max-width: 768px) {
   .main-title {
@@ -629,31 +666,25 @@ textarea#input:focus {
   .resource-container li .description {
     font-size: 1rem;
   }
-/* Custom scrollbar for the slideshow */
-#slideshow::-webkit-scrollbar {
-  height: 8px; /* Slim horizontal scrollbar */
-}
 
-#slideshow::-webkit-scrollbar-track {
-  background: transparent; /* Transparent track */
-}
+  /* Adjust buttons for mobile */
+  #examples li {
+    width: 95%;
+    padding: 12px 16px;
+  }
 
-#slideshow::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 255, 0.5); /* Neon blue thumb */
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
-}
+  textarea#input {
+    width: 95%;
+    padding: 12px 16px;
+  }
 
-#slideshow::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 255, 255, 0.8);
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.9);
-}
+  .quiz-option {
+    width: 95%;
+    padding: 10px 16px;
+  }
 
-/* Firefox Support */
-#slideshow {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 255, 255, 0.5) transparent;
-}
-
-
+  .quiz-btn, .send-btn {
+    padding: 10px 18px;
+    min-width: 130px;
+  }
 }
