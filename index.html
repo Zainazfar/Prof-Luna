@@ -41,6 +41,62 @@
         box-shadow: 0 0 24px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.6);
         background: linear-gradient(135deg, #33ffff, #66ffff);
       }
+
+      /* 🔥 BIGGER SLIDE STYLING */
+      #slideshow-wrapper {
+        display: flex;
+        justify-content: center;
+        margin: 2rem 0;
+      }
+
+      #slideshow {
+        width: 90%; /* Wider slides */
+        max-width: 1200px; /* Limit max width for big screens */
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+        background: linear-gradient(135deg, #0ff2ff, #00e1e1);
+        padding: 2rem;
+        animation: fadeIn 0.8s ease forwards;
+      }
+
+      .slide {
+        text-align: center;
+      }
+
+      .slide h2 {
+        font-size: 2.5rem; /* Bigger title */
+        margin-bottom: 1rem;
+        color: #0f0f0f;
+      }
+
+      .slide p {
+        font-size: 1.3rem;
+        color: #333;
+        line-height: 1.8;
+      }
+
+      /* Resources Styling */
+      #resources-section {
+        margin-top: 3rem;
+        text-align: center;
+      }
+
+      #resources-section h2 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: #00ffff;
+      }
+
+      #resources-section p {
+        color: #999;
+        font-style: italic;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+      }
     </style>
 
     <script type="importmap">
@@ -94,7 +150,6 @@
       <!-- Slides section first -->
       <section id="slideshow-wrapper">
         <div id="slideshow" hidden>
-          <!-- Example slide for testing -->
           <div class="slide">
             <h2>Slide 1: Welcome to Professor Luna</h2>
             <p>This is a placeholder slide. Replace this with dynamic content later.</p>
@@ -139,49 +194,10 @@
         }
 
         setTimeout(() => {
-          document.querySelector('.main-title').classList.add('loaded');
-          document.querySelector('.site-header').classList.add('loaded');
-          document.querySelectorAll('.container > *:not(h1)').forEach(el => {
-            el.classList.add('loaded');
-          });
+          document.getElementById('slideshow').hidden = false;
+          document.getElementById('resources-section').style.display = 'block';
         }, 100);
-
-        // For testing: show slides and resources
-        document.getElementById('slideshow').hidden = false;
-        document.getElementById('resources-section').style.display = 'block';
-      });
-
-      document.getElementById('surprise-me')?.addEventListener('click', () => {
-        const randomTopics = [
-          "Explain how black holes work in simple terms",
-          "Explain quantum computing like I'm 5",
-          "Explain why the sky is blue",
-          "Explain how airplanes stay in the air",
-          "Explain blockchain technology simply",
-          "Explain photosynthesis step by step",
-          "Explain how GPS works",
-          "Explain why we dream at night",
-          "Explain how vaccines work",
-          "Explain the theory of relativity simply",
-          "Explain how the internet works",
-          "Explain what dark matter is",
-          "Explain how nuclear power plants work",
-          "Explain the water cycle",
-          "Explain how cryptocurrencies work"
-        ];
-        const randomTopic = randomTopics[Math.floor(Math.random() * randomTopics.length)];
-        document.getElementById('input').value = randomTopic;
-
-        const event = new KeyboardEvent('keydown', {
-          key: 'Enter',
-          code: 'Enter',
-          keyCode: 13,
-          which: 13,
-          bubbles: true
-        });
-        document.getElementById('input').dispatchEvent(event);
       });
     </script>
   </body>
 </html>
-
