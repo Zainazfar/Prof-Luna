@@ -41,6 +41,44 @@
         box-shadow: 0 0 24px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.6);
         background: linear-gradient(135deg, #33ffff, #66ffff);
       }
+
+      /* Spinner Styles */
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(0, 255, 255, 0.3);
+        border-top: 4px solid #00ffff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+        display: none;
+      }
+
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 10, 15, 0.9);
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .loading-overlay p {
+        color: #00ffff;
+        margin-top: 20px;
+        font-family: 'Space Mono', monospace;
+        text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
     </style>
 
     <script type="importmap">
@@ -87,21 +125,16 @@
         <button id="surprise-me" class="surprise-btn">🎲 Surprise Me!</button>
         <button id="start-quiz" class="quiz-btn">🧠 Start Quiz</button>
       </div>
-      <!-- Add this right after the action buttons div -->
-      <div class="action-buttons">
-  <!-- ... your existing buttons ... -->
-      </div>
 
-<!-- Loading spinner -->
-      <div id="loading-spinner" class="spinner" style="display: none; margin: 2rem auto;"></div>
+      <!-- Loading spinner (for quick operations) -->
+      <div id="loading-spinner" class="spinner"></div>
 
       <div id="output"></div>
       <div id="error" hidden></div>
 
-      <!-- Slides section first -->
+      <!-- Slides section -->
       <section id="slideshow-wrapper">
         <div id="slideshow" hidden>
-          <!-- Example slide for testing -->
           <div class="slide">
             <h2>Slide 1: Welcome to Professor Luna</h2>
             <p>This is a placeholder slide. Replace this with dynamic content later.</p>
@@ -109,19 +142,24 @@
         </div>
       </section>
 
-      <!-- Resources section BELOW slides -->
+      <!-- Resources section -->
       <section id="resources-section" style="display: none;">
         <div class="resource-container">
           <h2>Further Reading and Resources</h2>
           <ul id="resources-list"></ul>
         </div>
       </section>
-
     </main>
 
     <section id="quiz-wrapper" hidden>
       <div id="quiz-container" class="quiz-container"></div>
     </section>
+
+    <!-- Loading Overlay (for major operations) -->
+    <div id="loading-overlay" class="loading-overlay">
+      <div class="spinner"></div>
+      <p>Professor Luna is thinking...</p>
+    </div>
 
     <script src="dev.env.js"></script>
     <script type="module" src="index.js"></script>
@@ -190,4 +228,3 @@
     </script>
   </body>
 </html>
-
