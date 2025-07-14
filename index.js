@@ -5,18 +5,23 @@
 import { marked } from 'marked';
 
 async function callGenerateAPI(prompt) {
-  const response = await fetch('/api/generate', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt }),
-  });
+  showLoading();
+  try {
+    const response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt }),
+    });
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch from server');
+    if (!response.ok) {
+      throw new Error('Failed to fetch from server');
+    }
+
+    const data = await response.json();
+    return data.text;
+  } finally {
+    hideLoading();
   }
-
-  const data = await response.json();
-  return data.text;
 }
 
 const userInput = document.querySelector('#input');
@@ -30,6 +35,8 @@ const startQuizBtn = document.querySelector('#start-quiz');
 const sendPromptBtn = document.querySelector('#send-prompt');
 const resourcesSection = document.querySelector('#resources-section');
 const resourcesList = document.querySelector('#resources-list');
+const loadingSpinner = document.querySelector('#loading-spinner');
+const loadingOverlay = document.querySelector('#loading-overlay');
 
 if (
   !userInput ||
@@ -44,6 +51,20 @@ if (
 ) {
   throw new Error('One or more required DOM elements are missing.');
 }
+
+// Loading state utilities
+const showLoading = (useOverlay = false) => {
+  if (useOverlay && loadingOverlay) {
+    loadingOverlay.style.display = 'flex';
+  } else if (loadingSpinner) {
+    loadingSpinner.style.display = 'block';
+  }
+};
+
+const hideLoading = () => {
+  if (loadingOverlay) loadingOverlay.style.display = 'none';
+  if (loadingSpinner) loadingSpinner.style.display = 'none';
+};
 
 const professorInstructions = `
 You are Professor Luna, an experienced teacher who loves explaining concepts using fun metaphors, mnemonic devices and analogies.
@@ -153,7 +174,6 @@ function parseResourcesMarkdown(markdown) {
 }
 
 function displayResources(resources) {
-  // Save current scroll position
   const scrollPosition = window.scrollY || document.documentElement.scrollTop;
   
   resourcesList.innerHTML = '';
@@ -164,7 +184,6 @@ function displayResources(resources) {
   
   resources.forEach((resource, index) => {
     const listItem = document.createElement('li');
-    // Set CSS custom property for staggered animation
     listItem.style.setProperty('--item-index', index);
     
     const link = document.createElement('a');
@@ -182,21 +201,20 @@ function displayResources(resources) {
     resourcesList.appendChild(listItem);
   });
 
-  // Restore scroll position after making resources visible
   requestAnimationFrame(() => {
     resourcesSection.classList.add('visible');
     window.scrollTo(0, scrollPosition);
   });
 }
 
-// Prevent focus-related scrolling
 resourcesSection.addEventListener('focusin', (e) => {
-  if (e.target.tagName === 'A') return; // Allow focus on links
+  if (e.target.tagName === 'A') return;
   e.preventDefault();
   e.stopPropagation();
 });
 
 async function generate(message) {
+  showLoading(true);
   userInput.disabled = true;
   const initialScroll = window.scrollY;
 
@@ -269,12 +287,14 @@ async function generate(message) {
     quizWrapper.setAttribute('hidden', 'true');
     resourcesSection.classList.remove('visible');
   } finally {
+    hideLoading();
     userInput.disabled = false;
     window.scrollTo(0, initialScroll);
   }
 }
 
 async function startQuiz() {
+  showLoading(true);
   const initialScroll = window.scrollY;
   
   quizContainer.innerHTML = '';
@@ -310,6 +330,8 @@ async function startQuiz() {
     const msg = parseError(e);
     quizContainer.innerHTML = `<p style="color: #ff5555;">Failed to load quiz: ${msg}</p>`;
     resourcesSection.classList.remove('visible');
+  } finally {
+    hideLoading();
   }
 }
 
