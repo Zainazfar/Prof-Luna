@@ -238,51 +238,99 @@ body::after {
   text-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 20px #0f0;
 }
 
+/* --- Enhanced Slideshow Animations --- */
 #slideshow {
   display: flex;
-  overflow-x: scroll;
+  flex-direction: row;
+  overflow-x: auto;
   scroll-snap-type: x mandatory;
-  gap: 16px;
-  padding: 10px;
-  background: rgba(33, 33, 33, 0.9);
-  border-radius: 10px;
-  box-shadow: 0 6px 20px rgba(0, 255, 255, 0.2);
-  max-width: 100%;
+  overscroll-behavior-x: contain;
+  gap: 24px;
+  margin: 25px auto;
+  padding: 16px;
+  border: 1px solid #3d3d3d;
+  border-radius: 12px;
+  background-color: rgba(33, 33, 33, 0.85);
+  box-shadow: 0 6px 16px rgba(0, 255, 255, 0.15);
+  max-width: 100%
+  margin-bottom: 40px;
+  z-index: 10;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.6s ease-in-out, visibility 0.6s step-end;
+}
+
+#slideshow[hidden] {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s ease-in-out, visibility 0.6s step-start;
 }
 
 .slide {
-  flex: 0 0 90%; /* Each slide takes 90% of viewport width */
-  scroll-snap-align: center;
-  background: #1e1e1e;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.3);
-  padding: 20px;
-  text-align: center;
+  border: 1px solid #444;
+  padding: 30px 20px;
   font-family: 'Indie Flower', cursive;
-  font-size: 1.5rem;
-  color: #f1f1f1;
-  line-height: 1.8;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  scroll-snap-align: center;
+  background-color: #1e1e1e;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 800px;
+  max-width: 650px;
+  min-height: 500px;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  z-index: 10;
+  opacity: 0;
+  transform: translateY(20px) scale(0.98);
+  animation: slideAppear 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--slide-index) * 0.15s);
+}
+
+@keyframes slideAppear {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .slide:hover {
-  transform: scale(1.02);
-  box-shadow: 0 6px 25px rgba(0, 255, 255, 0.4);
+  transform: translateY(-8px) scale(1.02) !important;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
 }
 
-/* 📱 Mobile adjustments */
-@media (max-width: 768px) {
-  .slide {
-    flex: 0 0 95%;
-    font-size: 1.3rem;
-  }
+.slide div {
+  font-size: 1.8rem;
+  text-align: center;
+  margin-top: 20px;
+  color: #f0f0f0;
+  line-height: 2;
 }
 
-@media (max-width: 480px) {
-  .slide {
-    flex: 0 0 100%; /* Fill entire screen on tiny phones */
-    font-size: 1.1rem;
-  }
+textarea#input {
+  width: 90%; /* Reduced from 95% */
+  max-width: 600px;
+  padding: 16px 20px;
+  border: 1px solid #444;
+  border-radius: 10px;
+  background-color: #2c2c2c;
+  color: #f1f1f1;
+  margin: 10px auto 0;
+  min-height: 110px;
+  resize: vertical;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 10;
+  display: block;
+}
+
+textarea#input:focus {
+  outline: none;
+  border-color: #66b2ff;
+  box-shadow: 0 0 0 3px rgba(102, 178, 255, 0.4);
 }
 
 #quiz-wrapper {
