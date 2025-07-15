@@ -275,8 +275,8 @@ body::after {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-width: 800px;
-  max-width: 650px;
+  width: 800px; /* default desktop width */
+  max-width: 90%;
   min-height: 500px;
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -334,29 +334,28 @@ textarea#input:focus {
 /* 📱 Mobile Fixes */
 @media (max-width: 768px) {
   .slide {
-    min-width: 90%; /* Slides shrink on mobile */
-    max-width: 90%;
+    width: 95%; /* Make slides almost full screen on tablets/phones */
     min-height: 300px;
     padding: 20px 15px;
   }
 
   .slide div {
-    font-size: 1.2rem; /* Text scales down */
+    font-size: 1.3rem;
+    line-height: 1.6;
   }
 }
 
 @media (max-width: 480px) {
   .slide {
-    min-width: 95%;
-    max-width: 95%;
+    width: 100%;
     min-height: 250px;
   }
 
   .slide div {
-    font-size: 1rem;
+    font-size: 1.1rem;
+    line-height: 1.5;
   }
 }
-
 
 #quiz-wrapper {
   margin-top: 30px;
