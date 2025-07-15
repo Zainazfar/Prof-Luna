@@ -226,7 +226,7 @@ body::after {
   position: relative;
   z-index: 10;
   text-shadow: 0 0 3px #0f0;
-  width: 90%; /* Reduced from 95% */
+  width: 90%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -245,14 +245,14 @@ body::after {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   overscroll-behavior-x: contain;
-  gap: 24px;
+  gap: 16px;
   margin: 25px auto;
-  padding: 16px;
+  padding: 12px;
   border: 1px solid #3d3d3d;
   border-radius: 12px;
   background-color: rgba(33, 33, 33, 0.85);
   box-shadow: 0 6px 16px rgba(0, 255, 255, 0.15);
-  max-width: 100%
+  max-width: 100%;
   margin-bottom: 40px;
   z-index: 10;
   opacity: 1;
@@ -268,7 +268,7 @@ body::after {
 
 .slide {
   border: 1px solid #444;
-  padding: 30px 20px;
+  padding: 20px;
   font-family: 'Indie Flower', cursive;
   scroll-snap-align: center;
   background-color: #1e1e1e;
@@ -277,9 +277,9 @@ body::after {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-width: 800px;
+  min-width: 600px;
   max-width: 650px;
-  min-height: 500px;
+  min-height: 400px;
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   position: relative;
@@ -311,7 +311,7 @@ body::after {
 }
 
 textarea#input {
-  width: 90%; /* Reduced from 95% */
+  width: 90%;
   max-width: 600px;
   padding: 16px 20px;
   border: 1px solid #444;
@@ -360,7 +360,7 @@ textarea#input:focus {
 .quiz-option {
   font-family: 'Space Mono', monospace;
   display: block;
-  width: 90%; /* Reduced from 95% */
+  width: 90%;
   max-width: 600px;
   margin: 10px auto;
   padding: 14px 20px;
@@ -390,7 +390,7 @@ textarea#input:focus {
 .quiz-btn {
   display: inline-block;
   width: auto;
-  min-width: 160px; /* Reduced from 180px */
+  min-width: 160px;
   text-align: center;
   padding: 14px 24px;
   background: #00ffff;
@@ -432,7 +432,7 @@ textarea#input:focus {
   margin: 10px 0;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   width: auto;
-  min-width: 144px; /* Reduced from 160px (10% reduction) */
+  min-width: 144px;
 }
 
 .send-btn:hover {
@@ -638,8 +638,10 @@ textarea#input:focus {
   }
 
   .slide {
-    min-width: 300px;
-    min-height: 400px;
+    min-width: 90%;
+    max-width: 100%;
+    min-height: 300px;
+    padding: 15px;
   }
 
   .site-header h1 {
@@ -665,56 +667,57 @@ textarea#input:focus {
 
   /* Adjust buttons for mobile */
   #examples li {
-    width: 92%; /* Reduced from 96% */
+    width: 92%;
     padding: 14px 18px;
   }
 
   textarea#input {
-    width: 92%; /* Reduced from 96% */
+    width: 92%;
     padding: 14px 18px;
   }
 
   .quiz-option {
-    width: 92%; /* Reduced from 96% */
+    width: 92%;
     padding: 12px 18px;
   }
+
   /* Compact spinner */
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid rgba(0, 255, 255, 0.3);
-  border-top: 3px solid #00ffff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 20px auto;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
-}
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(0, 255, 255, 0.3);
+    border-top: 3px solid #00ffff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+  }
 
-/* Full-screen overlay */
-.loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 10, 15, 0.9);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
+  /* Full-screen overlay */
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 10, 15, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
 
-.loading-text {
-  color: #00ffff;
-  margin-top: 20px;
-  text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
-  font-family: 'Space Mono', monospace;
-}
+  .loading-text {
+    color: #00ffff;
+    margin-top: 20px;
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+    font-family: 'Space Mono', monospace;
+  }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); box-shadow: 0 0 10px rgba(0, 255, 255, 0.7); }
-  50% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.9); }
-  100% { transform: rotate(360deg); box-shadow: 0 0 10px rgba(0, 255, 255, 0.7); }
-}
+  @keyframes spin {
+    0% { transform: rotate(0deg); box-shadow: 0 0 10px rgba(0, 255, 255, 0.7); }
+    50% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.9); }
+    100% { transform: rotate(360deg); box-shadow: 0 0 10px rgba(0, 255, 255, 0.7); }
+  }
 }
