@@ -246,18 +246,16 @@ body::after {
   scroll-snap-type: x mandatory;
   overscroll-behavior-x: contain;
   gap: 24px;
-  margin: 25px auto;
+  margin: 25px auto 40px auto;
   padding: 16px;
-  border: 1px solid #3d3d3d;
-  border-radius: 12px;
   background-color: rgba(33, 33, 33, 0.85);
   box-shadow: 0 6px 16px rgba(0, 255, 255, 0.15);
-  max-width: 100%
-  margin-bottom: 40px;
+  max-width: 100%;
   z-index: 10;
   opacity: 1;
   visibility: visible;
   transition: opacity 0.6s ease-in-out, visibility 0.6s step-end;
+  border-radius: 12px;
 }
 
 #slideshow[hidden] {
@@ -332,6 +330,33 @@ textarea#input:focus {
   border-color: #66b2ff;
   box-shadow: 0 0 0 3px rgba(102, 178, 255, 0.4);
 }
+
+/* 📱 Mobile Fixes */
+@media (max-width: 768px) {
+  .slide {
+    min-width: 90%; /* Slides shrink on mobile */
+    max-width: 90%;
+    min-height: 300px;
+    padding: 20px 15px;
+  }
+
+  .slide div {
+    font-size: 1.2rem; /* Text scales down */
+  }
+}
+
+@media (max-width: 480px) {
+  .slide {
+    min-width: 95%;
+    max-width: 95%;
+    min-height: 250px;
+  }
+
+  .slide div {
+    font-size: 1rem;
+  }
+}
+
 
 #quiz-wrapper {
   margin-top: 30px;
