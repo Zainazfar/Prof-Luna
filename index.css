@@ -240,95 +240,52 @@ body::after {
 
 #slideshow {
   display: flex;
-  flex-direction: row;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  overscroll-behavior-x: contain;
-  gap: 24px;
-  margin: 25px auto 40px auto;
-  padding: 16px;
-  background-color: rgba(33, 33, 33, 0.85);
-  box-shadow: 0 6px 16px rgba(0, 255, 255, 0.15);
-  max-width: 100%;
-  z-index: 10;
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.6s ease-in-out, visibility 0.6s step-end;
+  gap: 20px;
+  margin: 20px auto;
+  padding: 10px;
   border-radius: 12px;
-}
-
-#slideshow[hidden] {
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.6s ease-in-out, visibility 0.6s step-start;
+  background: rgba(33, 33, 33, 0.9);
+  box-shadow: 0 8px 20px rgba(0, 255, 255, 0.2);
+  max-width: 1200px;
 }
 
 .slide {
-  border: 1px solid #444;
-  padding: 30px 20px;
-  font-family: 'Indie Flower', cursive;
+  flex: 0 0 85%; /* Make slides take 85% of container width */
   scroll-snap-align: center;
-  background-color: #1e1e1e;
-  border-radius: 12px;
+  background: #1e1e1e;
+  color: #f1f1f1;
+  border-radius: 10px;
+  padding: 25px 20px;
+  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  flex: 0 0 auto; /* prevents stretching weirdness */
-  width: 80vw; /* make slides 80% of viewport width */
-  max-width: 800px; /* prevent them from being too big */
-  min-height: 400px;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-  position: relative;
-  z-index: 10;
-  opacity: 0;
-  transform: translateY(20px) scale(0.98);
-  animation: slideAppear 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  animation-delay: calc(var(--slide-index) * 0.15s);
-}
-
-@keyframes slideAppear {
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  text-align: center;
+  font-family: 'Indie Flower', cursive;
+  font-size: 1.5rem;
+  line-height: 1.8;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .slide:hover {
-  transform: translateY(-8px) scale(1.02) !important;
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  transform: scale(1.02);
+  box-shadow: 0 6px 25px rgba(0, 255, 255, 0.4);
 }
 
-.slide div {
-  font-size: 1.6rem;
-  text-align: center;
-  margin-top: 20px;
-  color: #f0f0f0;
-  line-height: 1.8;
-}
-
-/* 📱 Mobile Fixes */
+/* 📱 Mobile First */
 @media (max-width: 768px) {
   .slide {
-    width: 90vw; /* wider on smaller screens */
-    min-height: 300px;
-    padding: 20px 15px;
-  }
-
-  .slide div {
-    font-size: 1.3rem;
+    flex: 0 0 95%; /* Full width slides on small screens */
+    font-size: 1.2rem;
     line-height: 1.6;
   }
 }
 
 @media (max-width: 480px) {
   .slide {
-    width: 95vw; /* almost full screen */
-    min-height: 250px;
-  }
-
-  .slide div {
+    flex: 0 0 100%; /* Truly edge-to-edge slides on phones */
     font-size: 1.1rem;
     line-height: 1.5;
   }
