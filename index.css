@@ -257,6 +257,7 @@ body::after {
   z-index: 10;
   opacity: 1;
   transition: opacity 0.6s ease-in-out;
+  scroll-padding: 16px; /* Add padding for better mobile scrolling */
 }
 
 #slideshow[hidden] {
@@ -274,8 +275,8 @@ body::after {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-width: 400px; /* Keep for desktop */
-  max-width: 650px; /* Keep for desktop */
+  min-width: 400px; /* Desktop width */
+  max-width: 650px; /* Desktop width */
   min-height: 500px;
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
   transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
@@ -286,6 +287,30 @@ body::after {
   transform: translateY(15px);
   animation: slideAppear 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   animation-delay: calc(var(--slide-index) * 0.15s);
+  flex-shrink: 0; /* Prevent slides from shrinking */
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  #slideshow {
+    gap: 16px;
+    padding: 12px;
+    margin: 15px auto 30px;
+    scroll-padding: 12px;
+  }
+  
+  .slide {
+    min-width: calc(100vw - 56px); /* Full viewport width minus padding */
+    max-width: calc(100vw - 56px);
+    min-height: 400px;
+    padding: 20px 15px;
+  }
+  
+  .slide div {
+    font-size: 1.5rem;
+    line-height: 1.6;
+    margin-top: 15px;
+  }
 }
 
 @keyframes slideAppear {
@@ -329,6 +354,15 @@ textarea#input:focus {
   outline: none;
   border-color: #66b2ff;
   box-shadow: 0 0 0 3px rgba(102, 178, 255, 0.4);
+}
+
+/* Mobile input adjustments */
+@media (max-width: 768px) {
+  textarea#input {
+    width: calc(100% - 32px);
+    padding: 12px 16px;
+    min-height: 100px;
+  }
 }
 
 #quiz-wrapper {
