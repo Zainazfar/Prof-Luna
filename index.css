@@ -238,7 +238,6 @@ body::after {
   text-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 20px #0f0;
 }
 
-/* --- Enhanced Slideshow Animations --- */
 #slideshow {
   display: flex;
   flex-direction: row;
@@ -331,6 +330,26 @@ textarea#input:focus {
   outline: none;
   border-color: #66b2ff;
   box-shadow: 0 0 0 3px rgba(102, 178, 255, 0.4);
+}
+
+/* Mobile Fixes */
+@media (max-width: 768px) {
+  .slide {
+    min-width: 90%; /* Shrink slide width for mobile */
+    max-width: 95%;
+    min-height: 300px; /* Reduce height for small screens */
+    padding: 15px;
+  }
+
+  .slide div {
+    font-size: 1.4rem; /* Reduce text size */
+    line-height: 1.8;
+  }
+
+  textarea#input {
+    width: 95%;
+    padding: 14px 16px;
+  }
 }
 
 #quiz-wrapper {
