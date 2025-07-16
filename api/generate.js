@@ -1,25 +1,27 @@
 // api/generate.js
-let GoogleGenAI;
 
+// Dynamically import @google/genai
+let GoogleGenAI;
 (async () => {
-  // Dynamically import @google/genai (works in Vercel CommonJS)
-  const module = await import('@google/genai');
-  GoogleGenAI = module.GoogleGenAI;
+  const genaiModule = await import('@google/genai');
+  GoogleGenAI = genaiModule.default.GoogleGenAI || genaiModule.GoogleGenAI;
 })();
 
 // Initialize Gemini API with API key
 let ai;
-if (process.env.API_KEY) {
+const initAI = async () => {
+  if (!GoogleGenAI) {
+    const genaiModule = await import('@google/genai');
+    GoogleGenAI = genaiModule.default.GoogleGenAI || genaiModule.GoogleGenAI;
+  }
   ai = new GoogleGenAI({
-    apiKey: process.env.API_KEY,
+    apiKey: process.env.API_KEY || '', // fallback to empty string
   });
-} else {
-  console.error("⚠️ Missing API_KEY in environment variables!");
-}
+};
 
 // Model and config
 const MODEL_CONFIG = {
-  model: 'gemini-2.5-flash', // You can swap this with 'gemini-2.5-pro' if needed
+  model: 'gemini-2.5-flash', // You can change to gemini-2.5-pro if you prefer
   generationConfig: {
     responseMimeType: 'application/json',
     temperature: 0.7,
@@ -37,6 +39,10 @@ const MODEL_CONFIG = {
 // Function to generate content
 async function generateContent(prompt) {
   console.log(`🔮 Generating content for prompt: ${prompt.substring(0, 50)}...`);
+
+  if (!ai) {
+    await initAI();
+  }
 
   const result = await ai.models.generateContent({
     ...MODEL_CONFIG,
