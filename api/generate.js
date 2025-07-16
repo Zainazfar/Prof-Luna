@@ -8,7 +8,7 @@ const ai = new GoogleGenAI({
 
 // Model and config
 const MODEL_CONFIG = {
-  model: '// api/generate.js
+  model: 'gemini-2.5-flash',
 const { GoogleGenAI } = require('@google/genai');
 
 // Initialize Gemini API with API key
@@ -18,7 +18,7 @@ const ai = new GoogleGenAI({
 
 // Model and config
 const MODEL_CONFIG = {
-  model: '// api/generate.js
+  model: 'gemini-2.5-flash',
 const { GoogleGenAI } = require('@google/genai');
 
 // Initialize Gemini API with API key
