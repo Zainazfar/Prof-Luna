@@ -226,7 +226,7 @@ body::after {
   position: relative;
   z-index: 10;
   text-shadow: 0 0 3px #0f0;
-  width: 90%; /* Reduced from 95% */
+  width: 90%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -260,7 +260,7 @@ body::after {
 }
 
 #slideshow[hidden] {
-  display: none; /* Fully remove from layout flow when hidden */
+  display: none;
 }
 
 .slide {
@@ -274,8 +274,8 @@ body::after {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-width: 400px;
-  max-width: 650px;
+  min-width: 400px; /* Keep for desktop */
+  max-width: 650px; /* Keep for desktop */
   min-height: 500px;
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
   transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
@@ -283,7 +283,7 @@ body::after {
   position: relative;
   z-index: 10;
   opacity: 0;
-  transform: translateY(15px); /* Slight entrance animation */
+  transform: translateY(15px);
   animation: slideAppear 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   animation-delay: calc(var(--slide-index) * 0.15s);
 }
@@ -358,7 +358,7 @@ textarea#input:focus {
 .quiz-option {
   font-family: 'Space Mono', monospace;
   display: block;
-  width: 90%; /* Reduced from 95% */
+  width: 90%;
   max-width: 600px;
   margin: 10px auto;
   padding: 14px 20px;
@@ -388,7 +388,7 @@ textarea#input:focus {
 .quiz-btn {
   display: inline-block;
   width: auto;
-  min-width: 160px; /* Reduced from 180px */
+  min-width: 160px;
   text-align: center;
   padding: 14px 24px;
   background: #00ffff;
@@ -430,7 +430,7 @@ textarea#input:focus {
   margin: 10px 0;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   width: auto;
-  min-width: 144px; /* Reduced from 160px (10% reduction) */
+  min-width: 144px;
 }
 
 .send-btn:hover {
@@ -635,9 +635,30 @@ textarea#input:focus {
     font-size: 1.9rem;
   }
 
+  /* Key adjustments for mobile slideshow behavior */
+  #slideshow {
+    gap: 15px; /* Reduced gap for smaller screens */
+    padding: 10px; /* Reduced padding */
+  }
+
   .slide {
-    min-width: 300px;
-    min-height: 400px;
+    min-width: 85%; /* Allow slides to take up a large portion of the screen but not exceed it */
+    max-width: 85%; /* Ensure consistency */
+    min-height: 350px; /* Adjusted to be a bit smaller for mobile */
+    padding: 20px 15px; /* Reduced padding */
+    /* Ensure no unexpected scaling from hover effects on touch devices if not intended */
+    transform: none !important; /* Override desktop hover transform */
+    transition: none !important; /* Disable transition for more direct feel on touch */
+  }
+
+  .slide:hover {
+    transform: none !important; /* Neutralize hover for touch */
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.1); /* Consistent shadow with non-hover state */
+  }
+
+  .slide div {
+    font-size: 1.6rem; /* Slightly smaller font for mobile slides */
+    line-height: 1.8;
   }
 
   .site-header h1 {
@@ -663,17 +684,25 @@ textarea#input:focus {
 
   /* Adjust buttons for mobile */
   #examples li {
-    width: 92%; /* Reduced from 96% */
+    width: 92%;
     padding: 14px 18px;
   }
 
   textarea#input {
-    width: 92%; /* Reduced from 96% */
+    width: 92%;
     padding: 14px 18px;
   }
 
   .quiz-option {
-    width: 92%; /* Reduced from 96% */
+    width: 92%;
     padding: 12px 18px;
+  }
+
+  .quiz-btn, .send-btn {
+    min-width: unset; /* Allow buttons to shrink further if needed */
+    width: 85%; /* Make buttons take up more width on mobile for easier tapping */
+    max-width: 300px; /* Prevent them from becoming too wide on slightly larger mobile screens */
+    padding: 12px 15px; /* Adjusted padding to maintain a good height but also fit narrower screens */
+    font-size: 1rem; /* Slightly reduced font size for mobile buttons */
   }
 }
