@@ -1,27 +1,25 @@
 // api/generate.js
 
-// Dynamically import @google/genai
+// Dynamically import ESM-only @google/genai
 let GoogleGenAI;
-(async () => {
-  const genaiModule = await import('@google/genai');
-  GoogleGenAI = genaiModule.default.GoogleGenAI || genaiModule.GoogleGenAI;
-})();
+async function initGoogleGenAI() {
+  const mod = await import('@google/genai');
+  // If the module uses a default export, grab it
+  GoogleGenAI = mod.GoogleGenAI || mod.default.GoogleGenAI || mod.default;
+}
 
 // Initialize Gemini API with API key
 let ai;
-const initAI = async () => {
-  if (!GoogleGenAI) {
-    const genaiModule = await import('@google/genai');
-    GoogleGenAI = genaiModule.default.GoogleGenAI || genaiModule.GoogleGenAI;
-  }
+async function initAI() {
+  if (!GoogleGenAI) await initGoogleGenAI();
   ai = new GoogleGenAI({
     apiKey: process.env.API_KEY || '', // fallback to empty string
   });
-};
+}
 
 // Model and config
 const MODEL_CONFIG = {
-  model: 'gemini-2.5-flash', // You can change to gemini-2.5-pro if you prefer
+  model: 'gemini-2.5-flash', // Or change to gemini-2.5-pro if you want
   generationConfig: {
     responseMimeType: 'application/json',
     temperature: 0.7,
@@ -39,10 +37,7 @@ const MODEL_CONFIG = {
 // Function to generate content
 async function generateContent(prompt) {
   console.log(`🔮 Generating content for prompt: ${prompt.substring(0, 50)}...`);
-
-  if (!ai) {
-    await initAI();
-  }
+  if (!ai) await initAI();
 
   const result = await ai.models.generateContent({
     ...MODEL_CONFIG,
@@ -96,4 +91,5 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
 };
+
 
