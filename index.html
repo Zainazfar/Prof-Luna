@@ -227,8 +227,7 @@
       <div id="output"></div>
       <div id="error" hidden></div>
 
-      <!-- Flashcard Maker Section -->
-      <section id="flashcard-section" class="flashcard-maker" style="display:none;">
+      <section id="flashcard-section" class="flashcard-maker">
         <h2>🗂 Flashcard Maker</h2>
         <p>Enter terms and definitions separated by colons, one per line:</p>
         <textarea
@@ -241,15 +240,16 @@
       </section>
 
 
-      <!-- Slides section -->
       <section id="slideshow-wrapper">
         <div id="slideshow">
-          <!-- Slides will be dynamically added here by JavaScript -->
+          <div class="slide">
+            <h2>Slide 1: Welcome to Professor Luna</h2>
+            <p>This is a placeholder slide. Replace this with dynamic content later.</p>
+          </div>
         </div>
       </section>
 
-      <!-- Resources section -->
-      <section id="resources-section" style="display: none;">
+      <section id="resources-section">
         <div class="resource-container">
           <h2>Further Reading and Resources</h2>
           <ul id="resources-list"></ul>
@@ -261,7 +261,6 @@
       <div id="quiz-container" class="quiz-container"></div>
     </section>
 
-    <!-- Loading Overlay -->
     <div id="loading-overlay" class="loading-overlay">
       <div class="spinner"></div>
       <p>Professor Luna is thinking...</p>
