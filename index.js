@@ -428,58 +428,69 @@ sendPromptBtn?.addEventListener('click', async () => {
   if (message) {
     await generate(message);
   }
-  // Flashcard Maker Logic
-const openFlashcardsBtn = document.getElementById('open-flashcards');
-const flashcardSection = document.getElementById('flashcard-section');
-const topicInput = document.getElementById('topicInput');
-const generateButton = document.getElementById('generateButton');
-const flashcardsContainer = document.getElementById('flashcardsContainer');
-const errorMessage = document.getElementById('errorMessage');
+// FLASHCARD MAKER LOGIC
+const openFlashcardsBtn = document.querySelector('#open-flashcards');
+const flashcardSection = document.querySelector('#flashcard-section');
+const topicInput = document.querySelector('#topicInput');
+const generateButton = document.querySelector('#generateButton');
+const flashcardsContainer = document.querySelector('#flashcardsContainer');
+const errorMessage = document.querySelector('#errorMessage');
 
-// Show/hide flashcard maker
-openFlashcardsBtn?.addEventListener('click', () => {
-  flashcardSection.style.display = flashcardSection.style.display === 'none' ? 'block' : 'none';
-});
+// Toggle Flashcard Maker visibility
+if (openFlashcardsBtn && flashcardSection) {
+  openFlashcardsBtn.addEventListener('click', () => {
+    flashcardSection.style.display =
+      flashcardSection.style.display === 'none' ? 'block' : 'none';
+  });
+}
 
-// Generate flashcards
-generateButton?.addEventListener('click', async () => {
-  const topic = topicInput.value.trim();
-  if (!topic) {
-    errorMessage.textContent = '⚠️ Please enter a topic or some term: definition pairs.';
-    flashcardsContainer.innerHTML = '';
-    return;
-  }
-
-  errorMessage.textContent = '⏳ Generating flashcards...';
-  flashcardsContainer.innerHTML = '';
-  generateButton.disabled = true;
-
-  try {
-    const flashcardPrompt = `
-      Generate flashcards for the topic "${topic}".
-      Each flashcard should have:
-      - A term
-      - A concise definition
-      Format: "Term: Definition", one per line.
-      Example:
-      Photosynthesis: Process plants use to convert sunlight into energy.
-      Mitochondria: The powerhouse of the cell.
-    `;
-
-    const responseText = await callGenerateAPI(flashcardPrompt);
-
-    const lines = responseText.split('\n').filter(line => line.includes(':'));
-    if (lines.length === 0) {
-      errorMessage.textContent = '❌ No valid flashcards were generated. Try a different topic.';
+// Handle Generate Flashcards button
+if (generateButton) {
+  generateButton.addEventListener('click', async () => {
+    const topic = topicInput.value.trim();
+    if (!topic) {
+      errorMessage.textContent =
+        'Please enter a topic or some terms and definitions.';
+      flashcardsContainer.innerHTML = '';
       return;
     }
 
-    errorMessage.textContent = '';
-    lines.forEach((line, index) => {
-      const [term, ...defParts] = line.split(':');
-      const definition = defParts.join(':').trim();
+    errorMessage.textContent = 'Generating flashcards...';
+    flashcardsContainer.innerHTML = '';
+    generateButton.disabled = true;
 
-      if (term && definition) {
+    try {
+      const prompt = `Generate a list of flashcards for the topic: "${topic}". 
+Each flashcard should be formatted as "Term: Definition" (one per line). Example:
+Photosynthesis: The process by which green plants use sunlight to synthesize food.
+Gravity: The force that attracts a body toward the center of the earth.`;
+
+      const response = await callGenerateAPI(prompt);
+
+      if (!response) throw new Error('Empty response from server.');
+
+      const flashcards = response
+        .split('\n')
+        .map((line) => {
+          const [term, ...defParts] = line.split(':');
+          if (term && defParts.length) {
+            return {
+              term: term.trim(),
+              definition: defParts.join(':').trim(),
+            };
+          }
+          return null;
+        })
+        .filter((card) => card);
+
+      if (flashcards.length === 0) {
+        errorMessage.textContent =
+          'No valid flashcards were generated. Try a different topic.';
+        return;
+      }
+
+      errorMessage.textContent = '';
+      flashcards.forEach((flashcard, index) => {
         const cardDiv = document.createElement('div');
         cardDiv.classList.add('flashcard');
         cardDiv.dataset.index = index;
@@ -487,32 +498,30 @@ generateButton?.addEventListener('click', async () => {
         const cardInner = document.createElement('div');
         cardInner.classList.add('flashcard-inner');
 
-        const cardFront = document.createElement('div');
-        cardFront.classList.add('flashcard-front');
-        cardFront.textContent = term.trim();
+        const front = document.createElement('div');
+        front.classList.add('flashcard-front');
+        front.textContent = flashcard.term;
 
-        const cardBack = document.createElement('div');
-        cardBack.classList.add('flashcard-back');
-        cardBack.textContent = definition;
+        const back = document.createElement('div');
+        back.classList.add('flashcard-back');
+        back.textContent = flashcard.definition;
 
-        cardInner.appendChild(cardFront);
-        cardInner.appendChild(cardBack);
-        cardDiv.appendChild(cardInner);
-
+        cardInner.append(front, back);
+        cardDiv.append(cardInner);
         flashcardsContainer.appendChild(cardDiv);
 
-        // Flip effect
+        // Add flip animation
         cardDiv.addEventListener('click', () => {
           cardDiv.classList.toggle('flipped');
         });
-      }
-    });
-  } catch (err) {
-    console.error('Flashcard Error:', err);
-    errorMessage.textContent = `❌ Error: ${parseError(err)}`;
-  } finally {
-    generateButton.disabled = false;
-  }
-});
+      });
+    } catch (err) {
+      console.error('Flashcard generation error:', err);
+      errorMessage.textContent = `Error: ${err.message}`;
+    } finally {
+      generateButton.disabled = false;
+    }
+  });
+}
 
 });
