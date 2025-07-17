@@ -129,13 +129,19 @@
       <div id="error" hidden></div>
 
       <!-- Flashcard Maker Section -->
+<!-- Flashcard Maker Section -->
 <section id="flashcard-section" class="flashcard-maker" style="display:none;">
-  <h2>Flashcard Maker</h2>
-  <textarea id="topicInput" placeholder="Enter topic or term: definition pairs"></textarea>
+  <h2>🗂 Flashcard Maker</h2>
+  <p>Enter terms and definitions separated by colons, one per line:</p>
+  <textarea
+    id="topicInput"
+    placeholder="Example: Gravity: The force that attracts objects toward one another."
+  ></textarea>
   <button id="generateButton" class="send-btn">📄 Generate Flashcards</button>
   <div id="errorMessage" class="error-message"></div>
   <div id="flashcardsContainer" class="flashcards-container"></div>
 </section>
+
 
       <!-- Slides section -->
       <section id="slideshow-wrapper">
