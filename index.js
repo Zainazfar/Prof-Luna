@@ -428,4 +428,91 @@ sendPromptBtn?.addEventListener('click', async () => {
   if (message) {
     await generate(message);
   }
+  // Flashcard Maker Logic
+const openFlashcardsBtn = document.getElementById('open-flashcards');
+const flashcardSection = document.getElementById('flashcard-section');
+const topicInput = document.getElementById('topicInput');
+const generateButton = document.getElementById('generateButton');
+const flashcardsContainer = document.getElementById('flashcardsContainer');
+const errorMessage = document.getElementById('errorMessage');
+
+// Show/hide flashcard maker
+openFlashcardsBtn?.addEventListener('click', () => {
+  flashcardSection.style.display = flashcardSection.style.display === 'none' ? 'block' : 'none';
+});
+
+// Generate flashcards
+generateButton?.addEventListener('click', async () => {
+  const topic = topicInput.value.trim();
+  if (!topic) {
+    errorMessage.textContent = '⚠️ Please enter a topic or some term: definition pairs.';
+    flashcardsContainer.innerHTML = '';
+    return;
+  }
+
+  errorMessage.textContent = '⏳ Generating flashcards...';
+  flashcardsContainer.innerHTML = '';
+  generateButton.disabled = true;
+
+  try {
+    const flashcardPrompt = `
+      Generate flashcards for the topic "${topic}".
+      Each flashcard should have:
+      - A term
+      - A concise definition
+      Format: "Term: Definition", one per line.
+      Example:
+      Photosynthesis: Process plants use to convert sunlight into energy.
+      Mitochondria: The powerhouse of the cell.
+    `;
+
+    const responseText = await callGenerateAPI(flashcardPrompt);
+
+    const lines = responseText.split('\n').filter(line => line.includes(':'));
+    if (lines.length === 0) {
+      errorMessage.textContent = '❌ No valid flashcards were generated. Try a different topic.';
+      return;
+    }
+
+    errorMessage.textContent = '';
+    lines.forEach((line, index) => {
+      const [term, ...defParts] = line.split(':');
+      const definition = defParts.join(':').trim();
+
+      if (term && definition) {
+        const cardDiv = document.createElement('div');
+        cardDiv.classList.add('flashcard');
+        cardDiv.dataset.index = index;
+
+        const cardInner = document.createElement('div');
+        cardInner.classList.add('flashcard-inner');
+
+        const cardFront = document.createElement('div');
+        cardFront.classList.add('flashcard-front');
+        cardFront.textContent = term.trim();
+
+        const cardBack = document.createElement('div');
+        cardBack.classList.add('flashcard-back');
+        cardBack.textContent = definition;
+
+        cardInner.appendChild(cardFront);
+        cardInner.appendChild(cardBack);
+        cardDiv.appendChild(cardInner);
+
+        flashcardsContainer.appendChild(cardDiv);
+
+        // Flip effect
+        cardDiv.addEventListener('click', () => {
+          cardDiv.classList.toggle('flipped');
+        });
+      }
+    });
+  } catch (err) {
+    console.error('Flashcard Error:', err);
+    errorMessage.textContent = `❌ Error: ${parseError(err)}`;
+  } finally {
+    generateButton.disabled = false;
+  }
+});
+
 });
