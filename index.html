@@ -6,9 +6,11 @@
     <title>Explain Things with Professor Luna</title>
     <link rel="stylesheet" href="index.css" />
     <style>
+      /* Initial opacity for smooth loading */
       .container { opacity: 0; }
       .site-header { opacity: 0; }
 
+      /* Action Buttons Styling */
       .action-buttons {
         margin: 1rem 0;
         text-align: center;
@@ -32,7 +34,7 @@
         text-transform: uppercase;
         transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
         box-shadow: 0 0 12px rgba(0, 255, 255, 0.4), 0 0 24px rgba(0, 255, 255, 0.2);
-        width: 220px; 
+        width: 220px;
         text-align: center;
       }
 
@@ -50,7 +52,7 @@
         width: 100%;
         height: 100%;
         background: rgba(0, 10, 15, 0.9);
-        display: none;
+        display: none; /* Hidden by default */
         flex-direction: column;
         justify-content: center;
         align-items: center;
@@ -76,6 +78,103 @@
       @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
+      }
+
+      /* Flashcard specific styles (basic, you'll expand on this in index.css) */
+      .flashcard-maker {
+          padding: 20px;
+          background-color: #1a1a1a;
+          border-radius: 8px;
+          margin-top: 20px;
+          color: #eee;
+      }
+      .flashcard-maker h2 {
+          color: #00ffff;
+          text-align: center;
+          margin-bottom: 15px;
+      }
+      .flashcard-maker p {
+          text-align: center;
+          margin-bottom: 10px;
+      }
+      .flashcard-maker textarea {
+          width: calc(100% - 22px);
+          padding: 10px;
+          margin-bottom: 15px;
+          border-radius: 5px;
+          border: 1px solid #00ffff;
+          background-color: #2a2a2a;
+          color: #eee;
+          font-family: 'Space Mono', monospace;
+      }
+      .flashcard-maker .send-btn { /* Reusing send-btn style for generateButton */
+          display: block;
+          margin: 0 auto 20px auto;
+      }
+      .error-message {
+          color: #ff5555;
+          text-align: center;
+          margin-top: 10px;
+          font-weight: bold;
+      }
+      .flashcards-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 20px;
+          justify-content: center;
+          margin-top: 20px;
+      }
+      .flashcard {
+          width: 300px; /* Adjust as needed */
+          height: 200px; /* Adjust as needed */
+          perspective: 1000px; /* For 3D effect */
+          margin: 10px;
+          display: inline-block; /* Or use flexbox/grid for layout */
+          cursor: pointer;
+      }
+
+      .flashcard-inner {
+          width: 100%;
+          height: 100%;
+          text-align: center;
+          transition: transform 0.6s; /* Smooth transition for flipping */
+          transform-style: preserve-3d; /* Keep children in 3D space */
+          position: relative;
+      }
+
+      .flashcard.flipped .flashcard-inner {
+          transform: rotateY(180deg); /* Flip on Y-axis when 'flipped' class is active */
+      }
+
+      .flashcard-front,
+      .flashcard-back {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          backface-visibility: hidden; /* Hide the back of the card when facing away */
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 8px; /* Example styling */
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Example styling */
+          padding: 20px;
+          box-sizing: border-box;
+          font-family: 'Space Mono', monospace;
+      }
+
+      .flashcard-front {
+          background-color: #00ffff; /* Example styling */
+          color: #0f0f0f;
+          font-weight: bold;
+          font-size: 1.2em;
+      }
+
+      .flashcard-back {
+          background-color: #0f0f0f; /* Example styling */
+          color: #00ffff;
+          transform: rotateY(180deg); /* Initially rotated to be the back */
+          font-size: 0.9em;
+          text-align: left;
       }
     </style>
 
@@ -129,27 +228,23 @@
       <div id="error" hidden></div>
 
       <!-- Flashcard Maker Section -->
-<!-- Flashcard Maker Section -->
-<section id="flashcard-section" class="flashcard-maker" style="display:none;">
-  <h2>🗂 Flashcard Maker</h2>
-  <p>Enter terms and definitions separated by colons, one per line:</p>
-  <textarea
-    id="topicInput"
-    placeholder="Example: Gravity: The force that attracts objects toward one another."
-  ></textarea>
-  <button id="generateButton" class="send-btn">📄 Generate Flashcards</button>
-  <div id="errorMessage" class="error-message"></div>
-  <div id="flashcardsContainer" class="flashcards-container"></div>
-</section>
+      <section id="flashcard-section" class="flashcard-maker" style="display:none;">
+        <h2>🗂 Flashcard Maker</h2>
+        <p>Enter terms and definitions separated by colons, one per line:</p>
+        <textarea
+          id="topicInput"
+          placeholder="Example: Gravity: The force that attracts objects toward one another."
+        ></textarea>
+        <button id="generateButton" class="send-btn">📄 Generate Flashcards</button>
+        <div id="errorMessage" class="error-message"></div>
+        <div id="flashcardsContainer" class="flashcards-container"></div>
+      </section>
 
 
       <!-- Slides section -->
       <section id="slideshow-wrapper">
-        <div id="slideshow" hidden>
-          <div class="slide">
-            <h2>Slide 1: Welcome to Professor Luna</h2>
-            <p>This is a placeholder slide. Replace this with dynamic content later.</p>
-          </div>
+        <div id="slideshow">
+          <!-- Slides will be dynamically added here by JavaScript -->
         </div>
       </section>
 
@@ -177,9 +272,11 @@
 
     <script>
       document.addEventListener('DOMContentLoaded', () => {
+        // Smooth loading animation for main content
         document.querySelector('.container').style.opacity = '1';
         document.querySelector('.site-header').style.opacity = '1';
 
+        // Matrix rain background effect
         const matrixRain = document.querySelector('.matrix-rain');
         for (let i = 0; i < 100; i++) {
           const digit = document.createElement('span');
@@ -193,6 +290,7 @@
           matrixRain.appendChild(digit);
         }
 
+        // Add 'loaded' classes for initial animations
         setTimeout(() => {
           document.querySelector('.main-title').classList.add('loaded');
           document.querySelector('.site-header').classList.add('loaded');
@@ -201,43 +299,42 @@
           });
         }, 100);
 
-        // For testing: show slides and resources
-        document.getElementById('slideshow').hidden = false;
-        document.getElementById('resources-section').style.display = 'block';
-      });
+        // "Surprise Me!" button functionality
+        document.getElementById('surprise-me')?.addEventListener('click', () => {
+          const randomTopics = [
+            "Explain how black holes work in simple terms",
+            "Explain quantum computing like I'm 5",
+            "Explain why the sky is blue",
+            "Explain how airplanes stay in the air",
+            "Explain blockchain technology simply",
+            "Explain photosynthesis step by step",
+            "Explain how GPS works",
+            "Explain why we dream at night",
+            "Explain how vaccines work",
+            "Explain the theory of relativity simply",
+            "Explain how the internet works",
+            "Explain what dark matter is",
+            "Explain how nuclear power plants work",
+            "Explain the water cycle",
+            "Explain how cryptocurrencies work"
+          ];
+          const randomTopic = randomTopics[Math.floor(Math.random() * randomTopics.length)];
+          document.getElementById('input').value = randomTopic;
 
-      document.getElementById('surprise-me')?.addEventListener('click', () => {
-        const randomTopics = [
-          "Explain how black holes work in simple terms",
-          "Explain quantum computing like I'm 5",
-          "Explain why the sky is blue",
-          "Explain how airplanes stay in the air",
-          "Explain blockchain technology simply",
-          "Explain photosynthesis step by step",
-          "Explain how GPS works",
-          "Explain why we dream at night",
-          "Explain how vaccines work",
-          "Explain the theory of relativity simply",
-          "Explain how the internet works",
-          "Explain what dark matter is",
-          "Explain how nuclear power plants work",
-          "Explain the water cycle",
-          "Explain how cryptocurrencies work"
-        ];
-        const randomTopic = randomTopics[Math.floor(Math.random() * randomTopics.length)];
-        document.getElementById('input').value = randomTopic;
-
-        const event = new KeyboardEvent('keydown', {
-          key: 'Enter',
-          code: 'Enter',
-          keyCode: 13,
-          which: 13,
-          bubbles: true
+          // Programmatically trigger the 'Enter' key event to simulate user input and generation
+          const event = new KeyboardEvent('keydown', {
+            key: 'Enter',
+            code: 'Enter',
+            keyCode: 13,
+            which: 13,
+            bubbles: true
+          });
+          document.getElementById('input').dispatchEvent(event);
         });
-        document.getElementById('input').dispatchEvent(event);
       });
     </script>
   </body>
+</html>
 </html>
       });
     </script>
