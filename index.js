@@ -429,25 +429,35 @@ sendPromptBtn?.addEventListener('click', async () => {
     await generate(message);
   }
 // FLASHCARD MAKER LOGIC
-const openFlashcardsBtn = document.querySelector('#open-flashcards');
-const flashcardSection = document.querySelector('#flashcard-section');
-const topicInput = document.querySelector('#topicInput');
-const generateButton = document.querySelector('#generateButton');
-const flashcardsContainer = document.querySelector('#flashcardsContainer');
-const errorMessage = document.querySelector('#errorMessage');
+document.addEventListener('DOMContentLoaded', () => {
+  const openFlashcardsBtn = document.querySelector('#open-flashcards');
+  const flashcardSection = document.querySelector('#flashcard-section');
+  const topicInput = document.querySelector('#topicInput');
+  const generateButton = document.querySelector('#generateButton');
+  const flashcardsContainer = document.querySelector('#flashcardsContainer');
+  const errorMessage = document.querySelector('#errorMessage');
 
-// Toggle Flashcard Maker visibility
-if (openFlashcardsBtn && flashcardSection) {
+  if (!openFlashcardsBtn || !flashcardSection) {
+    console.error('Flashcard button or section missing from DOM.');
+    return;
+  }
+
+  // Toggle Flashcard Maker section
   openFlashcardsBtn.addEventListener('click', () => {
-    flashcardSection.style.display =
-      flashcardSection.style.display === 'none' ? 'block' : 'none';
+    const isVisible = flashcardSection.style.display === 'block';
+    flashcardSection.style.display = isVisible ? 'none' : 'block';
+    console.log('Flashcard Maker toggled:', !isVisible);
   });
-}
 
-// Handle Generate Flashcards button
-if (generateButton) {
+  if (!generateButton) {
+    console.error('Generate Flashcards button not found.');
+    return;
+  }
+
   generateButton.addEventListener('click', async () => {
     const topic = topicInput.value.trim();
+    console.log('Generate button clicked. Topic:', topic);
+
     if (!topic) {
       errorMessage.textContent =
         'Please enter a topic or some terms and definitions.';
@@ -461,11 +471,11 @@ if (generateButton) {
 
     try {
       const prompt = `Generate a list of flashcards for the topic: "${topic}". 
-Each flashcard should be formatted as "Term: Definition" (one per line). Example:
-Photosynthesis: The process by which green plants use sunlight to synthesize food.
-Gravity: The force that attracts a body toward the center of the earth.`;
+Each flashcard should be formatted as "Term: Definition" (one per line).`;
 
+      console.log('Sending API request...');
       const response = await callGenerateAPI(prompt);
+      console.log('API response:', response);
 
       if (!response) throw new Error('Empty response from server.');
 
@@ -522,6 +532,6 @@ Gravity: The force that attracts a body toward the center of the earth.`;
       generateButton.disabled = false;
     }
   });
-}
+});
 
 });
