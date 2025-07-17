@@ -176,6 +176,12 @@
           font-size: 0.9em;
           text-align: left;
       }
+
+      /* New CSS rule to make elements visible when the 'visible' class is added */
+      .slideshow.visible,
+      .resources-section.visible {
+          display: block !important; /* Use !important to override inline styles if present */
+      }
     </style>
 
     <script type="importmap">
@@ -228,7 +234,7 @@
       <div id="error" hidden></div>
 
       <!-- Flashcard Maker Section -->
-      <section id="flashcard-section" class="flashcard-maker" style="display:none;">
+      <section id="flashcard-section" class="flashcard-maker" hidden>
         <h2>🗂 Flashcard Maker</h2>
         <p>Enter terms and definitions separated by colons, one per line:</p>
         <textarea
@@ -243,13 +249,13 @@
 
       <!-- Slides section -->
       <section id="slideshow-wrapper">
-        <div id="slideshow">
+        <div id="slideshow" hidden>
           <!-- Slides will be dynamically added here by JavaScript -->
         </div>
       </section>
 
       <!-- Resources section -->
-      <section id="resources-section" style="display: none;">
+      <section id="resources-section" hidden>
         <div class="resource-container">
           <h2>Further Reading and Resources</h2>
           <ul id="resources-list"></ul>
@@ -331,11 +337,6 @@
           });
           document.getElementById('input').dispatchEvent(event);
         });
-      });
-    </script>
-  </body>
-</html>
-</html>
       });
     </script>
   </body>
