@@ -18,7 +18,7 @@
         flex-wrap: wrap;
       }
 
-      .surprise-btn, .quiz-btn {
+      .surprise-btn, .quiz-btn, .flashcard-btn {
         font-family: 'Space Mono', monospace;
         background: linear-gradient(135deg, #00ffff, #0ff);
         color: #0f0f0f;
@@ -36,7 +36,7 @@
         text-align: center;
       }
 
-      .surprise-btn:hover, .quiz-btn:hover {
+      .surprise-btn:hover, .quiz-btn:hover, flashcard-btn:hover {
         transform: translateY(-3px) scale(1.08);
         box-shadow: 0 0 24px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.6);
         background: linear-gradient(135deg, #33ffff, #66ffff);
@@ -122,6 +122,7 @@
       <div class="action-buttons">
         <button id="surprise-me" class="surprise-btn">🎲 Surprise Me!</button>
         <button id="start-quiz" class="quiz-btn">🧠 Start Quiz</button>
+        <button id="open-flashcards" class="flashcard-btn">🗂 Flashcard Maker</button>
       </div>
 
       <div id="output"></div>
