@@ -39,7 +39,7 @@ const loadingSpinner = document.querySelector('#loading-spinner');
 const loadingOverlay = document.querySelector('#loading-overlay');
 
 // Flashcard Maker DOM references
-const openFlashcardsBtn = document.querySelector('#open-flashcards');
+const openFlashcardsBtn = document.querySelector('#open-flashcards'); // Assuming this button exists in your HTML to open the flashcard section
 const flashcardSection = document.querySelector('#flashcard-section');
 const topicInput = document.querySelector('#topicInput');
 const generateButton = document.querySelector('#generateButton');
@@ -47,6 +47,8 @@ const flashcardsContainer = document.querySelector('#flashcardsContainer');
 const errorMessage = document.querySelector('#errorMessage');
 
 
+// --- Initial DOM Element Check ---
+// Ensure all necessary DOM elements are present before proceeding
 if (
   !userInput ||
   !modelOutput ||
@@ -57,17 +59,21 @@ if (
   !quizContainer ||
   !resourcesSection ||
   !resourcesList ||
-  !openFlashcardsBtn || // Added flashcard elements to the check
+  !openFlashcardsBtn ||
   !flashcardSection ||
   !topicInput ||
   !generateButton ||
   !flashcardsContainer ||
   !errorMessage
 ) {
+  // Log an error if any required element is missing, making debugging easier
+  console.error('One or more required DOM elements are missing. Please check your HTML structure.');
+  // Throw an error to stop script execution if critical elements are absent
   throw new Error('One or more required DOM elements are missing.');
 }
 
-// Loading state utilities
+// --- Loading State Utilities ---
+// Shows a loading spinner or overlay to indicate ongoing operations
 const showLoading = (useOverlay = false) => {
   if (useOverlay && loadingOverlay) {
     loadingOverlay.style.display = 'flex';
@@ -76,11 +82,14 @@ const showLoading = (useOverlay = false) => {
   }
 };
 
+// Hides the loading spinner or overlay
 const hideLoading = () => {
   if (loadingOverlay) loadingOverlay.style.display = 'none';
   if (loadingSpinner) loadingSpinner.style.display = 'none';
 };
 
+// --- AI Model Instructions ---
+// Instructions for Professor Luna to generate slideshow content
 const professorInstructions = `
 You are Professor Luna, an experienced teacher who loves explaining concepts using fun metaphors, mnemonic devices and analogies.
 Every explanation should sound like you're talking directly to a curious student.
@@ -95,6 +104,7 @@ The final output must be a JSON array of objects, where each object has a "text"
 Do not include any other text or markdown formatting outside the JSON array.
 `;
 
+// Instructions for Professor Luna's assistant to compile resources
 const resourcesInstructions = `
 You are Professor Luna's assistant for compiling helpful learning materials.
 Based on the topic: "{TOPIC_PLACEHOLDER}", provide a section titled "**Further Reading & Resources**" with 3-5 high-quality, reputable external links.
@@ -110,6 +120,7 @@ Format these as a markdown unordered list with the format:
 Do not include any other text or markdown formatting outside the resource list.
 `;
 
+// Instructions for Professor Luna to create quiz questions
 const quizInstructions = `
 You are Professor Luna, and you create fun quizzes to help students learn interactively.
 Create a JSON array of 5 quiz questions based on general science and technology knowledge challenging enough for students of grade 8-12.
@@ -121,6 +132,8 @@ Each question should have:
 Do not add any explanation or formatting outside the JSON array.
 `;
 
+// --- Utility Functions ---
+// Splits a given text into smaller chunks (slides) based on sentence length
 function splitIntoSlides(text, maxLength = 180) {
   const sentences = text.split(/(?<=[.!?])\s+/);
   let slides = [];
@@ -138,6 +151,7 @@ function splitIntoSlides(text, maxLength = 180) {
   return slides;
 }
 
+// Cleans redundant phrases from the generated text
 function cleanRedundantPhrases(text) {
   const phrases = [
     'Interesting, right?',
@@ -152,6 +166,7 @@ function cleanRedundantPhrases(text) {
   return cleaned;
 }
 
+// Adds a slide to the slideshow display
 async function addSlide(text, delay) {
   const slide = document.createElement('div');
   slide.className = 'slide text-only';
@@ -164,12 +179,14 @@ async function addSlide(text, delay) {
   }, delay);
 }
 
+// Parses error messages from various error types
 function parseError(e) {
   if (e instanceof Error) return e.message;
   if (typeof e === 'string') return e;
   return 'An unknown error occurred.';
 }
 
+// Parses markdown formatted resources into an array of objects
 function parseResourcesMarkdown(markdown) {
   const resources = [];
   const listContent = markdown.split('## Further Reading & Resources')[1] || markdown;
@@ -188,6 +205,7 @@ function parseResourcesMarkdown(markdown) {
   return resources;
 }
 
+// Displays the parsed resources in the resources section
 function displayResources(resources) {
   const scrollPosition = window.scrollY || document.documentElement.scrollTop;
 
@@ -222,17 +240,21 @@ function displayResources(resources) {
   });
 }
 
+// Prevents focus issues on the resources section
 resourcesSection.addEventListener('focusin', (e) => {
   if (e.target.tagName === 'A') return;
   e.preventDefault();
   e.stopPropagation();
 });
 
+// --- Main Content Generation Function ---
+// Generates slideshow content and resources based on user input
 async function generate(message) {
   showLoading(true);
   userInput.disabled = true;
   const initialScroll = window.scrollY;
 
+  // Clear previous content
   modelOutput.innerHTML = '';
   slideshow.innerHTML = '';
   error.innerHTML = '';
@@ -241,18 +263,22 @@ async function generate(message) {
   slideshow.classList.remove('visible');
   resourcesSection.classList.remove('visible');
   resourcesList.innerHTML = '';
+  flashcardSection.style.display = 'none'; // Hide flashcard section when generating new content
 
   try {
+    // Display user's prompt
     const userTurn = document.createElement('div');
     userTurn.innerHTML = await marked.parse(message);
     userTurn.className = 'user-turn';
     modelOutput.append(userTurn);
     userInput.value = '';
 
+    // Call API for slideshow content
     const scriptText = await callGenerateAPI(
       `${professorInstructions}\n\nTopic: "${message}"`
     );
 
+    // Clean and parse slideshow data
     let cleanScriptText = scriptText.trim();
     const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
     const match = cleanScriptText.match(fenceRegex);
@@ -273,8 +299,9 @@ async function generate(message) {
       allSlides.push(...chunks);
     }
 
+    // Display slides
     if (allSlides.length > 0) {
-      modelOutput.innerHTML = '';
+      modelOutput.innerHTML = ''; // Clear user input from main output if slides are generated
       slideshow.classList.add('visible');
       for (const [index, chunk] of allSlides.entries()) {
         setTimeout(() => addSlide(chunk, 50), index * 800);
@@ -284,6 +311,7 @@ async function generate(message) {
       slideshow.classList.remove('visible');
     }
 
+    // Call API for resources
     const resourcePrompt = resourcesInstructions.replace('{TOPIC_PLACEHOLDER}', message);
     const resourcesMarkdown = await callGenerateAPI(resourcePrompt);
 
@@ -308,10 +336,13 @@ async function generate(message) {
   }
 }
 
+// --- Quiz Functionality ---
+// Initiates the quiz generation and display
 async function startQuiz() {
   showLoading(true);
   const initialScroll = window.scrollY;
 
+  // Clear previous content and show quiz wrapper
   quizContainer.innerHTML = '';
   slideshow.classList.remove('visible');
   modelOutput.innerHTML = '';
@@ -319,6 +350,7 @@ async function startQuiz() {
   quizWrapper.removeAttribute('hidden');
   resourcesList.innerHTML = '';
   resourcesSection.classList.remove('visible');
+  flashcardSection.style.display = 'none'; // Hide flashcard section when starting quiz
 
   try {
     const quizText = await callGenerateAPI(quizInstructions);
@@ -350,6 +382,7 @@ async function startQuiz() {
   }
 }
 
+// Renders the quiz questions and handles user interaction
 function renderQuiz(questions) {
   quizContainer.innerHTML = '';
   let score = 0;
@@ -416,6 +449,8 @@ function renderQuiz(questions) {
   showQuestion(currentQuestion);
 }
 
+// --- Event Listeners for Main App Functionality ---
+// Handles Enter key press in the user input field to trigger content generation
 userInput.addEventListener('keydown', async (e) => {
   if (e.code === 'Enter' && !e.shiftKey) {
     e.preventDefault();
@@ -426,6 +461,7 @@ userInput.addEventListener('keydown', async (e) => {
   }
 });
 
+// Handles clicks on example prompts to populate input and generate content
 examples.forEach((li) =>
   li.addEventListener('click', async () => {
     const message = li.textContent?.trim();
@@ -436,8 +472,10 @@ examples.forEach((li) =>
   })
 );
 
+// Handles click on the "Start Quiz" button
 startQuizBtn.addEventListener('click', startQuiz);
 
+// Handles click on the "Send Prompt" button
 sendPromptBtn?.addEventListener('click', async () => {
   const message = userInput.value.trim();
   if (message) {
@@ -445,18 +483,23 @@ sendPromptBtn?.addEventListener('click', async () => {
   }
 });
 
-// FLASHCARD MAKER LOGIC
-// Confirm script loaded
+// --- FLASHCARD MAKER LOGIC ---
 console.log('✅ index.js loaded');
 
-// Toggle Flashcard Maker section
+// Toggle Flashcard Maker section visibility
 openFlashcardsBtn?.addEventListener('click', () => {
   flashcardSection.style.display =
     flashcardSection.style.display === 'block' ? 'none' : 'block';
+  // Hide other sections when flashcard maker is opened
+  slideshow.classList.remove('visible');
+  modelOutput.innerHTML = '';
+  quizWrapper.setAttribute('hidden', 'true');
+  resourcesSection.classList.remove('visible');
+  error.setAttribute('hidden', 'true');
   console.log('🗂 Flashcard Maker toggled');
 });
 
-// Handle Generate Button Click
+// Handle Generate Flashcards Button Click
 generateButton?.addEventListener('click', async () => {
   const topic = topicInput.value.trim();
   console.log('📄 Generate button clicked. Topic:', topic);
@@ -470,62 +513,74 @@ generateButton?.addEventListener('click', async () => {
   errorMessage.textContent = 'Generating flashcards...';
   flashcardsContainer.innerHTML = '';
   generateButton.disabled = true;
+  showLoading(true); // Show loading spinner for flashcard generation
 
   try {
-    const prompt = `Generate flashcards for "${topic}" in the format "Term: Definition" per line.`;
+    // Prompt the model to generate flashcards in a specific format
+    const prompt = `Generate flashcards for "${topic}". For each flashcard, provide a "Term: Definition" pair on a new line. For example:
+    "Photosynthesis: The process by which green plants and some other organisms use sunlight to synthesize foods from carbon dioxide and water."
+    "Mitochondria: An organelle found in large numbers in most cells, in which the biochemical processes of respiration and energy production occur."
+    Provide at least 5 flashcards.`;
+
     const response = await callGenerateAPI(prompt);
     console.log('✅ API response:', response);
 
     if (!response) throw new Error('Empty response from server.');
 
+    // Parse the response into flashcard objects
     const flashcards = response
       .split('\n')
       .map((line) => {
-        const [term, ...defParts] = line.split(':');
-        if (term && defParts.length) {
-          return {
-            term: term.trim(),
-            definition: defParts.join(':').trim(),
-          };
+        // Handle potential empty lines or lines without a colon
+        const parts = line.split(':');
+        if (parts.length >= 2) {
+          const term = parts[0].trim();
+          const definition = parts.slice(1).join(':').trim(); // Join back any colons in the definition
+          if (term && definition) {
+            return { term, definition };
+          }
         }
         return null;
       })
-      .filter((card) => card);
+      .filter((card) => card); // Filter out any null entries
 
     if (flashcards.length === 0) {
-      errorMessage.textContent = 'No flashcards generated.';
+      errorMessage.textContent = 'No flashcards generated. Please try a different topic or format.';
       return;
     }
 
-    errorMessage.textContent = '';
+    errorMessage.textContent = ''; // Clear error message on success
+    // Dynamically create and append flashcard elements
     flashcards.forEach((flashcard, index) => {
       const cardDiv = document.createElement('div');
-      cardDiv.classList.add('flashcard');
-      cardDiv.dataset.index = index;
+      cardDiv.classList.add('flashcard'); // Main container for a single flashcard
+      cardDiv.dataset.index = index; // Useful for tracking cards if needed
 
       const cardInner = document.createElement('div');
-      cardInner.classList.add('flashcard-inner');
+      cardInner.classList.add('flashcard-inner'); // Container for front and back, enables 3D flip
 
       const front = document.createElement('div');
       front.classList.add('flashcard-front');
-      front.textContent = flashcard.term;
+      front.innerHTML = `<h3>${flashcard.term}</h3>`; // Use h3 for term for better styling
 
       const back = document.createElement('div');
       back.classList.add('flashcard-back');
-      back.textContent = flashcard.definition;
+      back.innerHTML = `<p>${flashcard.definition}</p>`; // Use p for definition
 
       cardInner.append(front, back);
       cardDiv.append(cardInner);
       flashcardsContainer.appendChild(cardDiv);
 
+      // Add click listener for flipping
       cardDiv.addEventListener('click', () => {
-        cardDiv.classList.toggle('flipped');
+        cardDiv.classList.toggle('flipped'); // Toggle 'flipped' class to trigger CSS animation
       });
     });
   } catch (err) {
     console.error('❌ Flashcard generation error:', err);
-    errorMessage.textContent = `Error: ${err.message}`;
+    errorMessage.textContent = `Error generating flashcards: ${err.message}. Please try again.`;
   } finally {
     generateButton.disabled = false;
+    hideLoading(); // Hide loading spinner after generation
   }
 });
