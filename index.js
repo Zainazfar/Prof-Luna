@@ -38,6 +38,15 @@ const resourcesList = document.querySelector('#resources-list');
 const loadingSpinner = document.querySelector('#loading-spinner');
 const loadingOverlay = document.querySelector('#loading-overlay');
 
+// Flashcard Maker DOM references
+const openFlashcardsBtn = document.querySelector('#open-flashcards');
+const flashcardSection = document.querySelector('#flashcard-section');
+const topicInput = document.querySelector('#topicInput');
+const generateButton = document.querySelector('#generateButton');
+const flashcardsContainer = document.querySelector('#flashcardsContainer');
+const errorMessage = document.querySelector('#errorMessage');
+
+
 if (
   !userInput ||
   !modelOutput ||
@@ -47,7 +56,13 @@ if (
   !startQuizBtn ||
   !quizContainer ||
   !resourcesSection ||
-  !resourcesList
+  !resourcesList ||
+  !openFlashcardsBtn || // Added flashcard elements to the check
+  !flashcardSection ||
+  !topicInput ||
+  !generateButton ||
+  !flashcardsContainer ||
+  !errorMessage
 ) {
   throw new Error('One or more required DOM elements are missing.');
 }
@@ -175,17 +190,17 @@ function parseResourcesMarkdown(markdown) {
 
 function displayResources(resources) {
   const scrollPosition = window.scrollY || document.documentElement.scrollTop;
-  
+
   resourcesList.innerHTML = '';
   if (resources.length === 0) {
     resourcesSection.classList.remove('visible');
     return;
   }
-  
+
   resources.forEach((resource, index) => {
     const listItem = document.createElement('li');
     listItem.style.setProperty('--item-index', index);
-    
+
     const link = document.createElement('a');
     link.href = resource.url;
     link.textContent = resource.title;
@@ -268,7 +283,7 @@ async function generate(message) {
       modelOutput.innerHTML = marked.parse("Professor Luna couldn't generate slides for this topic.");
       slideshow.classList.remove('visible');
     }
-    
+
     const resourcePrompt = resourcesInstructions.replace('{TOPIC_PLACEHOLDER}', message);
     const resourcesMarkdown = await callGenerateAPI(resourcePrompt);
 
@@ -296,7 +311,7 @@ async function generate(message) {
 async function startQuiz() {
   showLoading(true);
   const initialScroll = window.scrollY;
-  
+
   quizContainer.innerHTML = '';
   slideshow.classList.remove('visible');
   modelOutput.innerHTML = '';
@@ -304,7 +319,7 @@ async function startQuiz() {
   quizWrapper.removeAttribute('hidden');
   resourcesList.innerHTML = '';
   resourcesSection.classList.remove('visible');
-  
+
   try {
     const quizText = await callGenerateAPI(quizInstructions);
 
@@ -428,25 +443,11 @@ sendPromptBtn?.addEventListener('click', async () => {
   if (message) {
     await generate(message);
   }
+});
+
 // FLASHCARD MAKER LOGIC
 // Confirm script loaded
 console.log('✅ index.js loaded');
-
-// DOM references
-const openFlashcardsBtn = document.querySelector('#open-flashcards');
-const flashcardSection = document.querySelector('#flashcard-section');
-const topicInput = document.querySelector('#topicInput');
-const generateButton = document.querySelector('#generateButton');
-const flashcardsContainer = document.querySelector('#flashcardsContainer');
-const errorMessage = document.querySelector('#errorMessage');
-
-// Check if elements exist
-if (!openFlashcardsBtn || !flashcardSection) {
-  console.error('❌ Flashcard button or section missing from DOM.');
-}
-if (!generateButton) {
-  console.error('❌ Generate Flashcards button not found.');
-}
 
 // Toggle Flashcard Maker section
 openFlashcardsBtn?.addEventListener('click', () => {
@@ -527,6 +528,4 @@ generateButton?.addEventListener('click', async () => {
   } finally {
     generateButton.disabled = false;
   }
-});
-
 });
