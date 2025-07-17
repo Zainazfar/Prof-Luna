@@ -429,109 +429,104 @@ sendPromptBtn?.addEventListener('click', async () => {
     await generate(message);
   }
 // FLASHCARD MAKER LOGIC
-document.addEventListener('DOMContentLoaded', () => {
-  const openFlashcardsBtn = document.querySelector('#open-flashcards');
-  const flashcardSection = document.querySelector('#flashcard-section');
-  const topicInput = document.querySelector('#topicInput');
-  const generateButton = document.querySelector('#generateButton');
-  const flashcardsContainer = document.querySelector('#flashcardsContainer');
-  const errorMessage = document.querySelector('#errorMessage');
+// Confirm script loaded
+console.log('✅ index.js loaded');
 
-  if (!openFlashcardsBtn || !flashcardSection) {
-    console.error('Flashcard button or section missing from DOM.');
+// DOM references
+const openFlashcardsBtn = document.querySelector('#open-flashcards');
+const flashcardSection = document.querySelector('#flashcard-section');
+const topicInput = document.querySelector('#topicInput');
+const generateButton = document.querySelector('#generateButton');
+const flashcardsContainer = document.querySelector('#flashcardsContainer');
+const errorMessage = document.querySelector('#errorMessage');
+
+// Check if elements exist
+if (!openFlashcardsBtn || !flashcardSection) {
+  console.error('❌ Flashcard button or section missing from DOM.');
+}
+if (!generateButton) {
+  console.error('❌ Generate Flashcards button not found.');
+}
+
+// Toggle Flashcard Maker section
+openFlashcardsBtn?.addEventListener('click', () => {
+  flashcardSection.style.display =
+    flashcardSection.style.display === 'block' ? 'none' : 'block';
+  console.log('🗂 Flashcard Maker toggled');
+});
+
+// Handle Generate Button Click
+generateButton?.addEventListener('click', async () => {
+  const topic = topicInput.value.trim();
+  console.log('📄 Generate button clicked. Topic:', topic);
+
+  if (!topic) {
+    errorMessage.textContent = 'Please enter a topic.';
+    flashcardsContainer.innerHTML = '';
     return;
   }
 
-  // Toggle Flashcard Maker section
-  openFlashcardsBtn.addEventListener('click', () => {
-    const isVisible = flashcardSection.style.display === 'block';
-    flashcardSection.style.display = isVisible ? 'none' : 'block';
-    console.log('Flashcard Maker toggled:', !isVisible);
-  });
+  errorMessage.textContent = 'Generating flashcards...';
+  flashcardsContainer.innerHTML = '';
+  generateButton.disabled = true;
 
-  if (!generateButton) {
-    console.error('Generate Flashcards button not found.');
-    return;
-  }
+  try {
+    const prompt = `Generate flashcards for "${topic}" in the format "Term: Definition" per line.`;
+    const response = await callGenerateAPI(prompt);
+    console.log('✅ API response:', response);
 
-  generateButton.addEventListener('click', async () => {
-    const topic = topicInput.value.trim();
-    console.log('Generate button clicked. Topic:', topic);
+    if (!response) throw new Error('Empty response from server.');
 
-    if (!topic) {
-      errorMessage.textContent =
-        'Please enter a topic or some terms and definitions.';
-      flashcardsContainer.innerHTML = '';
+    const flashcards = response
+      .split('\n')
+      .map((line) => {
+        const [term, ...defParts] = line.split(':');
+        if (term && defParts.length) {
+          return {
+            term: term.trim(),
+            definition: defParts.join(':').trim(),
+          };
+        }
+        return null;
+      })
+      .filter((card) => card);
+
+    if (flashcards.length === 0) {
+      errorMessage.textContent = 'No flashcards generated.';
       return;
     }
 
-    errorMessage.textContent = 'Generating flashcards...';
-    flashcardsContainer.innerHTML = '';
-    generateButton.disabled = true;
+    errorMessage.textContent = '';
+    flashcards.forEach((flashcard, index) => {
+      const cardDiv = document.createElement('div');
+      cardDiv.classList.add('flashcard');
+      cardDiv.dataset.index = index;
 
-    try {
-      const prompt = `Generate a list of flashcards for the topic: "${topic}". 
-Each flashcard should be formatted as "Term: Definition" (one per line).`;
+      const cardInner = document.createElement('div');
+      cardInner.classList.add('flashcard-inner');
 
-      console.log('Sending API request...');
-      const response = await callGenerateAPI(prompt);
-      console.log('API response:', response);
+      const front = document.createElement('div');
+      front.classList.add('flashcard-front');
+      front.textContent = flashcard.term;
 
-      if (!response) throw new Error('Empty response from server.');
+      const back = document.createElement('div');
+      back.classList.add('flashcard-back');
+      back.textContent = flashcard.definition;
 
-      const flashcards = response
-        .split('\n')
-        .map((line) => {
-          const [term, ...defParts] = line.split(':');
-          if (term && defParts.length) {
-            return {
-              term: term.trim(),
-              definition: defParts.join(':').trim(),
-            };
-          }
-          return null;
-        })
-        .filter((card) => card);
+      cardInner.append(front, back);
+      cardDiv.append(cardInner);
+      flashcardsContainer.appendChild(cardDiv);
 
-      if (flashcards.length === 0) {
-        errorMessage.textContent =
-          'No valid flashcards were generated. Try a different topic.';
-        return;
-      }
-
-      errorMessage.textContent = '';
-      flashcards.forEach((flashcard, index) => {
-        const cardDiv = document.createElement('div');
-        cardDiv.classList.add('flashcard');
-        cardDiv.dataset.index = index;
-
-        const cardInner = document.createElement('div');
-        cardInner.classList.add('flashcard-inner');
-
-        const front = document.createElement('div');
-        front.classList.add('flashcard-front');
-        front.textContent = flashcard.term;
-
-        const back = document.createElement('div');
-        back.classList.add('flashcard-back');
-        back.textContent = flashcard.definition;
-
-        cardInner.append(front, back);
-        cardDiv.append(cardInner);
-        flashcardsContainer.appendChild(cardDiv);
-
-        // Add flip animation
-        cardDiv.addEventListener('click', () => {
-          cardDiv.classList.toggle('flipped');
-        });
+      cardDiv.addEventListener('click', () => {
+        cardDiv.classList.toggle('flipped');
       });
-    } catch (err) {
-      console.error('Flashcard generation error:', err);
-      errorMessage.textContent = `Error: ${err.message}`;
-    } finally {
-      generateButton.disabled = false;
-    }
-  });
+    });
+  } catch (err) {
+    console.error('❌ Flashcard generation error:', err);
+    errorMessage.textContent = `Error: ${err.message}`;
+  } finally {
+    generateButton.disabled = false;
+  }
 });
 
 });
