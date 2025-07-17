@@ -92,57 +92,56 @@
   <body>
     <div class="matrix-rain"></div>
 
-<header class="site-header">
-  <div class="logo-glow-container">
-    <img src="1653759690-akes_motif (1).png" alt="AKHSS Gilgit ICT Club Logo" class="header-logo glow-effect" />
-  </div>
-  <div>
-    <h1>Made for AKHSS Gilgit ICT Club</h1>
-    <p style="font-size: 0.9rem; opacity: 0.7;">
-      <span class="creator-credit">By Zain Azfar</span>
-    </p>
-  </div>
-</header>
+    <header class="site-header">
+      <div class="logo-glow-container">
+        <img src="1653759690-akes_motif (1).png" alt="AKHSS Gilgit ICT Club Logo" class="header-logo glow-effect" />
+      </div>
+      <div>
+        <h1>Made for AKHSS Gilgit ICT Club</h1>
+        <p style="font-size: 0.9rem; opacity: 0.7;"><span class="creator-credit">By Zain Azfar</span></p>
+      </div>
+    </header>
 
-<main class="container">
-  <h1 class="main-title">Explain Things with Professor Luna</h1>
-  <p><strong>Examples:</strong></p>
-  <ul id="examples">
-    <li>Explain how neural networks work.</li>
-    <li>Explain how The Matrix works.</li>
-    <li>Explain how spaghettification works.</li>
-  </ul>
-  <p>Or enter your own prompt:</p>
+    <main class="container">
+      <h1 class="main-title">Explain Things with Professor Luna</h1>
+      <p><strong>Examples:</strong></p>
+      <ul id="examples">
+        <li>Explain how neural networks work.</li>
+        <li>Explain how The Matrix works.</li>
+        <li>Explain how spaghettification works.</li>
+      </ul>
+      <p>Or enter your own prompt:</p>
 
+      <textarea
+        id="input"
+        placeholder="Enter some prompt(Start your prompt with 'explain'...) and press Send."
+      ></textarea>
+
+      <button id="send-prompt" class="send-btn">📤 Send</button>
+
+      <div class="action-buttons">
+        <button id="surprise-me" class="surprise-btn">🎲 Surprise Me!</button>
+        <button id="start-quiz" class="quiz-btn">🧠 Start Quiz</button>
+        <button id="open-flashcards" class="flashcard-btn">🗂 Flashcard Maker</button>
+      </div>
+
+      <div id="output"></div>
+      <div id="error" hidden></div>
+
+      <!-- Flashcard Maker Section -->
+<!-- Flashcard Maker Section -->
+<section id="flashcard-section" class="flashcard-maker" style="display:none;">
+  <h2>🗂 Flashcard Maker</h2>
+  <p>Enter terms and definitions separated by colons, one per line:</p>
   <textarea
-    id="input"
-    placeholder="Enter some prompt (Start your prompt with 'explain'...) and press Send."
+    id="topicInput"
+    placeholder="Example: Gravity: The force that attracts objects toward one another."
   ></textarea>
+  <button id="generateButton" class="send-btn">📄 Generate Flashcards</button>
+  <div id="errorMessage" class="error-message"></div>
+  <div id="flashcardsContainer" class="flashcards-container"></div>
+</section>
 
-  <button id="send-prompt" class="send-btn">📤 Send</button>
-
-  <div class="action-buttons">
-    <button id="surprise-me" class="surprise-btn">🎲 Surprise Me!</button>
-    <button id="start-quiz" class="quiz-btn">🧠 Start Quiz</button>
-    <button id="open-flashcards" class="flashcard-btn">🗂 Flashcard Maker</button>
-  </div>
-
-  <div id="output"></div>
-  <div id="error" hidden></div>
-
-  <!-- Flashcard Maker Section -->
-  <section id="flashcard-section" class="flashcard-maker" style="display: none;">
-    <h2>🗂 Flashcard Maker</h2>
-    <p>Enter terms and definitions separated by colons, one per line:</p>
-    <textarea
-      id="topicInput"
-      placeholder="Example: Gravity: The force that attracts objects toward one another."
-    ></textarea>
-    <button id="generateButton" class="send-btn">📄 Generate Flashcards</button>
-    <div id="errorMessage" class="error-message"></div>
-    <div id="flashcardsContainer" class="flashcards-container"></div>
-  </section>
-</main>
 
       <!-- Slides section -->
       <section id="slideshow-wrapper">
@@ -244,4 +243,3 @@
     </script>
   </body>
 </html>
-
