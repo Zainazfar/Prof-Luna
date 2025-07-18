@@ -176,6 +176,55 @@
           font-size: 0.9em;
           text-align: left;
       }
+
+      /* Quiz Category Selection Styles */
+      #quiz-categories {
+        margin: 20px auto;
+        max-width: 800px;
+        background: rgba(30, 30, 30, 0.9);
+        border: 1px solid #3d3d3d;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      #quiz-categories h2 {
+        font-family: 'Space Mono', monospace;
+        font-size: 1.8rem;
+        color: #00ffff;
+        text-align: center;
+        margin-bottom: 15px;
+        text-shadow: 0 0 8px #00ffff, 0 0 15px #00ffffb0;
+      }
+
+      .category-button {
+        font-family: 'Space Mono', monospace;
+        background: linear-gradient(135deg, #00ff88, #00ffaa);
+        color: #111;
+        border: none;
+        padding: 14px 24px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 1.1rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+        box-shadow: 0 0 12px rgba(0, 255, 136, 0.4), 0 0 24px rgba(0, 255, 136, 0.2);
+        width: 80%; /* Adjust width for mobile */
+        max-width: 400px; /* Max width for desktop */
+        margin: 0 auto; /* Center the buttons */
+      }
+
+      .category-button:hover {
+        transform: translateY(-2px) scale(1.03);
+        box-shadow: 0 0 20px rgba(0, 255, 136, 0.7), 0 0 40px rgba(0, 255, 136, 0.4);
+      }
+
     </style>
 
     <script type="importmap">
@@ -258,6 +307,13 @@
     </main>
 
     <section id="quiz-wrapper" hidden>
+      <div id="quiz-categories" hidden>
+        <h2>Select a Quiz Category</h2>
+        <button class="category-button" data-category="Science">Science Quiz</button>
+        <button class="category-button" data-category="Technology">Technology Quiz</button>
+        <button class="category-button" data-category="History">History Quiz</button>
+        <button class="category-button" data-category="Literature">Literature Quiz</button>
+      </div>
       <div id="quiz-container" class="quiz-container"></div>
     </section>
 
