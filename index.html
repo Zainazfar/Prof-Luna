@@ -1,665 +1,435 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-import { marked } from 'marked';
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Explain Things with Professor Luna</title>
+    <link rel="stylesheet" href="index.css" />
+    <style>
+      /* Initial opacity for smooth loading */
+      .container { opacity: 0; }
+      .site-header { opacity: 0; }
 
-async function callGenerateAPI(prompt) {
-  showLoading(true); // Use overlay for API calls
-  try {
-    const response = await fetch('/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch from server');
-    }
-
-    const data = await response.json();
-    return data.text;
-  } finally {
-    hideLoading();
-  }
-}
-
-const userInput = document.querySelector('#input');
-const modelOutput = document.querySelector('#output');
-const slideshow = document.querySelector('#slideshow');
-const error = document.querySelector('#error');
-const examples = document.querySelectorAll('#examples li');
-const quizContainer = document.querySelector('#quiz-container');
-const quizWrapper = document.querySelector('#quiz-wrapper');
-const startQuizBtn = document.querySelector('#start-quiz');
-const sendPromptBtn = document.querySelector('#send-prompt');
-const resourcesSection = document.querySelector('#resources-section');
-const resourcesList = document.querySelector('#resources-list');
-const loadingOverlay = document.querySelector('#loading-overlay');
-
-// New DOM references for Quiz Categories and Grade Selection
-const quizCategories = document.querySelector('#quiz-categories');
-const categoryButtons = document.querySelectorAll('.category-button');
-const gradeSelection = document.querySelector('#grade-selection'); // New: Grade selection container
-const gradeSelect = document.querySelector('#grade-select');       // New: Grade dropdown
-const confirmGradeBtn = document.querySelector('#confirm-grade-btn'); // New: Confirm grade button
-
-// Flashcard Maker DOM references
-const openFlashcardsBtn = document.querySelector('#open-flashcards');
-const flashcardSection = document.querySelector('#flashcard-section');
-const topicInput = document.querySelector('#topicInput');
-const generateButton = document.querySelector('#generateButton');
-const flashcardsContainer = document.querySelector('#flashcardsContainer');
-const errorMessage = document.querySelector('#errorMessage');
-
-// Global variable to store the selected grade
-let currentSelectedGrade = null;
-
-
-// --- Initial DOM Element Check ---
-// Ensure all necessary DOM elements are present before proceeding
-if (
-  !userInput ||
-  !modelOutput ||
-  !slideshow ||
-  !error ||
-  !examples.length ||
-  !startQuizBtn ||
-  !quizContainer ||
-  !quizWrapper ||
-  !quizCategories ||
-  !categoryButtons.length ||
-  !gradeSelection || // New: Check grade selection elements
-  !gradeSelect ||
-  !confirmGradeBtn ||
-  !resourcesSection ||
-  !resourcesList ||
-  !openFlashcardsBtn ||
-  !flashcardSection ||
-  !topicInput ||
-  !generateButton ||
-  !flashcardsContainer ||
-  !errorMessage ||
-  !loadingOverlay
-) {
-  // Log an error if any required element is missing, making debugging easier
-  console.error('One or more required DOM elements are missing. Please check your HTML structure.');
-  // Throw an error to stop script execution if critical elements are absent
-  throw new Error('One or more required DOM elements are missing.');
-}
-
-// --- Loading State Utilities ---
-// Shows a loading spinner or overlay to indicate ongoing operations
-const showLoading = (useOverlay = false) => {
-  if (useOverlay && loadingOverlay) {
-    loadingOverlay.style.display = 'flex';
-  } else {
-    // Fallback or other loading indicator if no overlay
-    console.warn('Loading overlay not found or not requested for overlay.');
-  }
-};
-
-// Hides the loading spinner or overlay
-const hideLoading = () => {
-  if (loadingOverlay) loadingOverlay.style.display = 'none';
-};
-
-// --- AI Model Instructions ---
-// Instructions for Professor Luna to generate slideshow content
-const professorInstructions = `
-You are Professor Luna, an experienced teacher who loves explaining concepts using fun metaphors, mnemonic devices and analogies.
-Every explanation should sound like you're talking directly to a curious student.
-
-Keep it casual, funny, and slightly witty. Occasionally add rhetorical questions ("Interesting, right?"), engaging remarks ("Let's draw that out."), or calls to imagine ("Picture this in your mind."), but **don't overuse them**. Vary your phrasing naturally and use these sparingly for emphasis.
-
-Your task is to break down a given topic into a series of **concise** steps for a slideshow.
-Each slide should have **no more than 12 sentences**, written in simple, engaging language.
-Make sure each slide can be read in under 15 seconds.
-
-The final output must be a JSON array of objects, where each object has a "text" key.
-Do not include any other text or markdown formatting outside the JSON array.
-`;
-
-// Instructions for Professor Luna's assistant to compile resources
-const resourcesInstructions = `
-You are Professor Luna's assistant for compiling helpful learning materials.
-Based on the topic: "{TOPIC_PLACEHOLDER}", provide a section titled "**Further Reading & Resources**" with 3-5 high-quality, reputable external links.
-
-**Crucially, prioritize famous and mainstream sources for these links.**
-**Examples of preferred sources include, but are not limited to: for Youtube (video explanations), Wikipedia (for articles), National Geographic, NASA, university websites (.edu domains), or well-known scientific/tech organizations.**
-Ensure the links are reliable, directly relevant, and publicly accessible. Avoid less known websites.
-
-**Start your response with the exact heading: "## Further Reading & Resources"**
-Format these as a markdown unordered list with the format:
-- [Link Title](URL) - Brief description of what the resource covers.
-
-Do not include any other text or markdown formatting outside the resource list.
-`;
-
-// Instructions for Professor Luna to create quiz questions based on a category and grade
-const quizInstructions = (category, grade) => `
-You are Professor Luna, and you create fun quizzes to help students learn interactively.
-Create a JSON array of 5 quiz questions based on "${category}" knowledge, suitable for a student of grade ${grade}.
-Each question should have:
-- "question": the quiz question text
-- "options": an array of 4 answer options
-- "answer": the correct option text
-
-Do not add any explanation or formatting outside the JSON array.
-`;
-
-// --- Utility Functions ---
-// Splits a given text into smaller chunks (slides) based on sentence length
-function splitIntoSlides(text, maxLength = 180) {
-  const sentences = text.split(/(?<=[.!?])\s+/);
-  let slides = [];
-  let current = '';
-
-  for (let sentence of sentences) {
-    if ((current + sentence).length <= maxLength) {
-      current += sentence + ' ';
-    } else {
-      slides.push(current.trim());
-      current = sentence + ' ';
-    }
-  }
-  if (current.trim()) slides.push(current.trim());
-  return slides;
-}
-
-// Cleans redundant phrases from the generated text
-function cleanRedundantPhrases(text) {
-  const phrases = [
-    'Interesting, right?',
-    'Picture this in your mind.',
-    "Let's draw that out.",
-  ];
-  let cleaned = text;
-  phrases.forEach((phrase) => {
-    const regex = new RegExp(`(${phrase})(\\s*${phrase})+`, 'gi');
-    cleaned = cleaned.replace(regex, '$1');
-  });
-  return cleaned;
-}
-
-// Adds a slide to the slideshow display
-async function addSlide(text, delay) {
-  const slide = document.createElement('div');
-  slide.className = 'slide text-only';
-  const caption = document.createElement('div');
-  caption.textContent = text;
-  slide.append(caption);
-  slideshow.append(slide);
-  setTimeout(() => {
-    slide.classList.add('active');
-  }, delay);
-}
-
-// Parses error messages from various error types
-function parseError(e) {
-  if (e instanceof Error) return e.message;
-  if (typeof e === 'string') return e;
-  return 'An unknown error occurred.';
-}
-
-// Parses markdown formatted resources into an array of objects
-function parseResourcesMarkdown(markdown) {
-  const resources = [];
-  const listContent = markdown.split('## Further Reading & Resources')[1] || markdown;
-  const lines = listContent.split('\n');
-  lines.forEach(line => {
-    line = line.trim();
-    const match = line.match(/^- \[([^\]]+)\]\(([^)]+)\)\s*-\s*(.*)$/);
-    if (match) {
-      resources.push({
-        title: match[1].trim(),
-        url: match[2].trim(),
-        description: match[3].trim()
-      });
-    }
-  });
-  return resources;
-}
-
-// Displays the parsed resources in the resources section
-function displayResources(resources) {
-  const scrollPosition = window.scrollY || document.documentElement.scrollTop;
-
-  resourcesList.innerHTML = '';
-  if (resources.length === 0) {
-    resourcesSection.setAttribute('hidden', 'true'); // Use hidden attribute
-    return;
-  }
-
-  resources.forEach((resource, index) => {
-    const listItem = document.createElement('li');
-    listItem.style.setProperty('--item-index', index);
-
-    const link = document.createElement('a');
-    link.href = resource.url;
-    link.textContent = resource.title;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-
-    const descriptionSpan = document.createElement('span');
-    descriptionSpan.classList.add('description');
-    descriptionSpan.textContent = resource.description;
-
-    listItem.appendChild(link);
-    listItem.appendChild(descriptionSpan);
-    resourcesList.appendChild(listItem);
-  });
-
-  requestAnimationFrame(() => {
-    resourcesSection.removeAttribute('hidden'); // Remove hidden attribute
-    window.scrollTo(0, scrollPosition);
-  });
-}
-
-// Prevents focus issues on the resources section
-resourcesSection.addEventListener('focusin', (e) => {
-  if (e.target.tagName === 'A') return;
-  e.preventDefault();
-  e.stopPropagation();
-});
-
-// --- Main Content Generation Function ---
-// Generates slideshow content and resources based on user input
-async function generate(message) {
-  showLoading(true);
-  userInput.disabled = true;
-  const initialScroll = window.scrollY;
-
-  // Clear previous content and hide all sections
-  modelOutput.innerHTML = '';
-  slideshow.innerHTML = '';
-  error.innerHTML = '';
-  quizWrapper.setAttribute('hidden', 'true');
-  gradeSelection.setAttribute('hidden', 'true'); // Hide grade selection
-  quizCategories.setAttribute('hidden', 'true'); // Hide categories
-  quizContainer.innerHTML = ''; // Clear quiz content
-  error.setAttribute('hidden', 'true');
-  slideshow.setAttribute('hidden', 'true'); // Use hidden attribute
-  resourcesSection.setAttribute('hidden', 'true'); // Use hidden attribute
-  resourcesList.innerHTML = '';
-  flashcardSection.setAttribute('hidden', 'true'); // Hide flashcard section
-
-  try {
-    // Display user's prompt
-    const userTurn = document.createElement('div');
-    userTurn.innerHTML = await marked.parse(message);
-    userTurn.className = 'user-turn';
-    modelOutput.append(userTurn);
-    userInput.value = '';
-
-    // Call API for slideshow content
-    const scriptText = await callGenerateAPI(
-      `${professorInstructions}\n\nTopic: "${message}"`
-    );
-
-    // Clean and parse slideshow data
-    let cleanScriptText = scriptText.trim();
-    const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
-    const match = cleanScriptText.match(fenceRegex);
-    if (match && match[2]) {
-      cleanScriptText = match[2].trim();
-    }
-
-    let slidesData = JSON.parse(cleanScriptText);
-
-    if (!Array.isArray(slidesData) || slidesData.some((s) => !s.text)) {
-      throw new Error('Malformed slideshow data from server.');
-    }
-
-    let allSlides = [];
-    for (const slideData of slidesData) {
-      const cleanedText = cleanRedundantPhrases(slideData.text);
-      const chunks = splitIntoSlides(cleanedText);
-      allSlides.push(...chunks);
-    }
-
-    // Display slides
-    if (allSlides.length > 0) {
-      modelOutput.innerHTML = ''; // Clear user input from main output if slides are generated
-      slideshow.removeAttribute('hidden'); // Remove hidden attribute
-      for (const [index, chunk] of allSlides.entries()) {
-        setTimeout(() => addSlide(chunk, 50), index * 800);
+      /* Action Buttons Styling */
+      .action-buttons {
+        margin: 1rem 0;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
       }
-    } else {
-      modelOutput.innerHTML = marked.parse("Professor Luna couldn't generate slides for this topic.");
-      slideshow.setAttribute('hidden', 'true'); // Use hidden attribute
-    }
 
-    // Call API for resources
-    const resourcePrompt = resourcesInstructions.replace('{TOPIC_PLACEHOLDER}', message);
-    const resourcesMarkdown = await callGenerateAPI(resourcePrompt);
+      .surprise-btn, .quiz-btn, .flashcard-btn {
+        font-family: 'Space Mono', monospace;
+        background: linear-gradient(135deg, #00ffff, #0ff);
+        color: #0f0f0f;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 1rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+        box-shadow: 0 0 12px rgba(0, 255, 255, 0.4), 0 0 24px rgba(0, 255, 255, 0.2);
+        width: 220px;
+        text-align: center;
+      }
 
-    if (resourcesMarkdown) {
-      const parsedResources = parseResourcesMarkdown(resourcesMarkdown);
-      if (parsedResources.length > 0) {
-        displayResources(parsedResources);
+      .surprise-btn:hover, .quiz-btn:hover, .flashcard-btn:hover {
+        transform: translateY(-3px) scale(1.08);
+        box-shadow: 0 0 24px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.6);
+        background: linear-gradient(135deg, #33ffff, #66ffff);
+      }
+
+      /* Loading Overlay Styles */
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 10, 15, 0.9);
+        display: none; /* Hidden by default */
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .loading-overlay .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(0, 255, 255, 0.3);
+        border-top: 4px solid #00ffff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      .loading-overlay p {
+        color: #00ffff;
+        margin-top: 20px;
+        font-family: 'Space Mono', monospace;
+        text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      /* Flashcard specific styles (basic, you'll expand on this in index.css) */
+      .flashcard-maker {
+          padding: 20px;
+          background-color: #1a1a1a;
+          border-radius: 8px;
+          margin-top: 20px;
+          color: #eee;
+      }
+      .flashcard-maker h2 {
+          color: #00ffff;
+          text-align: center;
+          margin-bottom: 15px;
+      }
+      .flashcard-maker p {
+          text-align: center;
+          margin-bottom: 10px;
+      }
+      .flashcard-maker textarea {
+          width: calc(100% - 22px);
+          padding: 10px;
+          margin-bottom: 15px;
+          border-radius: 5px;
+          border: 1px solid #00ffff;
+          background-color: #2a2a2a;
+          color: #eee;
+          font-family: 'Space Mono', monospace;
+      }
+      .flashcard-maker .send-btn { /* Reusing send-btn style for generateButton */
+          display: block;
+          margin: 0 auto 20px auto;
+      }
+      .error-message {
+          color: #ff5555;
+          text-align: center;
+          margin-top: 10px;
+          font-weight: bold;
+      }
+      .flashcards-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 20px;
+          justify-content: center;
+          margin-top: 20px;
+      }
+      .flashcard {
+          width: 300px; /* Adjust as needed */
+          height: 200px; /* Adjust as needed */
+          perspective: 1000px; /* For 3D effect */
+          margin: 10px;
+          display: inline-block; /* Or use flexbox/grid for layout */
+          cursor: pointer;
+      }
+
+      .flashcard-inner {
+          width: 100%;
+          height: 100%;
+          text-align: center;
+          transition: transform 0.6s; /* Smooth transition for flipping */
+          transform-style: preserve-3d; /* Keep children in 3D space */
+          position: relative;
+      }
+
+      .flashcard.flipped .flashcard-inner {
+          transform: rotateY(180deg); /* Flip on Y-axis when 'flipped' class is active */
+      }
+
+      .flashcard-front,
+      .flashcard-back {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          backface-visibility: hidden; /* Hide the back of the card when facing away */
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 8px; /* Example styling */
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Example styling */
+          padding: 20px;
+          box-sizing: border-box;
+          font-family: 'Space Mono', monospace;
+      }
+
+      .flashcard-front {
+          background-color: #00ffff; /* Example styling */
+          color: #0f0f0f;
+          font-weight: bold;
+          font-size: 1.2em;
+      }
+
+      .flashcard-back {
+          background-color: #0f0f0f; /* Example styling */
+          color: #00ffff;
+          transform: rotateY(180deg); /* Initially rotated to be the back */
+          font-size: 0.9em;
+          text-align: left;
+      }
+
+      /* Quiz Category Selection Styles */
+      #quiz-categories, #grade-selection {
+        margin: 20px auto;
+        max-width: 800px;
+        background: rgba(30, 30, 30, 0.9);
+        border: 1px solid #3d3d3d;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      #quiz-categories h2, #grade-selection h2 {
+        font-family: 'Space Mono', monospace;
+        font-size: 1.8rem;
+        color: #00ffff;
+        text-align: center;
+        margin-bottom: 15px;
+        text-shadow: 0 0 8px #00ffff, 0 0 15px #00ffffb0;
+      }
+
+      .category-button, .grade-button {
+        font-family: 'Space Mono', monospace;
+        background: linear-gradient(135deg, #00ff88, #00ffaa);
+        color: #111;
+        border: none;
+        padding: 14px 24px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 1.1rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+        box-shadow: 0 0 12px rgba(0, 255, 136, 0.4), 0 0 24px rgba(0, 255, 136, 0.2);
+        width: 80%; /* Adjust width for mobile */
+        max-width: 400px; /* Max width for desktop */
+        margin: 0 auto; /* Center the buttons */
+      }
+
+      .category-button:hover, .grade-button:hover {
+        transform: translateY(-2px) scale(1.03);
+        box-shadow: 0 0 20px rgba(0, 255, 136, 0.7), 0 0 40px rgba(0, 255, 136, 0.4);
+      }
+
+      /* Style for the select dropdown */
+      #grade-select {
+        width: 80%;
+        max-width: 400px;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #00ffff;
+        background-color: #2a2a2a;
+        color: #eee;
+        font-family: 'Space Mono', monospace;
+        font-size: 1rem;
+        margin: 0 auto 15px auto; /* Center and add margin */
+        cursor: pointer;
+        appearance: none; /* Remove default dropdown arrow */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg fill="%2300FFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 20px;
+      }
+
+      #grade-select option {
+        background-color: #2a2a2a;
+        color: #eee;
+      }
+
+    </style>
+
+    <script type="importmap">
+    {
+      "imports": {
+        "@google/genai": "https://esm.sh/@google/genai@^1.8.0",
+        "marked": "https://esm.sh/marked@^16.0.0"
       }
     }
+    </script>
+  </head>
 
-  } catch (e) {
-    const msg = parseError(e);
-    error.innerHTML = `Something went wrong: ${msg}`;
-    error.removeAttribute('hidden');
-    slideshow.setAttribute('hidden', 'true'); // Use hidden attribute
-    quizWrapper.setAttribute('hidden', 'true');
-    resourcesSection.setAttribute('hidden', 'true'); // Use hidden attribute
-  } finally {
-    hideLoading();
-    userInput.disabled = false;
-    window.scrollTo(0, initialScroll);
-  }
-}
+  <body>
+    <div class="matrix-rain"></div>
 
-// --- Quiz Functionality ---
-// Displays grade selection
-async function showGradeSelection() {
-  // Hide other sections
-  modelOutput.innerHTML = '';
-  slideshow.innerHTML = '';
-  error.innerHTML = '';
-  flashcardSection.setAttribute('hidden', 'true');
-  resourcesSection.setAttribute('hidden', 'true');
-  quizContainer.innerHTML = ''; // Clear any previous quiz questions
-  quizCategories.setAttribute('hidden', 'true'); // Hide categories
+    <header class="site-header">
+      <div class="logo-glow-container">
+        <img src="1653759690-akes_motif (1).png" alt="AKHSS Gilgit ICT Club Logo" class="header-logo glow-effect" />
+      </div>
+      <div>
+        <h1>Made for AKHSS Gilgit ICT Club</h1>
+        <p style="font-size: 0.9rem; opacity: 0.7;"><span class="creator-credit">By Zain Azfar</span></p>
+      </div>
+    </header>
 
-  // Show quiz wrapper and grade selection
-  quizWrapper.removeAttribute('hidden');
-  gradeSelection.removeAttribute('hidden'); // Make visible
-  quizContainer.setAttribute('hidden', 'true'); // Ensure quiz questions are hidden initially
-  console.log('Grade selection shown. Is hidden attribute removed?', gradeSelection.hasAttribute('hidden')); // Debug log
-}
-
-// Displays quiz categories after grade is selected
-async function showQuizCategories() {
-  // Hide grade selection
-  gradeSelection.setAttribute('hidden', 'true'); // Hide it
-  console.log('Grade selection hidden. Is hidden attribute present?', gradeSelection.hasAttribute('hidden')); // Debug log
-
-  // Show quiz categories
-  quizCategories.removeAttribute('hidden');
-  quizContainer.setAttribute('hidden', 'true'); // Ensure quiz questions are hidden initially
-}
-
-// Initiates the quiz generation and display for a specific category and grade
-async function startQuiz(category, grade) {
-  showLoading(true);
-  const initialScroll = window.scrollY;
-
-  // Clear previous content and hide categories
-  quizContainer.innerHTML = '';
-  quizCategories.setAttribute('hidden', 'true'); // Hide categories
-  gradeSelection.setAttribute('hidden', 'true'); // Hide grade selection
-  quizContainer.removeAttribute('hidden'); // Show quiz container
-  slideshow.setAttribute('hidden', 'true');
-  modelOutput.innerHTML = '';
-  error.innerHTML = '';
-  resourcesSection.setAttribute('hidden', 'true');
-  flashcardSection.setAttribute('hidden', 'true');
-
-  try {
-    const quizText = await callGenerateAPI(quizInstructions(category, grade)); // Pass category and grade to instructions
-
-    let cleanQuiz = quizText.trim();
-    const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
-    const match = cleanQuiz.match(fenceRegex);
-    if (match && match[2]) {
-      cleanQuiz = match[2].trim();
-    }
-
-    let questions = JSON.parse(cleanQuiz);
-
-    if (
-      !Array.isArray(questions) ||
-      questions.some((q) => !q.question || !q.options || !q.answer)
-    ) {
-      throw new Error('Quiz data is malformed.');
-    }
-
-    renderQuiz(questions);
-    window.scrollTo(0, initialScroll);
-  } catch (e) {
-    const msg = parseError(e);
-    quizContainer.innerHTML = `<p style="color: #ff5555;">Failed to load quiz: ${msg}</p>`;
-    resourcesSection.setAttribute('hidden', 'true');
-  } finally {
-    hideLoading();
-  }
-}
-
-// Renders the quiz questions and handles user interaction
-function renderQuiz(questions) {
-  quizContainer.innerHTML = '';
-  let score = 0;
-  let currentQuestion = 0;
-
-  function showQuestion(index) {
-    quizContainer.innerHTML = '';
-
-    const q = questions[index];
-    const qElem = document.createElement('div');
-    qElem.className = 'quiz-question';
-    qElem.innerHTML = `
-      <h3>${q.question}</h3>
-      <ul>
-        ${q.options
-          .map(
-            (opt) =>
-              `<li><button class="quiz-option">${opt}</button></li>`
-          )
-          .join('')}
+    <main class="container">
+      <h1 class="main-title">Explain Things with Professor Luna</h1>
+      <p><strong>Examples:</strong></p>
+      <ul id="examples">
+        <li>Explain how neural networks work.</li>
+        <li>Explain how The Matrix works.</li>
+        <li>Explain how spaghettification works.</li>
       </ul>
-    `;
-    quizContainer.appendChild(qElem);
+      <p>Or enter your own prompt:</p>
 
-    const optionButtons = quizContainer.querySelectorAll('.quiz-option');
-    optionButtons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        optionButtons.forEach((b) => (b.disabled = true));
+      <textarea
+        id="input"
+        placeholder="Enter some prompt(Start your prompt with 'explain'...) and press Send."
+      ></textarea>
 
-        if (btn.textContent === q.answer) {
-          btn.classList.add('correct');
-          score++;
-        } else {
-          btn.classList.add('wrong');
-          optionButtons.forEach((b) => {
-            if (b.textContent === q.answer) {
-              b.classList.add('correct');
-            }
-          });
+      <button id="send-prompt" class="send-btn">📤 Send</button>
+
+      <div class="action-buttons">
+        <button id="surprise-me" class="surprise-btn">🎲 Surprise Me!</button>
+        <button id="start-quiz" class="quiz-btn">🧠 Start Quiz</button>
+        <button id="open-flashcards" class="flashcard-btn">🗂 Flashcard Maker</button>
+      </div>
+
+      <div id="output"></div>
+      <div id="error" hidden></div>
+
+      <section id="flashcard-section" class="flashcard-maker" hidden>
+        <h2>🗂 Flashcard Maker</h2>
+        <p>Enter terms and definitions separated by colons, one per line:</p>
+        <textarea
+          id="topicInput"
+          placeholder="Example: Gravity: The force that attracts objects toward one another."
+        ></textarea>
+        <button id="generateButton" class="send-btn">📄 Generate Flashcards</button>
+        <div id="errorMessage" class="error-message"></div>
+        <div id="flashcardsContainer" class="flashcards-container"></div>
+      </section>
+
+
+      <section id="slideshow-wrapper">
+        <div id="slideshow">
+          <div class="slide">
+            <h2>Slide 1: Welcome to Professor Luna</h2>
+            <p>This is a placeholder slide. Replace this with dynamic content later.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="resources-section">
+        <div class="resource-container">
+          <h2>Further Reading and Resources</h2>
+          <ul id="resources-list"></ul>
+        </div>
+      </section>
+    </main>
+
+    <section id="quiz-wrapper" hidden>
+      <div id="grade-selection" hidden>
+        <h2>Select Your Grade Level</h2>
+        <select id="grade-select">
+          <option value="5">Grade 5</option>
+          <option value="6">Grade 6</option>
+          <option value="7">Grade 7</option>
+          <option value="8">Grade 8</option>
+          <option value="9">Grade 9</option>
+          <option value="10">Grade 10</option>
+          <option value="11">Grade 11</option>
+          <option value="12">Grade 12</option>
+        </select>
+        <button id="confirm-grade-btn" class="grade-button">Confirm Grade</button>
+      </div>
+      <div id="quiz-categories" hidden>
+        <h2>Select a Quiz Category</h2>
+        <button class="category-button" data-category="Chemistry">Chemistry Quiz</button>
+        <button class="category-button" data-category="Mathematics">Mathematics Quiz</button>
+        <button class="category-button" data-category="Physics">Physics Quiz</button>
+        <button class="category-button" data-category="Biology">Biology Quiz</button>
+        <button class="category-button" data-category="Computer Science">Comp Sci Quiz</button>
+        <button class="category-button" data-category="Pakistan Studies">Pak Studies Quiz</button>
+      </div>
+      <div id="quiz-container" class="quiz-container"></div>
+    </section>
+
+    <div id="loading-overlay" class="loading-overlay">
+      <div class="spinner"></div>
+      <p>Professor Luna is thinking...</p>
+    </div>
+
+    <script src="dev.env.js"></script>
+    <script type="module" src="index.js"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        // Smooth loading animation for main content
+        document.querySelector('.container').style.opacity = '1';
+        document.querySelector('.site-header').style.opacity = '1';
+
+        // Matrix rain background effect
+        const matrixRain = document.querySelector('.matrix-rain');
+        for (let i = 0; i < 100; i++) {
+          const digit = document.createElement('span');
+          digit.className = 'binary-digit';
+          digit.textContent = Math.random() > 0.5 ? '0' : '1';
+          digit.style.left = `${Math.random() * 100}vw`;
+          digit.style.setProperty('--delay', Math.random() * 5);
+          digit.style.animationDuration = `${5 + Math.random() * 10}s`;
+          digit.style.fontSize = `${12 + Math.random() * 12}px`;
+          digit.style.opacity = `${0.2 + Math.random() * 0.5}`;
+          matrixRain.appendChild(digit);
         }
 
+        // Add 'loaded' classes for initial animations
         setTimeout(() => {
-          if (currentQuestion + 1 < questions.length) {
-            currentQuestion++;
-            showQuestion(currentQuestion);
-          } else {
-            showResult();
-          }
-        }, 1000);
+          document.querySelector('.main-title').classList.add('loaded');
+          document.querySelector('.site-header').classList.add('loaded');
+          document.querySelectorAll('.container > *:not(h1)').forEach(el => {
+            el.classList.add('loaded');
+          });
+        }, 100);
+
+        // "Surprise Me!" button functionality
+        document.getElementById('surprise-me')?.addEventListener('click', () => {
+          const randomTopics = [
+            "Explain how black holes work in simple terms",
+            "Explain quantum computing like I'm 5",
+            "Explain why the sky is blue",
+            "Explain how airplanes stay in the air",
+            "Explain blockchain technology simply",
+            "Explain photosynthesis step by step",
+            "Explain how GPS works",
+            "Explain why we dream at night",
+            "Explain how vaccines work",
+            "Explain the theory of relativity simply",
+            "Explain how the internet works",
+            "Explain what dark matter is",
+            "Explain how nuclear power plants work",
+            "Explain the water cycle",
+            "Explain how cryptocurrencies work"
+          ];
+          const randomTopic = randomTopics[Math.floor(Math.random() * randomTopics.length)];
+          document.getElementById('input').value = randomTopic;
+
+          // Programmatically trigger the 'Enter' key event to simulate user input and generation
+          const event = new KeyboardEvent('keydown', {
+            key: 'Enter',
+            code: 'Enter',
+            keyCode: 13,
+            which: 13,
+            bubbles: true
+          });
+          document.getElementById('input').dispatchEvent(event);
+        });
       });
-    });
-  }
-
-  function showResult() {
-    quizContainer.innerHTML = `
-      <h2>Your Score: ${score} / ${questions.length}</h2>
-      <button id="retry-quiz" class="quiz-btn">🔁 Retry Quiz</button>
-    `;
-    document
-      .getElementById('retry-quiz')
-      .addEventListener('click', () => showGradeSelection()); // Go back to grade selection on retry
-  }
-
-  showQuestion(currentQuestion);
-}
-
-// --- Event Listeners for Main App Functionality ---
-// Handles Enter key press in the user input field to trigger content generation
-userInput.addEventListener('keydown', async (e) => {
-  if (e.code === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    const message = userInput.value.trim();
-    if (message) {
-      await generate(message);
-    }
-  }
-});
-
-// Handles clicks on example prompts to populate input and generate content
-examples.forEach((li) =>
-  li.addEventListener('click', async () => {
-    const message = li.textContent?.trim();
-    if (message) {
-      userInput.value = message;
-      await generate(message);
-    }
-  })
-);
-
-// Handles click on the "Start Quiz" button to show grade selection
-startQuizBtn.addEventListener('click', showGradeSelection);
-
-// Handles click on the "Confirm Grade" button
-confirmGradeBtn.addEventListener('click', () => {
-  currentSelectedGrade = gradeSelect.value; // Store the selected grade globally
-  console.log('Grade confirmed:', currentSelectedGrade); // Debug log
-  showQuizCategories(); // Now show categories
-});
-
-// Handles clicks on quiz category buttons
-categoryButtons.forEach(button => {
-  button.addEventListener('click', () => {
-    if (currentSelectedGrade) { // Only proceed if a grade has been selected
-      const category = button.dataset.category;
-      startQuiz(category, currentSelectedGrade); // Use the global selected grade
-    } else {
-      // This case should ideally not happen if the flow is correct
-      console.error('No grade selected before choosing a category. Returning to grade selection.');
-      showGradeSelection(); // Redirect back to grade selection
-    }
-  });
-});
-
-// Handles click on the "Send Prompt" button
-sendPromptBtn?.addEventListener('click', async () => {
-  const message = userInput.value.trim();
-  if (message) {
-    await generate(message);
-  }
-});
-
-// --- FLASHCARD MAKER LOGIC ---
-console.log('✅ index.js loaded');
-
-// Toggle Flashcard Maker section visibility
-openFlashcardsBtn?.addEventListener('click', () => {
-  // Hide all other sections
-  slideshow.setAttribute('hidden', 'true');
-  modelOutput.innerHTML = '';
-  quizWrapper.setAttribute('hidden', 'true');
-  gradeSelection.setAttribute('hidden', 'true'); // Hide grade selection
-  quizCategories.setAttribute('hidden', 'true'); // Hide categories
-  quizContainer.innerHTML = ''; // Clear quiz content
-  resourcesSection.setAttribute('hidden', 'true');
-  error.setAttribute('hidden', 'true');
-
-  // Toggle flashcard section visibility
-  if (flashcardSection.hasAttribute('hidden')) {
-    flashcardSection.removeAttribute('hidden');
-  } else {
-    flashcardSection.setAttribute('hidden', 'true');
-  }
-  console.log('🗂 Flashcard Maker toggled');
-});
-
-// Handle Generate Flashcards Button Click
-generateButton?.addEventListener('click', async () => {
-  const topic = topicInput.value.trim();
-  console.log('📄 Generate button clicked. Topic:', topic);
-
-  if (!topic) {
-    errorMessage.textContent = 'Please enter a topic.';
-    flashcardsContainer.innerHTML = '';
-    return;
-  }
-
-  errorMessage.textContent = 'Generating flashcards...';
-  flashcardsContainer.innerHTML = '';
-  generateButton.disabled = true;
-  showLoading(true); // Show loading spinner for flashcard generation
-
-  try {
-    // Prompt the model to generate flashcards in a specific format
-    const prompt = `Generate flashcards for "${topic}". For each flashcard, provide a "Term: Definition" pair on a new line. For example:
-    "Photosynthesis: The process by which green plants and some other organisms use sunlight to synthesize foods from carbon dioxide and water."
-    "Mitochondria: An organelle found in large numbers in most cells, in which the biochemical processes of respiration and energy production occur."
-    Provide at least 5 flashcards.`;
-
-    const response = await callGenerateAPI(prompt);
-    console.log('✅ API response:', response);
-
-    if (!response) throw new Error('Empty response from server.');
-
-    // Parse the response into flashcard objects
-    const flashcards = response
-      .split('\n')
-      .map((line) => {
-        // Handle potential empty lines or lines without a colon
-        const parts = line.split(':');
-        if (parts.length >= 2) {
-          const term = parts[0].trim();
-          const definition = parts.slice(1).join(':').trim(); // Join back any colons in the definition
-          if (term && definition) {
-            return { term, definition };
-          }
-        }
-        return null;
-      })
-      .filter((card) => card); // Filter out any null entries
-
-    if (flashcards.length === 0) {
-      errorMessage.textContent = 'No flashcards generated. Please try a different topic or format.';
-      return;
-    }
-
-    errorMessage.textContent = ''; // Clear error message on success
-    // Dynamically create and append flashcard elements
-    flashcards.forEach((flashcard, index) => {
-      const cardDiv = document.createElement('div');
-      cardDiv.classList.add('flashcard'); // Main container for a single flashcard
-      cardDiv.dataset.index = index; // Useful for tracking cards if needed
-
-      const cardInner = document.createElement('div');
-      cardInner.classList.add('flashcard-inner'); // Container for front and back, enables 3D flip
-
-      const front = document.createElement('div');
-      front.classList.add('flashcard-front');
-      front.innerHTML = `<h3>${flashcard.term}</h3>`; // Use h3 for term for better styling
-
-      const back = document.createElement('div');
-      back.classList.add('flashcard-back');
-      back.innerHTML = `<p>${flashcard.definition}</p>`; // Use p for definition
-
-      cardInner.append(front, back);
-      cardDiv.append(cardInner);
-      flashcardsContainer.appendChild(cardDiv);
-
-      // Add click listener for flipping
-      cardDiv.addEventListener('click', () => {
-        cardDiv.classList.toggle('flipped'); // Toggle 'flipped' class to trigger CSS animation
-      });
-    });
-  } catch (err) {
-    console.error('❌ Flashcard generation error:', err);
-    errorMessage.textContent = `Error generating flashcards: ${err.message}. Please try again.`;
-  } finally {
-    generateButton.disabled = false;
-    hideLoading(); // Hide loading spinner after generation
-  }
-});
-
+    </script>
+  </body>
+</html>
