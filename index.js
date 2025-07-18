@@ -52,6 +52,9 @@ const generateButton = document.querySelector('#generateButton');
 const flashcardsContainer = document.querySelector('#flashcardsContainer');
 const errorMessage = document.querySelector('#errorMessage');
 
+// Global variable to store the selected grade
+let currentSelectedGrade = null;
+
 
 // --- Initial DOM Element Check ---
 // Ensure all necessary DOM elements are present before proceeding
@@ -371,26 +374,13 @@ async function showGradeSelection() {
 }
 
 // Displays quiz categories after grade is selected
-async function showQuizCategories(selectedGrade) {
+async function showQuizCategories() {
   // Hide grade selection
   gradeSelection.setAttribute('hidden', 'true');
 
   // Show quiz categories
   quizCategories.removeAttribute('hidden');
   quizContainer.setAttribute('hidden', 'true'); // Ensure quiz questions are hidden initially
-
-  // Attach event listeners to category buttons, passing the selected grade
-  categoryButtons.forEach(button => {
-    // Remove existing event listener to prevent multiple calls
-    const oldClickListener = button.onclick; // Store old listener if any
-    if (oldClickListener) {
-        button.removeEventListener('click', oldClickListener);
-    }
-    button.addEventListener('click', () => {
-      const category = button.dataset.category;
-      startQuiz(category, selectedGrade); // Pass both category and grade
-    });
-  });
 }
 
 // Initiates the quiz generation and display for a specific category and grade
@@ -534,8 +524,22 @@ startQuizBtn.addEventListener('click', showGradeSelection);
 
 // Handles click on the "Confirm Grade" button
 confirmGradeBtn.addEventListener('click', () => {
-  const selectedGrade = gradeSelect.value;
-  showQuizCategories(selectedGrade); // Pass the selected grade to show categories
+  currentSelectedGrade = gradeSelect.value; // Store the selected grade globally
+  showQuizCategories(); // Now show categories
+});
+
+// Handles clicks on quiz category buttons
+categoryButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    if (currentSelectedGrade) { // Only proceed if a grade has been selected
+      const category = button.dataset.category;
+      startQuiz(category, currentSelectedGrade); // Use the global selected grade
+    } else {
+      // This case should ideally not happen if the flow is correct
+      console.error('No grade selected before choosing a category. Returning to grade selection.');
+      showGradeSelection(); // Redirect back to grade selection
+    }
+  });
 });
 
 // Handles click on the "Send Prompt" button
@@ -655,4 +659,3 @@ generateButton?.addEventListener('click', async () => {
     hideLoading(); // Hide loading spinner after generation
   }
 });
-
