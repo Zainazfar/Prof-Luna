@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import { marked } from 'marked';
+import { Analytics } from "@vercel/analytics/next";
 
 async function callGenerateAPI(prompt) {
   showLoading(true); // Use overlay for API calls
