@@ -300,8 +300,10 @@ body::after {
   }
   
   .slide {
-    min-width: calc(100vw - 56px); /* Full viewport width minus padding */
-    max-width: calc(100vw - 56px);
+    /* Optimized width for mobile: 100vw minus slideshow's left/right padding */
+    width: calc(100vw - (2 * 12px)); 
+    min-width: calc(100vw - (2 * 12px));
+    max-width: calc(100vw - (2 * 12px));
     min-height: 400px;
     padding: 20px 15px;
   }
@@ -672,14 +674,20 @@ textarea#input:focus {
   /* Key adjustments for mobile slideshow behavior */
   #slideshow {
     gap: 15px; /* Reduced gap for smaller screens */
-    padding: 10px; /* Reduced padding */
+    padding: 12px; /* Reduced padding */
+    margin: 15px auto 30px;
+    scroll-padding: 12px;
   }
-
+  
   .slide {
-    min-width: 85%; /* Allow slides to take up a large portion of the screen but not exceed it */
-    max-width: 85%; /* Ensure consistency */
-    min-height: 350px; /* Adjusted to be a bit smaller for mobile */
-    padding: 20px 15px; /* Reduced padding */
+    /* Optimized width for mobile: 100vw minus slideshow's left/right padding */
+    /* This calculation ensures the slide fits perfectly within the scrollable area,
+       allowing the 'gap' to provide the visual separation between slides. */
+    width: calc(100vw - (2 * 12px)); /* 100vw minus the left and right padding of the slideshow */
+    min-width: calc(100vw - (2 * 12px));
+    max-width: calc(100vw - (2 * 12px));
+    min-height: 400px; /* Keep this for consistent height */
+    padding: 20px 15px;
     /* Ensure no unexpected scaling from hover effects on touch devices if not intended */
     transform: none !important; /* Override desktop hover transform */
     transition: none !important; /* Disable transition for more direct feel on touch */
