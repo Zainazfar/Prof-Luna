@@ -5,7 +5,7 @@
 import { marked } from 'marked';
 
 async function callGenerateAPI(prompt) {
-  showLoading();
+  showLoading(true); // Use overlay for API calls
   try {
     const response = await fetch('/api/generate', {
       method: 'POST',
@@ -35,11 +35,14 @@ const startQuizBtn = document.querySelector('#start-quiz');
 const sendPromptBtn = document.querySelector('#send-prompt');
 const resourcesSection = document.querySelector('#resources-section');
 const resourcesList = document.querySelector('#resources-list');
-const loadingSpinner = document.querySelector('#loading-spinner');
-const loadingOverlay = document.querySelector('#loading-overlay');
+const loadingOverlay = document.querySelector('#loading-overlay'); // Corrected to use loadingOverlay
+
+// New DOM references for Quiz Categories
+const quizCategories = document.querySelector('#quiz-categories');
+const categoryButtons = document.querySelectorAll('.category-button');
 
 // Flashcard Maker DOM references
-const openFlashcardsBtn = document.querySelector('#open-flashcards'); // Assuming this button exists in your HTML to open the flashcard section
+const openFlashcardsBtn = document.querySelector('#open-flashcards');
 const flashcardSection = document.querySelector('#flashcard-section');
 const topicInput = document.querySelector('#topicInput');
 const generateButton = document.querySelector('#generateButton');
@@ -57,6 +60,9 @@ if (
   !examples.length ||
   !startQuizBtn ||
   !quizContainer ||
+  !quizWrapper || // Added quizWrapper to check
+  !quizCategories || // Added quizCategories to check
+  !categoryButtons.length || // Check if category buttons exist
   !resourcesSection ||
   !resourcesList ||
   !openFlashcardsBtn ||
@@ -64,7 +70,8 @@ if (
   !topicInput ||
   !generateButton ||
   !flashcardsContainer ||
-  !errorMessage
+  !errorMessage ||
+  !loadingOverlay // Ensure loadingOverlay is checked
 ) {
   // Log an error if any required element is missing, making debugging easier
   console.error('One or more required DOM elements are missing. Please check your HTML structure.');
@@ -77,15 +84,15 @@ if (
 const showLoading = (useOverlay = false) => {
   if (useOverlay && loadingOverlay) {
     loadingOverlay.style.display = 'flex';
-  } else if (loadingSpinner) {
-    loadingSpinner.style.display = 'block';
+  } else {
+    // Fallback or other loading indicator if no overlay
+    console.warn('Loading overlay not found or not requested for overlay.');
   }
 };
 
 // Hides the loading spinner or overlay
 const hideLoading = () => {
   if (loadingOverlay) loadingOverlay.style.display = 'none';
-  if (loadingSpinner) loadingSpinner.style.display = 'none';
 };
 
 // --- AI Model Instructions ---
@@ -120,10 +127,10 @@ Format these as a markdown unordered list with the format:
 Do not include any other text or markdown formatting outside the resource list.
 `;
 
-// Instructions for Professor Luna to create quiz questions
-const quizInstructions = `
+// Instructions for Professor Luna to create quiz questions based on a category
+const quizInstructions = (category) => `
 You are Professor Luna, and you create fun quizzes to help students learn interactively.
-Create a JSON array of 5 quiz questions based on general science and technology knowledge challenging enough for students of grade 8-12.
+Create a JSON array of 5 quiz questions based on "${category}" knowledge, challenging enough for students of grade 8-12.
 Each question should have:
 - "question": the quiz question text
 - "options": an array of 4 answer options
@@ -211,7 +218,7 @@ function displayResources(resources) {
 
   resourcesList.innerHTML = '';
   if (resources.length === 0) {
-    resourcesSection.classList.remove('visible');
+    resourcesSection.setAttribute('hidden', 'true'); // Use hidden attribute
     return;
   }
 
@@ -235,7 +242,8 @@ function displayResources(resources) {
   });
 
   requestAnimationFrame(() => {
-    resourcesSection.classList.add('visible');
+    resourcesSection.removeAttribute('hidden'); // Remove hidden attribute
+    // No need for 'visible' class if using 'hidden' attribute for display
     window.scrollTo(0, scrollPosition);
   });
 }
@@ -254,16 +262,18 @@ async function generate(message) {
   userInput.disabled = true;
   const initialScroll = window.scrollY;
 
-  // Clear previous content
+  // Clear previous content and hide all sections
   modelOutput.innerHTML = '';
   slideshow.innerHTML = '';
   error.innerHTML = '';
   quizWrapper.setAttribute('hidden', 'true');
+  quizCategories.setAttribute('hidden', 'true'); // Hide categories
+  quizContainer.innerHTML = ''; // Clear quiz content
   error.setAttribute('hidden', 'true');
-  slideshow.classList.remove('visible');
-  resourcesSection.classList.remove('visible');
+  slideshow.setAttribute('hidden', 'true'); // Use hidden attribute
+  resourcesSection.setAttribute('hidden', 'true'); // Use hidden attribute
   resourcesList.innerHTML = '';
-  flashcardSection.style.display = 'none'; // Hide flashcard section when generating new content
+  flashcardSection.setAttribute('hidden', 'true'); // Hide flashcard section
 
   try {
     // Display user's prompt
@@ -302,13 +312,13 @@ async function generate(message) {
     // Display slides
     if (allSlides.length > 0) {
       modelOutput.innerHTML = ''; // Clear user input from main output if slides are generated
-      slideshow.classList.add('visible');
+      slideshow.removeAttribute('hidden'); // Remove hidden attribute
       for (const [index, chunk] of allSlides.entries()) {
         setTimeout(() => addSlide(chunk, 50), index * 800);
       }
     } else {
       modelOutput.innerHTML = marked.parse("Professor Luna couldn't generate slides for this topic.");
-      slideshow.classList.remove('visible');
+      slideshow.setAttribute('hidden', 'true'); // Use hidden attribute
     }
 
     // Call API for resources
@@ -326,9 +336,9 @@ async function generate(message) {
     const msg = parseError(e);
     error.innerHTML = `Something went wrong: ${msg}`;
     error.removeAttribute('hidden');
-    slideshow.classList.remove('visible');
+    slideshow.setAttribute('hidden', 'true'); // Use hidden attribute
     quizWrapper.setAttribute('hidden', 'true');
-    resourcesSection.classList.remove('visible');
+    resourcesSection.setAttribute('hidden', 'true'); // Use hidden attribute
   } finally {
     hideLoading();
     userInput.disabled = false;
@@ -337,23 +347,40 @@ async function generate(message) {
 }
 
 // --- Quiz Functionality ---
-// Initiates the quiz generation and display
-async function startQuiz() {
+// Displays quiz categories
+async function showQuizCategories() {
+  // Hide other sections
+  modelOutput.innerHTML = '';
+  slideshow.innerHTML = '';
+  error.innerHTML = '';
+  flashcardSection.setAttribute('hidden', 'true');
+  resourcesSection.setAttribute('hidden', 'true');
+  quizContainer.innerHTML = ''; // Clear any previous quiz questions
+
+  // Show quiz wrapper and categories
+  quizWrapper.removeAttribute('hidden');
+  quizCategories.removeAttribute('hidden');
+  quizContainer.setAttribute('hidden', 'true'); // Ensure quiz questions are hidden initially
+}
+
+
+// Initiates the quiz generation and display for a specific category
+async function startQuiz(category) {
   showLoading(true);
   const initialScroll = window.scrollY;
 
-  // Clear previous content and show quiz wrapper
+  // Clear previous content and hide categories
   quizContainer.innerHTML = '';
-  slideshow.classList.remove('visible');
+  quizCategories.setAttribute('hidden', 'true'); // Hide categories
+  quizContainer.removeAttribute('hidden'); // Show quiz container
+  slideshow.setAttribute('hidden', 'true');
   modelOutput.innerHTML = '';
   error.innerHTML = '';
-  quizWrapper.removeAttribute('hidden');
-  resourcesList.innerHTML = '';
-  resourcesSection.classList.remove('visible');
-  flashcardSection.style.display = 'none'; // Hide flashcard section when starting quiz
+  resourcesSection.setAttribute('hidden', 'true');
+  flashcardSection.setAttribute('hidden', 'true');
 
   try {
-    const quizText = await callGenerateAPI(quizInstructions);
+    const quizText = await callGenerateAPI(quizInstructions(category)); // Pass category to instructions
 
     let cleanQuiz = quizText.trim();
     const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
@@ -376,7 +403,7 @@ async function startQuiz() {
   } catch (e) {
     const msg = parseError(e);
     quizContainer.innerHTML = `<p style="color: #ff5555;">Failed to load quiz: ${msg}</p>`;
-    resourcesSection.classList.remove('visible');
+    resourcesSection.setAttribute('hidden', 'true');
   } finally {
     hideLoading();
   }
@@ -443,7 +470,7 @@ function renderQuiz(questions) {
     `;
     document
       .getElementById('retry-quiz')
-      .addEventListener('click', startQuiz);
+      .addEventListener('click', () => showQuizCategories()); // Go back to categories on retry
   }
 
   showQuestion(currentQuestion);
@@ -472,8 +499,16 @@ examples.forEach((li) =>
   })
 );
 
-// Handles click on the "Start Quiz" button
-startQuizBtn.addEventListener('click', startQuiz);
+// Handles click on the "Start Quiz" button to show categories
+startQuizBtn.addEventListener('click', showQuizCategories);
+
+// Handles clicks on quiz category buttons
+categoryButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const category = button.dataset.category;
+    startQuiz(category);
+  });
+});
 
 // Handles click on the "Send Prompt" button
 sendPromptBtn?.addEventListener('click', async () => {
@@ -488,14 +523,21 @@ console.log('✅ index.js loaded');
 
 // Toggle Flashcard Maker section visibility
 openFlashcardsBtn?.addEventListener('click', () => {
-  flashcardSection.style.display =
-    flashcardSection.style.display === 'block' ? 'none' : 'block';
-  // Hide other sections when flashcard maker is opened
-  slideshow.classList.remove('visible');
+  // Hide all other sections
+  slideshow.setAttribute('hidden', 'true');
   modelOutput.innerHTML = '';
   quizWrapper.setAttribute('hidden', 'true');
-  resourcesSection.classList.remove('visible');
+  quizCategories.setAttribute('hidden', 'true'); // Hide categories
+  quizContainer.innerHTML = ''; // Clear quiz content
+  resourcesSection.setAttribute('hidden', 'true');
   error.setAttribute('hidden', 'true');
+
+  // Toggle flashcard section visibility
+  if (flashcardSection.hasAttribute('hidden')) {
+    flashcardSection.removeAttribute('hidden');
+  } else {
+    flashcardSection.setAttribute('hidden', 'true');
+  }
   console.log('🗂 Flashcard Maker toggled');
 });
 
