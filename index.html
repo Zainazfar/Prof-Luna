@@ -178,7 +178,7 @@
       }
 
       /* Quiz Category Selection Styles */
-      #quiz-categories {
+      #quiz-categories, #grade-selection {
         margin: 20px auto;
         max-width: 800px;
         background: rgba(30, 30, 30, 0.9);
@@ -192,7 +192,7 @@
         gap: 15px;
       }
 
-      #quiz-categories h2 {
+      #quiz-categories h2, #grade-selection h2 {
         font-family: 'Space Mono', monospace;
         font-size: 1.8rem;
         color: #00ffff;
@@ -201,7 +201,7 @@
         text-shadow: 0 0 8px #00ffff, 0 0 15px #00ffffb0;
       }
 
-      .category-button {
+      .category-button, .grade-button {
         font-family: 'Space Mono', monospace;
         background: linear-gradient(135deg, #00ff88, #00ffaa);
         color: #111;
@@ -220,9 +220,36 @@
         margin: 0 auto; /* Center the buttons */
       }
 
-      .category-button:hover {
+      .category-button:hover, .grade-button:hover {
         transform: translateY(-2px) scale(1.03);
         box-shadow: 0 0 20px rgba(0, 255, 136, 0.7), 0 0 40px rgba(0, 255, 136, 0.4);
+      }
+
+      /* Style for the select dropdown */
+      #grade-select {
+        width: 80%;
+        max-width: 400px;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #00ffff;
+        background-color: #2a2a2a;
+        color: #eee;
+        font-family: 'Space Mono', monospace;
+        font-size: 1rem;
+        margin: 0 auto 15px auto; /* Center and add margin */
+        cursor: pointer;
+        appearance: none; /* Remove default dropdown arrow */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg fill="%2300FFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 20px;
+      }
+
+      #grade-select option {
+        background-color: #2a2a2a;
+        color: #eee;
       }
 
     </style>
@@ -307,14 +334,28 @@
     </main>
 
     <section id="quiz-wrapper" hidden>
+      <div id="grade-selection" hidden>
+        <h2>Select Your Grade Level</h2>
+        <select id="grade-select">
+          <option value="5">Grade 5</option>
+          <option value="6">Grade 6</option>
+          <option value="7">Grade 7</option>
+          <option value="8">Grade 8</option>
+          <option value="9">Grade 9</option>
+          <option value="10">Grade 10</option>
+          <option value="11">Grade 11</option>
+          <option value="12">Grade 12</option>
+        </select>
+        <button id="confirm-grade-btn" class="grade-button">Confirm Grade</button>
+      </div>
       <div id="quiz-categories" hidden>
         <h2>Select a Quiz Category</h2>
         <button class="category-button" data-category="Chemistry">Chemistry Quiz</button>
         <button class="category-button" data-category="Mathematics">Mathematics Quiz</button>
         <button class="category-button" data-category="Physics">Physics Quiz</button>
         <button class="category-button" data-category="Biology">Biology Quiz</button>
-         <button class="category-button" data-category="Computer Science">Comp Sci Quiz</button>
-         <button class="category-button" data-category="Pakistan Studies">Pak Studies Quiz</button>
+        <button class="category-button" data-category="Computer Science">Comp Sci Quiz</button>
+        <button class="category-button" data-category="Pakistan Studies">Pak Studies Quiz</button>
       </div>
       <div id="quiz-container" class="quiz-container"></div>
     </section>
