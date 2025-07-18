@@ -293,17 +293,18 @@ body::after {
 /* Mobile-specific styles */
 @media (max-width: 768px) {
   #slideshow {
-    gap: 16px;
-    padding: 12px;
+    gap: 15px; /* Reduced gap for smaller screens */
+    padding: 12px; /* Reduced padding */
     margin: 15px auto 30px;
     scroll-padding: 12px;
   }
   
   .slide {
-    /* Optimized width for mobile: using a percentage for better scaling */
-    width: 90%; /* Changed from calc(100vw - 40px) to a percentage */
-    min-width: 90%;
-    max-width: 90%;
+    /* Adjusted width to account for #slideshow padding and gap,
+       ensuring slides fit without causing horizontal overflow. */
+    width: calc(100% - 30px); /* 100% of #slideshow width minus (gap * 2 - padding * 2) roughly */
+    min-width: calc(100% - 30px);
+    max-width: calc(100% - 30px);
     min-height: 400px;
     padding: 20px 15px;
     /* Ensure no unexpected scaling from hover effects on touch devices if not intended */
@@ -680,17 +681,19 @@ textarea#input:focus {
 
   /* Key adjustments for mobile slideshow behavior */
   #slideshow {
-    gap: 15px; /* Reduced gap for smaller screens */
-    padding: 12px; /* Reduced padding */
+    /* Ensure no extra space causing overflow */
+    gap: 15px;
+    padding: 0 12px; /* Adjusted padding to ensure content fits within viewport */
     margin: 15px auto 30px;
-    scroll-padding: 12px;
+    scroll-padding: 0 12px; /* Match padding for scroll snapping */
   }
   
   .slide {
-    /* Optimized width for mobile: using a percentage for better scaling */
-    width: 90%; /* Adjusted to 90% for more consistent padding and to prevent zoom */
-    min-width: 90%;
-    max-width: 90%;
+    /* Set width to 100% of the scrollable container,
+       and let the #slideshow's padding provide the side spacing. */
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
     min-height: 400px;
     padding: 20px 15px;
     /* Ensure no unexpected scaling from hover effects on touch devices if not intended */
@@ -726,7 +729,7 @@ textarea#input:focus {
     font-size: 1rem;
   }
   .resource-container li .description {
-    font-size: 1rem;
+    font-size: 1.1rem; /* Adjusted to match other text more closely */
   }
 
   /* Adjust buttons for mobile */
