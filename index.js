@@ -35,11 +35,14 @@ const startQuizBtn = document.querySelector('#start-quiz');
 const sendPromptBtn = document.querySelector('#send-prompt');
 const resourcesSection = document.querySelector('#resources-section');
 const resourcesList = document.querySelector('#resources-list');
-const loadingOverlay = document.querySelector('#loading-overlay'); // Corrected to use loadingOverlay
+const loadingOverlay = document.querySelector('#loading-overlay');
 
-// New DOM references for Quiz Categories
+// New DOM references for Quiz Categories and Grade Selection
 const quizCategories = document.querySelector('#quiz-categories');
 const categoryButtons = document.querySelectorAll('.category-button');
+const gradeSelection = document.querySelector('#grade-selection'); // New: Grade selection container
+const gradeSelect = document.querySelector('#grade-select');       // New: Grade dropdown
+const confirmGradeBtn = document.querySelector('#confirm-grade-btn'); // New: Confirm grade button
 
 // Flashcard Maker DOM references
 const openFlashcardsBtn = document.querySelector('#open-flashcards');
@@ -60,9 +63,12 @@ if (
   !examples.length ||
   !startQuizBtn ||
   !quizContainer ||
-  !quizWrapper || // Added quizWrapper to check
-  !quizCategories || // Added quizCategories to check
-  !categoryButtons.length || // Check if category buttons exist
+  !quizWrapper ||
+  !quizCategories ||
+  !categoryButtons.length ||
+  !gradeSelection || // New: Check grade selection elements
+  !gradeSelect ||
+  !confirmGradeBtn ||
   !resourcesSection ||
   !resourcesList ||
   !openFlashcardsBtn ||
@@ -71,7 +77,7 @@ if (
   !generateButton ||
   !flashcardsContainer ||
   !errorMessage ||
-  !loadingOverlay // Ensure loadingOverlay is checked
+  !loadingOverlay
 ) {
   // Log an error if any required element is missing, making debugging easier
   console.error('One or more required DOM elements are missing. Please check your HTML structure.');
@@ -127,10 +133,10 @@ Format these as a markdown unordered list with the format:
 Do not include any other text or markdown formatting outside the resource list.
 `;
 
-// Instructions for Professor Luna to create quiz questions based on a category
-const quizInstructions = (category) => `
+// Instructions for Professor Luna to create quiz questions based on a category and grade
+const quizInstructions = (category, grade) => `
 You are Professor Luna, and you create fun quizzes to help students learn interactively.
-Create a JSON array of 5 quiz questions based on "${category}" knowledge, challenging enough for students of grade 8-12.
+Create a JSON array of 5 quiz questions based on "${category}" knowledge, suitable for a student of grade ${grade}.
 Each question should have:
 - "question": the quiz question text
 - "options": an array of 4 answer options
@@ -243,7 +249,6 @@ function displayResources(resources) {
 
   requestAnimationFrame(() => {
     resourcesSection.removeAttribute('hidden'); // Remove hidden attribute
-    // No need for 'visible' class if using 'hidden' attribute for display
     window.scrollTo(0, scrollPosition);
   });
 }
@@ -267,6 +272,7 @@ async function generate(message) {
   slideshow.innerHTML = '';
   error.innerHTML = '';
   quizWrapper.setAttribute('hidden', 'true');
+  gradeSelection.setAttribute('hidden', 'true'); // Hide grade selection
   quizCategories.setAttribute('hidden', 'true'); // Hide categories
   quizContainer.innerHTML = ''; // Clear quiz content
   error.setAttribute('hidden', 'true');
@@ -347,8 +353,8 @@ async function generate(message) {
 }
 
 // --- Quiz Functionality ---
-// Displays quiz categories
-async function showQuizCategories() {
+// Displays grade selection
+async function showGradeSelection() {
   // Hide other sections
   modelOutput.innerHTML = '';
   slideshow.innerHTML = '';
@@ -356,22 +362,46 @@ async function showQuizCategories() {
   flashcardSection.setAttribute('hidden', 'true');
   resourcesSection.setAttribute('hidden', 'true');
   quizContainer.innerHTML = ''; // Clear any previous quiz questions
+  quizCategories.setAttribute('hidden', 'true'); // Hide categories
 
-  // Show quiz wrapper and categories
+  // Show quiz wrapper and grade selection
   quizWrapper.removeAttribute('hidden');
-  quizCategories.removeAttribute('hidden');
+  gradeSelection.removeAttribute('hidden');
   quizContainer.setAttribute('hidden', 'true'); // Ensure quiz questions are hidden initially
 }
 
+// Displays quiz categories after grade is selected
+async function showQuizCategories(selectedGrade) {
+  // Hide grade selection
+  gradeSelection.setAttribute('hidden', 'true');
 
-// Initiates the quiz generation and display for a specific category
-async function startQuiz(category) {
+  // Show quiz categories
+  quizCategories.removeAttribute('hidden');
+  quizContainer.setAttribute('hidden', 'true'); // Ensure quiz questions are hidden initially
+
+  // Attach event listeners to category buttons, passing the selected grade
+  categoryButtons.forEach(button => {
+    // Remove existing event listener to prevent multiple calls
+    const oldClickListener = button.onclick; // Store old listener if any
+    if (oldClickListener) {
+        button.removeEventListener('click', oldClickListener);
+    }
+    button.addEventListener('click', () => {
+      const category = button.dataset.category;
+      startQuiz(category, selectedGrade); // Pass both category and grade
+    });
+  });
+}
+
+// Initiates the quiz generation and display for a specific category and grade
+async function startQuiz(category, grade) {
   showLoading(true);
   const initialScroll = window.scrollY;
 
   // Clear previous content and hide categories
   quizContainer.innerHTML = '';
   quizCategories.setAttribute('hidden', 'true'); // Hide categories
+  gradeSelection.setAttribute('hidden', 'true'); // Hide grade selection
   quizContainer.removeAttribute('hidden'); // Show quiz container
   slideshow.setAttribute('hidden', 'true');
   modelOutput.innerHTML = '';
@@ -380,7 +410,7 @@ async function startQuiz(category) {
   flashcardSection.setAttribute('hidden', 'true');
 
   try {
-    const quizText = await callGenerateAPI(quizInstructions(category)); // Pass category to instructions
+    const quizText = await callGenerateAPI(quizInstructions(category, grade)); // Pass category and grade to instructions
 
     let cleanQuiz = quizText.trim();
     const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
@@ -470,7 +500,7 @@ function renderQuiz(questions) {
     `;
     document
       .getElementById('retry-quiz')
-      .addEventListener('click', () => showQuizCategories()); // Go back to categories on retry
+      .addEventListener('click', () => showGradeSelection()); // Go back to grade selection on retry
   }
 
   showQuestion(currentQuestion);
@@ -499,15 +529,13 @@ examples.forEach((li) =>
   })
 );
 
-// Handles click on the "Start Quiz" button to show categories
-startQuizBtn.addEventListener('click', showQuizCategories);
+// Handles click on the "Start Quiz" button to show grade selection
+startQuizBtn.addEventListener('click', showGradeSelection);
 
-// Handles clicks on quiz category buttons
-categoryButtons.forEach(button => {
-  button.addEventListener('click', () => {
-    const category = button.dataset.category;
-    startQuiz(category);
-  });
+// Handles click on the "Confirm Grade" button
+confirmGradeBtn.addEventListener('click', () => {
+  const selectedGrade = gradeSelect.value;
+  showQuizCategories(selectedGrade); // Pass the selected grade to show categories
 });
 
 // Handles click on the "Send Prompt" button
@@ -527,6 +555,7 @@ openFlashcardsBtn?.addEventListener('click', () => {
   slideshow.setAttribute('hidden', 'true');
   modelOutput.innerHTML = '';
   quizWrapper.setAttribute('hidden', 'true');
+  gradeSelection.setAttribute('hidden', 'true'); // Hide grade selection
   quizCategories.setAttribute('hidden', 'true'); // Hide categories
   quizContainer.innerHTML = ''; // Clear quiz content
   resourcesSection.setAttribute('hidden', 'true');
@@ -626,3 +655,4 @@ generateButton?.addEventListener('click', async () => {
     hideLoading(); // Hide loading spinner after generation
   }
 });
+
