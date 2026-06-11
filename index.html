@@ -20,7 +20,7 @@
         flex-wrap: wrap;
       }
 
-      .surprise-btn, .quiz-btn, .flashcard-btn {
+      .surprise-btn, .quiz-btn, .flashcard-btn, .guide-btn {
         font-family: 'Space Mono', monospace;
         background: linear-gradient(135deg, #00ffff, #0ff);
         color: #0f0f0f;
@@ -38,7 +38,7 @@
         text-align: center;
       }
 
-      .surprise-btn:hover, .quiz-btn:hover, .flashcard-btn:hover {
+      .surprise-btn:hover, .quiz-btn:hover, .flashcard-btn:hover, .guide-btn:hover {
         transform: translateY(-3px) scale(1.08);
         box-shadow: 0 0 24px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.6);
         background: linear-gradient(135deg, #33ffff, #66ffff);
@@ -298,10 +298,12 @@
         <button id="surprise-me" class="surprise-btn">🎲 Surprise Me!</button>
         <button id="start-quiz" class="quiz-btn">🧠 Start Quiz</button>
         <button id="open-flashcards" class="flashcard-btn">🗂 Flashcard Maker</button>
+        <button id="guide-button" class="guide-btn">📝 Project Guide</button>
       </div>
 
       <div id="output"></div>
       <div id="error" hidden></div>
+      <div id="guide" class="guide-container" hidden></div>
 
       <section id="flashcard-section" class="flashcard-maker" hidden>
         <h2>🗂 Flashcard Maker</h2>
@@ -363,7 +365,8 @@
     </div>
 
     <script src="dev.env.js"></script>
-    <script type="module" src="index.js"></script>
+    <script type="module" src="index.ts"></script>
+    <script type="module" src="generate.js"></script>
 
     <script>
       document.addEventListener('DOMContentLoaded', () => {
