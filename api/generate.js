@@ -1,90 +1,89 @@
+import { marked } from 'marked';
 
-let GoogleGenAI;
-async function initGoogleGenAI() {
-  const mod = await import('@google/genai');
-
-  GoogleGenAI = mod.GoogleGenAI || mod.default.GoogleGenAI || mod.default;
-}
-
-
-let ai;
-async function initAI() {
-  if (!GoogleGenAI) await initGoogleGenAI();
-  ai = new GoogleGenAI({
-    apiKey: process.env.API_KEY || '', 
-  });
-}
-
-// Model and config
-const MODEL_CONFIG = {
-  model: 'gemini-3-flash-preview', 
-  generationConfig: {
-    responseMimeType: 'application/json',
-    temperature: 0.7,
-    topP: 0.9,
-    maxOutputTokens: 1000,
-  },
-  safetySettings: [
-    {
-      category: 'HARM_CATEGORY_HARASSMENT',
-      threshold: 'BLOCK_ONLY_HIGH',
-    },
-  ],
-};
-
-
-async function generateContent(prompt) {
-  console.log(`🔮 Generating content for prompt: ${prompt.substring(0, 50)}...`);
-  if (!ai) await initAI();
-
-  const result = await ai.models.generateContent({
-    ...MODEL_CONFIG,
-    contents: [{
-      role: 'user',
-      parts: [{ text: prompt }],
-    }],
-  });
-
-
-  const responseText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-  if (!responseText) {
-    console.error('❌ No text in API response:', JSON.stringify(result, null, 2));
-    throw new Error('Unexpected API response format');
-  }
-
-  return responseText;
-}
-
-
-module.exports = async (req, res) => {
- 
-  if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  try {
-    const { prompt } = req.body;
-
-
-    if (!prompt || typeof prompt !== 'string') {
-      return res.status(400).json({ error: 'Invalid or missing prompt' });
+document.addEventListener('DOMContentLoaded', () => {
+    const userInput = document.querySelector('#input');
+    const error = document.querySelector('#error');
+    const guideButton = document.querySelector('#guide-button');
+    const guideContainer = document.querySelector('#guide');
+    const sendPromptBtn = document.querySelector('#send-prompt');
+    
+    if (guideButton) {
+        guideButton.addEventListener('click', async () => {
+            const message = userInput.value.trim();
+            if (!message) return;
+            
+            // UI state
+            if (error) error.hidden = true;
+            guideButton.disabled = true;
+            if (sendPromptBtn) sendPromptBtn.disabled = true;
+            
+            // Show guide container with loading state
+            guideContainer.innerHTML = '<div class="loading">Generating project guide...</div>';
+            guideContainer.removeAttribute('hidden');
+            
+            try {
+                const guideRes = await fetch('/api/generate-guide', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message }),
+                });
+                
+                if (!guideRes.ok) {
+                    throw new Error(await guideRes.text());
+                }
+                
+                const { guide } = await guideRes.json();
+                guideContainer.innerHTML = await marked.parse(guide);
+                
+                // Make all links open in a new tab
+                guideContainer.querySelectorAll('a').forEach(a => {
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                });
+            } catch (e) {
+                const msg = e instanceof Error ? e.message : String(e);
+                if (error) {
+                    error.textContent = msg;
+                    error.removeAttribute('hidden');
+                }
+                guideContainer.hidden = true;
+            } finally {
+                guideButton.disabled = false;
+                if (sendPromptBtn) sendPromptBtn.disabled = false;
+            }
+        });
     }
 
-    const text = await generateContent(prompt);
+    // Handlers for UI toggles
+    const quizBtn = document.querySelector('#start-quiz');
+    const flashcardBtn = document.querySelector('#open-flashcards');
+    const quizWrapper = document.querySelector('#quiz-wrapper');
+    const flashcardSection = document.querySelector('#flashcard-section');
+    const slideshowWrapper = document.querySelector('#slideshow-wrapper');
 
-    return res.status(200).json({ text });
-  } catch (error) {
-    console.error('💥 API Error:', error);
-    return res.status(500).json({ error: error.message || 'Internal Server Error' });
-  }
-};
+    if (quizBtn && quizWrapper) {
+        quizBtn.addEventListener('click', () => {
+            quizWrapper.hidden = !quizWrapper.hidden;
+            if (flashcardSection) flashcardSection.hidden = true;
+            if (guideContainer) guideContainer.hidden = true;
+            if (slideshowWrapper) slideshowWrapper.hidden = true;
+        });
+    }
 
+    if (flashcardBtn && flashcardSection) {
+        flashcardBtn.addEventListener('click', () => {
+            flashcardSection.hidden = !flashcardSection.hidden;
+            if (quizWrapper) quizWrapper.hidden = true;
+            if (guideContainer) guideContainer.hidden = true;
+            if (slideshowWrapper) slideshowWrapper.hidden = true;
+        });
+    }
 
+    if (guideButton && guideContainer) {
+        guideButton.addEventListener('click', () => {
+            if (flashcardSection) flashcardSection.hidden = true;
+            if (quizWrapper) quizWrapper.hidden = true;
+            if (slideshowWrapper) slideshowWrapper.hidden = true;
+        });
+    }
+});
