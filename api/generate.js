@@ -17,7 +17,7 @@ async function initAI() {
 
 // Model and config
 const MODEL_CONFIG = {
-  model: 'gemini-3-flash-preview', 
+  model: 'gemini-3.5-flash', 
   generationConfig: {
     responseMimeType: 'application/json',
     temperature: 0.7,
