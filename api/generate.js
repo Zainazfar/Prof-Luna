@@ -14,7 +14,7 @@ async function initAI() {
 
 // Default Base Configuration
 const MODEL_CONFIG = {
-  model: 'gemini-2.5-flash', // Updated to match your server.ts preferred stable version
+  model: 'gemini-2.5-flash', 
   generationConfig: {
     responseMimeType: 'text/plain',
     temperature: 0.7,
@@ -47,6 +47,19 @@ For each step, provide specific resources or actions (e.g., articles, tutorials,
 IMPORTANT: Use the google search tool to find real referenced articles or videos. For every external resource you mention, you MUST format it as a clickable Markdown hyperlink using the exact URL from your search results: [Title of article/video](https://...). Do not just put the title in quotes. 
 Then, give a reflection prompt after each step to help the student assess their understanding. 
 Finally, set a final project milestone and a self-check quiz at the end.
+`;
+
+const RESOURCES_INSTRUCTIONS = `
+You are an academic advisor. Your job is to provide highly relevant online learning resources based on the user's query.
+Generate a structured list of exactly 3 to 4 useful external online resources or reference items.
+
+The final output must be a JSON array of objects, where each object has two keys: "title" and "url".
+Example structure:
+[
+  { "title": "Understanding the Fundamentals", "url": "https://www.google.com/search?q=fundamentals" }
+]
+
+Do not include any other text or markdown formatting outside of the JSON array.
 `;
 
 // Helper: Sanitize and verify links from search grounding chunks
@@ -172,7 +185,20 @@ module.exports = async (req, res) => {
       return res.status(200).json({ script: JSON.parse(scriptText) });
     }
 
-    // Route 3: Standard Catch-all generation fallback (Keeps original flow unbroken)
+    // Route 3: Dedicated Resources Generation (New implementation)
+    if (currentPath.includes('generate-resources') || action === 'generate-resources') {
+      const result = await generateContent(`Topic: "${searchInput}"`, RESOURCES_INSTRUCTIONS, false, true);
+      let resourcesText = (result?.candidates?.[0]?.content?.parts?.[0]?.text || "").trim();
+
+      const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
+      const match = resourcesText.match(fenceRegex);
+      if (match && match[2]) {
+        resourcesText = match[2].trim();
+      }
+      return res.status(200).json({ resources: JSON.parse(resourcesText) });
+    }
+
+    // Route 4: Standard Catch-all generation fallback
     const result = await generateContent(searchInput);
     const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
 
