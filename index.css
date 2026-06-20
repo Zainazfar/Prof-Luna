@@ -755,114 +755,116 @@ textarea#input:focus {
     padding: 12px 15px; /* Adjusted padding to maintain a good height but also fit narrower screens */
     font-size: 1rem; /* Slightly reduced font size for mobile buttons */
   }
-/* Basic CSS for Flashcard Flipping (You will style this further) */
-.flashcard {
-    width: 300px; /* Adjust as needed */
-    height: 200px; /* Adjust as needed */
-    perspective: 1000px; /* For 3D effect */
-    margin: 10px;
-    display: inline-block; /* Or use flexbox/grid for layout */
-}
 
-.flashcard-inner {
+  .button-group {
+    flex-direction: column;
+    width: 92%;
+  }
+
+  .button-group button {
     width: 100%;
-    height: 100%;
-    text-align: center;
-    transition: transform 0.6s; /* Smooth transition for flipping */
-    transform-style: preserve-3d; /* Keep children in 3D space */
-    position: relative;
+  }
 }
 
-.flashcard.flipped .flashcard-inner {
-    transform: rotateY(180deg); /* Flip on Y-axis when 'flipped' class is active */
+.button-group {
+  display: flex;
+  gap: 15px;
+  margin: 15px auto 0;
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+  z-index: 10;
 }
 
-.flashcard-front,
-.flashcard-back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden; /* Hide the back of the card when facing away */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px; /* Example styling */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Example styling */
-    padding: 20px;
-    box-sizing: border-box;
+.button-group button {
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #00ff88, #00ffaa);
+  color: #111;
+  font-family: 'Space Mono', monospace;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.flashcard-front {
-    background-color: #f0f0f0; /* Example styling */
-    color: #333;
+.button-group button:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.7);
 }
 
-.flashcard-back {
-    background-color: #333; /* Example styling */
-    color: #fff;
-    transform: rotateY(180deg); /* Initially rotated to be the back */
+.button-group button:disabled {
+  background: #3a3a3a;
+  color: #888;
+  box-shadow: none;
+  cursor: not-allowed;
 }
 
-/* Styles for the input area and buttons */
-.flashcard-section {
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    margin-top: 20px;
+#guide {
+  margin: 40px auto;
+  padding: 30px;
+  width: 90%;
+  max-width: 900px;
+  border: 1px solid #3d3d3d;
+  border-radius: 12px;
+  background-color: rgba(30, 30, 30, 0.9);
+  color: #f1f1f1;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+  position: relative;
+  z-index: 10;
+  animation: fadeUp 0.6s ease-out forwards;
 }
 
-.section-title {
-    font-size: 1.8em;
-    margin-bottom: 15px;
-    color: #333;
+#guide[hidden] {
+  display: none;
 }
 
-.input-area {
-    margin-bottom: 20px;
+#guide h1, #guide h2, #guide h3 {
+  margin-top: 25px;
+  margin-bottom: 15px;
+  text-align: left;
+  color: #00ffff;
+  font-family: 'Space Mono', monospace;
+  text-shadow: 0 0 5px #00ffff;
 }
 
-.input-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #555;
+#guide h1 { font-size: 2rem; }
+#guide h2 { font-size: 1.6rem; }
+#guide h3 { font-size: 1.3rem; }
+
+#guide p, #guide ul, #guide ol {
+  margin-bottom: 15px;
+  line-height: 1.7;
 }
 
-.text-input {
-    width: calc(100% - 22px); /* Account for padding and border */
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 1em;
-    margin-bottom: 10px;
+#guide ul, #guide ol {
+  padding-left: 20px;
 }
 
-.generate-button {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s ease;
+#guide a {
+  color: #00ff88;
+  text-decoration: none;
+  transition: text-shadow 0.3s ease;
 }
 
-.generate-button:hover {
-    background-color: #0056b3;
+#guide a:hover {
+  text-decoration: underline;
+  text-shadow: 0 0 8px #00ff88;
 }
 
-.error-message {
-    color: #dc3545;
-    margin-top: 10px;
-    font-weight: bold;
+.loading {
+  font-style: italic;
+  color: #00ffff;
+  text-align: center;
+  text-shadow: 0 0 8px #00ffff;
+  animation: pulse 1.5s infinite;
 }
 
-.flashcards-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    margin-top: 20px;
-}
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
 }
