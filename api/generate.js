@@ -19,12 +19,11 @@ const FALLBACK_MODELS = [
   'gemini-1.5-flash',
 ];
 
-// Corrected config structure for @google/genai
+// Configuration optimized for complete text output
 const COMMON_CONFIG = {
-  responseMimeType: 'application/json',
   temperature: 0.7,
   topP: 0.9,
-  maxOutputTokens: 1000,
+  maxOutputTokens: 4096, // Increased to prevent truncated responses
   safetySettings: [
     {
       category: 'HARM_CATEGORY_HARASSMENT',
@@ -70,7 +69,7 @@ async function generateContentWithFallback(prompt) {
         ai.models.generateContent({
           model: model,
           contents: prompt,
-          config: COMMON_CONFIG, // Note: config property used in @google/genai
+          config: COMMON_CONFIG,
         })
       );
 
