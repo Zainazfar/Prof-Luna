@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@google/genai": "^1.9.0"
+    "@google/genai": "^1.9.0",
+    "@vercel/analytics": "^1.4.0"
   }
 }
